@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+
+<head>
+    
+    <title>最小PE文件的制作 - The Blog of WoaW04</title>
+    <meta charset="UTF-8">
+    <meta name="keywords" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+    
+    
+
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <meta name="description" content="战前准备要制作最小PE文件，那么需要知道哪些字段可以删，哪些字段不能删，而哪些字段需要修改 首先，需要知道哪些字段可以删除&#x2F;修改，即对这个字段进行任何操作都不会影响程序的运行 下图将所有可删的字段全部改为了1，由于010editor的特性，这里将会显示为橙色  当然，要缩小PE文件绝不止是将这些橙色部分进行修改，下面的数据节、引入函数节等都需要修改  值得注意的是，由于修改PE文件会涉及">
+<meta property="og:type" content="article">
+<meta property="og:title" content="最小PE文件的制作">
+<meta property="og:url" content="http://example.com/2023/09/26/%E6%9C%80%E5%B0%8FPE%E6%96%87%E4%BB%B6/index.html">
+<meta property="og:site_name" content="The Blog of WoaW04">
+<meta property="og:description" content="战前准备要制作最小PE文件，那么需要知道哪些字段可以删，哪些字段不能删，而哪些字段需要修改 首先，需要知道哪些字段可以删除&#x2F;修改，即对这个字段进行任何操作都不会影响程序的运行 下图将所有可删的字段全部改为了1，由于010editor的特性，这里将会显示为橙色  当然，要缩小PE文件绝不止是将这些橙色部分进行修改，下面的数据节、引入函数节等都需要修改  值得注意的是，由于修改PE文件会涉及">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-25%20235341.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-25%20235459.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20000147.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20000516.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20084721.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20085226.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20085733.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20085830.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20085943.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20090158.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20090404.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20090610.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20091028.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20091316.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20091402.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20093616.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20091807.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20092635.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20092733.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20092835.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20093710.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20094434.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20094531.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20095347.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20095821.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20100214.png">
+<meta property="og:image" content="c:/Users/WoaW04/AppData/Roaming/Typora/typora-user-images/image-20230926100423971.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20102422.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20132806.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20125604.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20092835.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20125844.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20132806.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20133152.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20134132.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20134255.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20134712.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20134923.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20135227.png">
+<meta property="article:published_time" content="2023-09-26T02:00:00.000Z">
+<meta property="article:modified_time" content="2023-09-26T05:57:38.175Z">
+<meta property="article:author" content="WoaW04">
+<meta property="article:tag" content="软件安全">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-25%20235341.png">
+    <link rel="stylesheet" href="/lib/jquery.fancybox.min.css?v=1695708523208">
+    
+    <link rel="stylesheet" href="/lib/mdui_043tiny/css/mdui.css?v=1695708523208">
+    <link rel="stylesheet" href="/lib/iconfont/iconfont.css?v=1695708523208">
+    <link rel="stylesheet" href="/css/style.css?v=1695708523208">
+    
+        <link rel="stylesheet" href="/css/dark.css?v=1695708523208">
+     
+    
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+<body class="mdui-drawer-body-left">
+    
+    <div id="nexmoe-background">
+        <div class="nexmoe-bg" style="background-image: url(https://cdn.jsdelivr.net/gh/WoaW04/Picture/image95796589_p0.jpg)"></div>
+        <div class="mdui-appbar mdui-shadow-0">
+            <div class="mdui-toolbar">
+                <a mdui-drawer="{target: '#drawer', swipe: true}" title="menu" class="mdui-btn mdui-btn-icon mdui-ripple"><i class="mdui-icon nexmoefont icon-menu"></i></a>
+                <div class="mdui-toolbar-spacer"></div>
+                <!--<a href="javascript:;" class="mdui-btn mdui-btn-icon"><i class="mdui-icon material-icons">search</i></a>-->
+                <a href="/" title="WoaW04" class="mdui-btn mdui-btn-icon"><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image90830939_p2.png" alt="WoaW04"></a>
+            </div>
+        </div>
+    </div>
+    <div id="nexmoe-header">
+        <div class="nexmoe-drawer mdui-drawer" id="drawer">
+    <div class="nexmoe-avatar mdui-ripple">
+        <a href="/" title="WoaW04">
+            <img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image90830939_p2.png" alt="WoaW04" alt="WoaW04">
+        </a>
+    </div>
+    <div class="nexmoe-count">
+        <div><span>文章</span>4</div>
+        <div><span>标签</span>3</div>
+        <div><span>分类</span>0</div>
+    </div>
+    <div class="nexmoe-list mdui-list" mdui-collapse="{accordion: true}">
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/" title="回到首页">
+            <i class="mdui-list-item-icon nexmoefont icon-home"></i>
+            <div class="mdui-list-item-content">
+                回到首页
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/about.html" title="关于博客">
+            <i class="mdui-list-item-icon nexmoefont icon-info-circle"></i>
+            <div class="mdui-list-item-content">
+                关于博客
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/PY.html" title="我的朋友">
+            <i class="mdui-list-item-icon nexmoefont icon-unorderedlist"></i>
+            <div class="mdui-list-item-content">
+                我的朋友
+            </div>
+        </a>
+        
+    </div>
+    <aside id="nexmoe-sidebar">
+    
+    <div class="nexmoe-widget-wrap">
+    <div class="nexmoe-widget nexmoe-search">
+        
+            <form id="search_form">
+                <label><input class="st-default-search-input" id="search_value" name="q" type="search" placeholder="搜索" style="
+                    font-size: 15px !important;
+                    height: 56px !important;
+                    background-image: none;
+                "></label>
+            </form>
+         
+    </div>
+</div>
+    
+    <div class="nexmoe-widget-wrap">
+    <div class="nexmoe-widget nexmoe-social">
+        <a class="mdui-ripple" href="https://space.bilibili.com/3096846" target="_blank" mdui-tooltip="{content: '哔哩哔哩'}" style="color: rgb(231, 106, 141);background-color: rgba(231, 106, 141, .15);">
+            <i class="nexmoefont icon-bilibili"></i>
+        </a><a class="mdui-ripple" href="https://github.com/WoaW04" target="_blank" mdui-tooltip="{content: 'GitHub'}" style="color: rgb(255, 255, 255);background-color: rgba(255, 255, 255, .15);">
+            <i class="nexmoefont icon-github"></i>
+        </a>
+    </div>
+</div>
+    
+    
+
+    
+    
+  <div class="nexmoe-widget-wrap">
+    <div id="randomtagcloud" class="nexmoe-widget tagcloud nexmoe-rainbow">
+      <a href="/tags/Learning/" style="font-size: 20px;">Learning</a> <a href="/tags/Misc/" style="font-size: 10px;">Misc</a> <a href="/tags/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8/" style="font-size: 10px;">软件安全</a>
+    </div>
+    
+  </div>
+
+    
+</aside>
+    <div class="nexmoe-copyright">
+        &copy; 2023 WoaW04
+        Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+        & <a href="https://github.com/theme-nexmoe/hexo-theme-nexmoe" target="_blank">Nexmoe</a>
+        
+    </div>
+</div><!-- .nexmoe-drawer -->
+    </div>
+    <div id="nexmoe-content">
+        <div class="nexmoe-primary">
+            <div class="nexmoe-post">
+
+  <article>
+      
+          <div class="nexmoe-post-cover" style="padding-bottom: NaN%;"> 
+              <img data-src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-25%20234811.png" data-sizes="auto" alt="最小PE文件的制作" class="lazyload">
+              <h1>最小PE文件的制作</h1>
+          </div>
+      
+      
+      <div class="nexmoe-post-meta nexmoe-rainbow" style="margin:10px 0!important;">
+    <a><i class="nexmoefont icon-calendar-fill"></i>2023年09月26日</a>
+</div>
+
+      
+
+      <h2 id="战前准备"><a href="#战前准备" class="headerlink" title="战前准备"></a>战前准备</h2><p>要制作最小PE文件，那么需要知道哪些字段可以删，哪些字段不能删，而哪些字段需要修改</p>
+<p>首先，需要知道哪些字段可以删除&#x2F;修改，即对这个字段进行任何操作都不会影响程序的运行</p>
+<p>下图将所有可删的字段全部改为了1，由于010editor的特性，这里将会显示为橙色</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-25%20235341.png"></p>
+<p>当然，要缩小PE文件绝不止是将这些橙色部分进行修改，下面的数据节、引入函数节等都需要修改</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-25%20235459.png"></p>
+<p>值得注意的是，由于修改PE文件会涉及RVA和FA的修改，如果每一步都进行这些修改，虽然会使得更改过程更加清晰，但是效率将会大大降低，所以作为马后炮，我在这里先将RVA和FA的修改按下不表，将大致过程结束之后在进行RVA和FA的统一更改</p>
+<h2 id="第一步"><a href="#第一步" class="headerlink" title="第一步"></a>第一步</h2><p>删除DOS桩和MZ签名部分</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20000147.png"></p>
+<p>MZ签名最重要的就是前两个字节，其余都可以删除，但是需要注意的是，003CH处用于定位NT映像头开始的位置，当NT映像头的位置改变时，这个地方也需要做出变化</p>
+<p>如下图所示，是删掉上图所示一些部分的结果（注意观察左边的地址）</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20000516.png"></p>
+<p>为什么不删除MZ签名后的两个字节呢？这就需要注意观察刚才所说的003CH位置了，删去部分MZ文件头和DOS桩后，003CH的位置将会被NT映像头中的可选映像头中的SectionAlignment（节的对齐粒度）替代，而在给到的模板中，这个对齐粒度为4字节，而这个数转换为地址则为00000004H，恰好是删除操作之后的NT映像头的准确位置，因此，MZ签名后的两个字节并不删除，方便寻址与粒度的配合</p>
+<h2 id="第二步"><a href="#第二步" class="headerlink" title="第二步"></a>第二步</h2><p>删除可选映像头的Directory域部分（这里放没有删除DOS-MZ文件头+DOS桩的图以方便理解）</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20084721.png"></p>
+<p>这里分为两部分，一个是NumberOfRvaAndSizes，一个是Directory域</p>
+<p>蓝色部分的第一个四字节为NumberOfRvaAndSizes，指明了数据目录有多少个项，此处的值为00000010H，即16个项，由于Directory域中只有输入表是必须的，而输入表在数据目录的第二项（如图所示）</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20085226.png"></p>
+<p>因此只需要留下两项，即把NumberOfRvaAndSizes改为00000002H</p>
+<p>后面的更改便是把Directory域中的除了输出表和输入表的部分给删除就行了，由于一个项在域中占8个字节，因此在NumberOfRvaAndSizes后面的16个字节不删除，其余的都可以删</p>
+<p>这里放删除DOS-MZ文件头+DOS桩之后需要删的部分（蓝色部分）</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20085733.png"></p>
+<p>删除后</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20085830.png"></p>
+<p>记得改NumberOfRvaAndSizes</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20085943.png"></p>
+<h2 id="第三步"><a href="#第三步" class="headerlink" title="第三步"></a>第三步</h2><p>删除.rdata节在节表中的位置</p>
+<p>让我们从模板来看这个位置</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20090158.png"></p>
+<p>如图所示，这个地方就是节表，紧跟在Directory域后面，节表中的每一个项都占40字节，即28H</p>
+<p>节表最重要的是代码节，即.text节的部分，其余都可以进行删除</p>
+<p>此处，我们需要删除.rdata节的部分，即下图蓝色部分</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20090404.png"></p>
+<p>而在删除之后，需要更改NumberOfSections这一项为1</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20090610.png"></p>
+<p>（吐槽一下，就算不删.rdata部分，直接改这个为01程序也能继续运行）</p>
+<p>而除了.rdata项之外，.text项是否也有可以删除的地方呢</p>
+<p>答案是肯定的</p>
+<p>节表中的.text项后面的16个字节是可以被删除的</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20091028.png"></p>
+<p>这个可以被删除的部分为“本节属性”，可能被后面的东西取代了，但不造成影响</p>
+<p>于是，在上一步的结果后面，我们继续做减法</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20091316.png"></p>
+<p>这一段可以删除</p>
+<p>然后记得把NumberOfSections这一项改一改</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20091402.png"></p>
+<p>在这一步我们可以得到这个结果</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20093616.png"></p>
+<h2 id="第四步"><a href="#第四步" class="headerlink" title="第四步"></a>第四步</h2><p>由于要制造最小PE文件，所以后面汇编<del>有得你写的</del>需要重写，因此原先代码节的部分就可以删除了</p>
+<p>根据可选映像头中的AddressOfEntryPoint可以定位代码节的开始</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20091807.png"></p>
+<p>那怎么定位结束呢？</p>
+<p>这就需要知道IAT表的位置了，由于.text节和.rdata节紧密相连，而.rdata节中的第一个部分就是IAT，因此找到IAT的开始就找到了.text节的结束了</p>
+<p>那么如何找到IAT的位置呢？</p>
+<p>这就需要看我们的Directory域了（虽然上面删掉了，但是也可以看模板找字节进行搜寻对吧？），Directory域中有IAT这一项，这一项和其他项一样，有RVA和大小，有了RVA就可以定位了</p>
+<p>下图为模板中Directory域中IAT的RVA</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20092635.png"></p>
+<p>对应的位置</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20092733.png"></p>
+<p>根据OEP和IAT的RVA，我们就可以确定要删除的代码段了</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20092835.png"></p>
+<p>于是这一步我们可以得到这个结果</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20093710.png"></p>
+<h2 id="第五步"><a href="#第五步" class="headerlink" title="第五步"></a>第五步</h2><p>见缝插针</p>
+<p>在这一步，我们需要把.rdata中需要的函数名和dll文件的名字放在上面那些可以被更改但不会影响程序运行的地方</p>
+<p>首先明确，在模板给出的函数中，实际真的被用到的只有MessageBoxA函数和其对应的dll，即use32.dll</p>
+<p>因此我们需要把这两个放到适当的位置</p>
+<p>此处略过对比，直接上结果</p>
+<p>把user32放到这里</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20094434.png"></p>
+<p>把MessageBoxA放到这里</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20094531.png"></p>
+<p>这样下面那些名字就可以删掉了</p>
+<p>但是有个小问题，应该删到哪呢？</p>
+<p>这里我们需要知道.rdata节的最后一部分，即IMPORT Hints&#x2F;Names&amp;DLL Names的结构了，在一个部分里面，分为两个小部分，两个小部分通过一个字节的00隔开，部分与部分之间用两个字节00隔开</p>
+<p>下面简要说明这两个小部分：</p>
+<p>一个是IMAGE_IMPORT_BY_NAME，还有一个是DLL names字符串，第一个是一个结构由两项组成：Hint和Name，Hint占两个字节，Name为一个字符串</p>
+<p>通过这个，我们可以推断，如果要知道删到哪，那么需要知道整个部分的第一个函数，然后往前找两个字节就可以了</p>
+<p>于是我们可以知道要删的就是下图这个部分（以上一步的结果为例）</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20095347.png"></p>
+<p>那么我们就删除了后面的IMPORT Hints&#x2F;Names&amp;DLL部分了</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20095821.png"></p>
+<h2 id="第六步"><a href="#第六步" class="headerlink" title="第六步"></a>第六步</h2><p>这一步，我们需要重构原先的IAT和IDT</p>
+<p>可能有人会问，那INT（IMPORT Name Table）呢？</p>
+<p>这个可以直接删掉的，只要让IDT指向IAT或DLL文件名，IAT再指向函数名就好了，INT？真不熟！</p>
+<p>为此，我们先删除整个.rdata节，然后根据IAT和IDT的结构进行复原</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20100214.png"></p>
+<p>删去之后，我们需要明确，由于我们设置的粒度为4，所以最后的结果必须是4字节的整数倍，在这个地方，我们删除.rdata节的所有数据后，可以在文件末尾补两个字节的0，后面就不用再补了</p>
+<p><img data-fancybox="gallery" data-sizes="auto" data-src="C:\Users\WoaW04\AppData\Roaming\Typora\typora-user-images\image-20230926100423971.png" alt="image-20230926100423971" class="lazyload"></p>
+<p>现在，让我们开始复原IAT和IDT吧</p>
+<p>首先我们先认识IAT的结构</p>
+<pre><code>IAT是一个指针数组
+数组内存储着函数名前两个字节的地址（即上文所述的Hint）
+一个元素四个字节
+相同DLL内的函数名地址相连
+如这里两个函数名地址
+F8 02 00 00 EC 02 00 00
+不同DLL中的函数用四字节0隔开
+D0 02 00 00 00 00 00 00 F8 02 00 00
+</code></pre>
+<p>然后再让我们看看IDT的结构</p>
+<pre><code>IDT由一系列的 IMAGE_IMPORT_DESCRIPTOR结构组成
+结构的数量取决于程序要使用的DLL文件的数量，每一个IMAGE_IMPORT_DESCRIPTOR 结构对应一个DLL文件
+在所有这些结构的最后，由一个内容全为0的 IMAGE_IMPORT_DESCRIPTOR 结构作为结束
+</code></pre>
+<p>下面重点介绍一下IMAGE_IMPORT_DESCRIPTOR 的数据结构</p>
+<pre><code class="c">typedef struct _IMAGE_IMPORT_DESCRIPTOR &#123;
+    union &#123;
+        DWORD   Characteristics;      //0 for terminating null import descriptor
+        DWORD   OriginalFirstThunk;   //指向INT内的地址
+    &#125;;                                  //此处共占4字节
+    DWORD   TimeDateStamp;            //当可执行文件不与被导入的DLL进行绑定时，此字段为0
+    DWORD   ForwarderChain;           //第一个被转向的API索引
+    DWORD   Name;                     //指向被导入的DLL名称
+    DWORD   FirstThunk;               //指向IAT内的地址
+&#125; IMAGE_IMPORT_DESCRIPTOR;
+typedef IMAGE_IMPORT_DESCRIPTOR UNALIGNED *PIMAGE_IMPORT_DESCRIPTOR;
+</code></pre>
+<p>由结构可知最重要的是OriginalFirstThunk、Name和FirstThunk这三个部分，由于我们已经删除了INT表，因此需要让OriginalFirstThunk和FirstThunk的值都指向IAT表</p>
+<p>对于IAT表，我们需要让它指向MessageBoxA这个函数，因此可以重构成这样</p>
+<pre><code>1C 00 00 00 00 00 00 00
+</code></pre>
+<p>对于IDT表，我们可以重构成这样</p>
+<pre><code>E8 00 00 00
+00 00 00 00
+00 00 00 00
+0C 00 00 00
+E8 00 00 00
+00 00 00 00
+00 00 00 00
+</code></pre>
+<p>最后结果如下（注意IAT指向的地址和IDT指向的地址）</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20102422.png"></p>
+<h2 id="第七步"><a href="#第七步" class="headerlink" title="第七步"></a>第七步</h2><p>让我们最后整点汇编吧</p>
+<p>首先把能进行修改的字节标1（橙色）</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20132806.png"></p>
+<p>OD，启动！</p>
+<p>我们以模板的汇编代码为准进行修改</p>
+<p>由于上面已经分析过代码段的位置，这里不再赘述，在OD中直接找到这个位置</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20125604.png"></p>
+<p>先结合模板分析一下</p>
+<p>（模板中的代码段）</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20092835.png"></p>
+<p>（模板中的数据）</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20125844.png"></p>
+<p>这里需要一点汇编知识</p>
+<pre><code class="assembly">push 0x1040
+// 68 40 10 00 00 压栈
+
+push 0x4001F8
+// 68 F8 01 40 00 标题
+
+push 0x40020C
+// 68 0C 02 40 00 文本框内容
+
+push 0x0
+// 6A 00           某个参数，不过这里没有
+
+call 00400264
+// E8 14 00 00 00 CALL进MessageBoxA中，这里的地址需要计算
+
+jmp dword ptr ds:[0x400274]
+// FF 25 74 02 40 00 400274H(little-endian)是IAT地址
+</code></pre>
+<p>由上文所述，如果需要程序正常运行，那么需要将数据段的数据准确压入栈中，为此我们需要在地址中下一点功夫</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20132806.png"></p>
+<p>根据数据段的位置，以及可以被修改的字节位置，我们可以写出以下汇编代码</p>
+<pre><code class="assembly">push 0x1040
+// 68 40 10 00 00 压栈（与上面相同）
+
+jmp
+// EB 0D 间接跳转，后面会大量使用，用于在不连续内存块中保证运行完整
+
+push 0x4000A4
+// 68 A4 00 40 00 标题
+
+jmp
+// EB 1A 间接跳转
+
+push 0x4000B8
+// 68 B8 00 40 00 文本框内容
+
+push 0x0
+// 6A 00 某个参数，不过这里没有
+
+call 00400264
+// E8 0B 00 00 00 CALL进MessageBoxA中，这里的地址需要计算
+
+jmp
+// EB 09 间接跳转
+
+jmp dword ptr ds:[0x4000E8]
+// FF 25 E8 00 40 00 4000E8H(little-endian)是IAT地址
+</code></pre>
+<p>然后就可以插入了</p>
+<p>这里重点提一下中间的call后面地址的计算</p>
+<pre><code>X=真正要跳转的地址-（E8这条指令的地址+5）
+</code></pre>
+<p>根据在OD中对模板文件的查看，容易知道E8跳转的地址实际上就是汇编代码最后一段的地址（FF25），因此我们可以得出</p>
+<pre><code>X=00400070H-(00400060H+5H)=0BH
+</code></pre>
+<p>这样我们的汇编部分就结束了</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20133152.png"></p>
+<h2 id="第八步"><a href="#第八步" class="headerlink" title="第八步"></a>第八步</h2><p>最后做一点小修改</p>
+<p>首先是SizeOfOptionalHeader</p>
+<p>这个是整个可选映像头的大小，鉴于我们对可选映像头的修改只有删除Directory域，因此这里做个简单的加减法（E0-70&#x3D;70）就可以得出结果了</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20134132.png"></p>
+<p>然后是OEP</p>
+<p>鉴于我们把汇编代码乱放，因此我们需要找到第一条指令的执行位置并修改OEP</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20134255.png"></p>
+<p>接下来是SizeOfHeaders</p>
+<p>别看这有个Size，实际上指向的应该是第一个节开始的位置，这里放OEP就好</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20134712.png"></p>
+<p>之后是Directory域的修改</p>
+<p>即输入表的RVA和大小的修改，不多赘述</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20134923.png"></p>
+<p>最后是代码节的修改</p>
+<p>将地址改为数据的起点即可</p>
+<p>重点要更改的是节表的VirtualAddress和PointerToRawData这两项</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20135227.png"></p>
+<p>当然，不能忘记改自己的名字和学号，这个就不放了（GBK编码）</p>
+<p>至此，所有工作已经结束，我们已经获得了一个Win11下可以正常运行的最小PE文件（以模板给的字符串是268B，如果删掉数据节一点东西的话应该能更小)</p>
+
+  </article>
+
+  
+      
+    <div class="nexmoe-post-copyright">
+        <strong>本文作者：</strong>WoaW04<br>
+        <strong>本文链接：</strong><a href="http://example.com/2023/09/26/%E6%9C%80%E5%B0%8FPE%E6%96%87%E4%BB%B6/" title="http:&#x2F;&#x2F;example.com&#x2F;2023&#x2F;09&#x2F;26&#x2F;%E6%9C%80%E5%B0%8FPE%E6%96%87%E4%BB%B6&#x2F;" target="_blank" rel="noopener">http:&#x2F;&#x2F;example.com&#x2F;2023&#x2F;09&#x2F;26&#x2F;%E6%9C%80%E5%B0%8FPE%E6%96%87%E4%BB%B6&#x2F;</a><br>
+        
+            <strong>版权声明：</strong>本文采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/cn/deed.zh" target="_blank">CC BY-NC-SA 3.0 CN</a> 协议进行许可
+        
+    </div>
+
+
+  
+  
+  <div class="nexmoe-post-meta nexmoe-rainbow">
+    
+    
+        <a class="nexmoefont icon-tag-fill -none-link" href="/tags/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8/" rel="tag">软件安全</a>
+    
+</div>
+
+  
+      <div class="nexmoe-post-footer">
+          <section class="nexmoe-comment">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.css">
+<div id="gitalk"></div>
+<script src="https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: '80b2453b6d5f37ad6225',
+        clientSecret: '43e99fa852795c9a7b3eb924b2558c64b84bbdeb',
+        id: window.location.pathname,
+        repo: 'nexmoe.github.io',
+        owner: 'nexmoe',
+        admin: 'nexmoe'
+    })
+    gitalk.render('gitalk')
+</script>
+</section>
+      </div>
+  
+</div>
+            <div class="nexmoe-post-right">
+              <div class="nexmoe-fixed">
+                  <div class="nexmoe-tool"> 
+                    
+                      
+                    
+                      <a href="#nexmoe-content" class="toc-link" aria-label="回到顶部" title="top"><button class="mdui-fab mdui-ripple"><i class="nexmoefont icon-caret-top"></i></button></a>
+                  </div>
+              </div>
+            </div>
+        </div>
+    </div>
+     
+    <div id="nexmoe-search-space">
+        <div class="search-container">
+            <div class="search-header">
+                <div class="search-input-container">
+                    <input class="search-input" type="text" placeholder="搜索" oninput="sinput();">
+                </div>
+                <a class="search-close" onclick="sclose();">×</a>
+            </div>
+            <div class="search-body"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/combine/npm/lazysizes@5.1.0/lazysizes.min.js,npm/mdui@0.4.3/dist/js/mdui.min.js?v=1"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+
+ 
+
+<script async src="/js/app.js?v=1695708523209"></script>
+
+
+	<script async src="/js/search.js?v=1695708523209"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js"></script>
+<script>
+	$(".justified-gallery").justifiedGallery({
+		rowHeight: 160,
+		margins: 10,
+	});
+</script>
+
+
+    
+
+
+
+
+
+</body>
+
+</html>
