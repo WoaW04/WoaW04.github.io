@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+
+<head>
+    
+    <title>栢鹭杯2023RE - The Blog of WoaW04</title>
+    <meta charset="UTF-8">
+    <meta name="keywords" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+    
+    
+
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <meta name="description" content="第一次遇到AVX指令集的题目，感觉比较有意思记录一下 了解VPSHUFB指令重点是这个说明书 https:&#x2F;&#x2F;www.felixcloutier.com&#x2F;x86&#x2F;pshufb 里面介绍了AVX指令集中vpshufb的使用方法（左上Index可以看到所有指令） 当然最重要的部分我先放这了： PSHUFB performs in-place shuffles of bytes in the desti">
+<meta property="og:type" content="article">
+<meta property="og:title" content="栢鹭杯2023RE">
+<meta property="og:url" content="http://example.com/2023/10/11/%E6%A0%A2%E9%B9%AD%E6%9D%AF2023RE/index.html">
+<meta property="og:site_name" content="The Blog of WoaW04">
+<meta property="og:description" content="第一次遇到AVX指令集的题目，感觉比较有意思记录一下 了解VPSHUFB指令重点是这个说明书 https:&#x2F;&#x2F;www.felixcloutier.com&#x2F;x86&#x2F;pshufb 里面介绍了AVX指令集中vpshufb的使用方法（左上Index可以看到所有指令） 当然最重要的部分我先放这了： PSHUFB performs in-place shuffles of bytes in the desti">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-10-11%20231458.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-10-11%20231614.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-10-11%20231747.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-10-11%20231950.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-10-11%20232255.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-10-11%20232338.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-10-11%20233034.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-10-11%20233205.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-10-11%20233244.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-10-11%20233844.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-10-11%20234323.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-10-11%20234410.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-10-11%20234745.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-10-11%20234842.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-10-11%20235022.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-10-11%20235113.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-10-11%20235442.png">
+<meta property="article:published_time" content="2023-10-11T13:32:48.000Z">
+<meta property="article:modified_time" content="2023-10-11T15:55:15.525Z">
+<meta property="article:author" content="WoaW04">
+<meta property="article:tag" content="RE">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-10-11%20231458.png">
+    <link rel="stylesheet" href="/lib/jquery.fancybox.min.css?v=1697039785423">
+    
+    <link rel="stylesheet" href="/lib/mdui_043tiny/css/mdui.css?v=1697039785424">
+    <link rel="stylesheet" href="/lib/iconfont/iconfont.css?v=1697039785424">
+    <link rel="stylesheet" href="/css/style.css?v=1697039785424">
+    
+        <link rel="stylesheet" href="/css/dark.css?v=1697039785424">
+     
+    
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+<body class="mdui-drawer-body-left">
+    
+    <div id="nexmoe-background">
+        <div class="nexmoe-bg" style="background-image: url(https://cdn.jsdelivr.net/gh/WoaW04/Picture/image95796589_p0.jpg)"></div>
+        <div class="mdui-appbar mdui-shadow-0">
+            <div class="mdui-toolbar">
+                <a mdui-drawer="{target: '#drawer', swipe: true}" title="menu" class="mdui-btn mdui-btn-icon mdui-ripple"><i class="mdui-icon nexmoefont icon-menu"></i></a>
+                <div class="mdui-toolbar-spacer"></div>
+                <!--<a href="javascript:;" class="mdui-btn mdui-btn-icon"><i class="mdui-icon material-icons">search</i></a>-->
+                <a href="/" title="WoaW04" class="mdui-btn mdui-btn-icon"><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image90830939_p2.png" alt="WoaW04"></a>
+            </div>
+        </div>
+    </div>
+    <div id="nexmoe-header">
+        <div class="nexmoe-drawer mdui-drawer" id="drawer">
+    <div class="nexmoe-avatar mdui-ripple">
+        <a href="/" title="WoaW04">
+            <img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image90830939_p2.png" alt="WoaW04" alt="WoaW04">
+        </a>
+    </div>
+    <div class="nexmoe-count">
+        <div><span>文章</span>5</div>
+        <div><span>标签</span>4</div>
+        <div><span>分类</span>0</div>
+    </div>
+    <div class="nexmoe-list mdui-list" mdui-collapse="{accordion: true}">
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/" title="回到首页">
+            <i class="mdui-list-item-icon nexmoefont icon-home"></i>
+            <div class="mdui-list-item-content">
+                回到首页
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/about.html" title="关于博客">
+            <i class="mdui-list-item-icon nexmoefont icon-info-circle"></i>
+            <div class="mdui-list-item-content">
+                关于博客
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/PY.html" title="我的朋友">
+            <i class="mdui-list-item-icon nexmoefont icon-unorderedlist"></i>
+            <div class="mdui-list-item-content">
+                我的朋友
+            </div>
+        </a>
+        
+    </div>
+    <aside id="nexmoe-sidebar">
+    
+    <div class="nexmoe-widget-wrap">
+    <div class="nexmoe-widget nexmoe-search">
+        
+            <form id="search_form">
+                <label><input class="st-default-search-input" id="search_value" name="q" type="search" placeholder="搜索" style="
+                    font-size: 15px !important;
+                    height: 56px !important;
+                    background-image: none;
+                "></label>
+            </form>
+         
+    </div>
+</div>
+    
+    <div class="nexmoe-widget-wrap">
+    <div class="nexmoe-widget nexmoe-social">
+        <a class="mdui-ripple" href="https://space.bilibili.com/3096846" target="_blank" mdui-tooltip="{content: '哔哩哔哩'}" style="color: rgb(231, 106, 141);background-color: rgba(231, 106, 141, .15);">
+            <i class="nexmoefont icon-bilibili"></i>
+        </a><a class="mdui-ripple" href="https://github.com/WoaW04" target="_blank" mdui-tooltip="{content: 'GitHub'}" style="color: rgb(255, 255, 255);background-color: rgba(255, 255, 255, .15);">
+            <i class="nexmoefont icon-github"></i>
+        </a>
+    </div>
+</div>
+    
+    
+
+    
+    
+  <div class="nexmoe-widget-wrap">
+    <div id="randomtagcloud" class="nexmoe-widget tagcloud nexmoe-rainbow">
+      <a href="/tags/Learning/" style="font-size: 20px;">Learning</a> <a href="/tags/Misc/" style="font-size: 10px;">Misc</a> <a href="/tags/RE/" style="font-size: 10px;">RE</a> <a href="/tags/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8/" style="font-size: 10px;">软件安全</a>
+    </div>
+    
+  </div>
+
+    
+</aside>
+    <div class="nexmoe-copyright">
+        &copy; 2023 WoaW04
+        Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+        & <a href="https://github.com/theme-nexmoe/hexo-theme-nexmoe" target="_blank">Nexmoe</a>
+        
+    </div>
+</div><!-- .nexmoe-drawer -->
+    </div>
+    <div id="nexmoe-content">
+        <div class="nexmoe-primary">
+            <div class="nexmoe-post">
+
+  <article>
+      
+          <div class="nexmoe-post-cover" style="padding-bottom: 66.66666666666666%;"> 
+              <img data-src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image95796589_p0.jpg" data-sizes="auto" alt="栢鹭杯2023RE" class="lazyload">
+              <h1>栢鹭杯2023RE</h1>
+          </div>
+      
+      
+      <div class="nexmoe-post-meta nexmoe-rainbow" style="margin:10px 0!important;">
+    <a><i class="nexmoefont icon-calendar-fill"></i>2023年10月11日</a>
+</div>
+
+      
+
+      <p>第一次遇到AVX指令集的题目，感觉比较有意思记录一下</p>
+<h1 id="了解VPSHUFB指令"><a href="#了解VPSHUFB指令" class="headerlink" title="了解VPSHUFB指令"></a>了解VPSHUFB指令</h1><p>重点是这个说明书</p>
+<p><a target="_blank" rel="noopener" href="https://www.felixcloutier.com/x86/pshufb">https://www.felixcloutier.com/x86/pshufb</a></p>
+<p>里面介绍了AVX指令集中vpshufb的使用方法（左上Index可以看到所有指令）</p>
+<p>当然最重要的部分我先放这了：</p>
+<pre><code>PSHUFB performs in-place shuffles of bytes in the destination operand (the first operand) according to the shuffle control mask in the source operand (the second operand). 
+</code></pre>
+<p>即</p>
+<pre><code>PSHUFB 以第二个操作数为shuffle控制掩码将目标操作数（第一个操作数）中执行以字节为单位的shuffle。该指令排列目标操作数中的数据，使随机掩码不受影响。
+</code></pre>
+<p>那么问题来了</p>
+<p>shuffle是什么？</p>
+<p>直译是洗牌，当然也有随机播放、改组的意思</p>
+<p>在这个地方，我觉得可以理解为“重组”</p>
+<p>即将操作数依据某个掩码（mask）进行“重组”操作</p>
+<p>因此，我们可以这么理解</p>
+<pre><code>PSHUFB的作用就是将给到的第一个操作数以第二个操作数为索引进行重组
+</code></pre>
+<p>举个例子</p>
+<p>现在我们在有操作数1，写成数组形式为</p>
+<pre><code class="python">ymm0 = [0x2A, 0x3A, 0x4A]
+</code></pre>
+<p>操作数2</p>
+<pre><code class="python">ymm1 = [0x01, 0x02, 0x00]
+</code></pre>
+<p>当我们使用VPSHUFB，以ymm2为shuffle control mask时，就会得到这样的结果</p>
+<pre><code class="python">ymm0 = [0x4A, 0x2A, 0x3A]
+</code></pre>
+<p>可见，ymm0内的数根据ymm1给出的进行了重排，得到了一个原有元素不变但位置变化的数组，并覆盖了原先ymm0内的数</p>
+<h1 id="让我们开始做题吧"><a href="#让我们开始做题吧" class="headerlink" title="让我们开始做题吧"></a>让我们开始做题吧</h1><p>题目是栢鹭杯2023RE赛道的第一题</p>
+<p>相关文件我懒得放了，想学的找个方式联系我我发你（小社工）</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-10-11%20231458.png"></p>
+<h2 id="第一步，先查壳"><a href="#第一步，先查壳" class="headerlink" title="第一步，先查壳"></a>第一步，先查壳</h2><p>（吐槽一下已经很久没见过比赛有壳的了）</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-10-11%20231614.png"></p>
+<p>好的没壳</p>
+<h2 id="第二步，上IDA"><a href="#第二步，上IDA" class="headerlink" title="第二步，上IDA"></a>第二步，上IDA</h2><p>没壳就先上IDA吧（32位）</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-10-11%20231747.png"></p>
+<p>一眼Input code</p>
+<p>直接在这F5吧</p>
+<p>加载一下VC32_14的签名，然后把printf标注一下可以得到这个</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-10-11%20231950.png"></p>
+<p>可以看到两个函数sub_415190和sub_4156D0</p>
+<p>看看第一个</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-10-11%20232255.png"></p>
+<p>下滑看到不少常量，应该很有用</p>
+<p>然后看看第二个</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-10-11%20232338.png"></p>
+<p>也是常量，不过按照Little Endian来看，这就是0123…DEF然后循环，应该没什么大作用</p>
+<p>那么重点可能就在第一个函数那几个__asm里面了</p>
+<p>__asm为内联汇编，也就是说IDA没有分析出来这玩意干什么的，于是直接丢进来了</p>
+<p>所以要知道这个玩意干什么用的，就得上动态调试了</p>
+<h2 id="第三步，动态调试"><a href="#第三步，动态调试" class="headerlink" title="第三步，动态调试"></a>第三步，动态调试</h2><p>使用x32dbg进行动调</p>
+<p>（别问我为什么不用OD，OD解析不出来AVX指令集，把我坑惨了）</p>
+<p>这里用的是吾爱的itruth，感谢大佬施舍</p>
+<p>直接定位关键位置吧</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-10-11%20233034.png"></p>
+<p>这个就是最重要的函数</p>
+<p>随便输点东西先看看能不能走完它</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-10-11%20233205.png"></p>
+<p>不太友善，直接一个failed</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-10-11%20233244.png"></p>
+<p><del>看来得一步步找cmp然后nop掉了</del></p>
+<p>先把爆破狂魔放一边，这种题硬跳肯定出不来flag的</p>
+<p>不过便于后续操作，先硬跳一遍看看结果如何</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-10-11%20233844.png"></p>
+<p>硬跳之后发现给出来的flag似乎是一个hash值</p>
+<p>也就是说我们可能只需要解决一个函数即可，后面交由程序生成</p>
+<p>（这样就不用敲hash函数力（喜））</p>
+<p>先保存下来，去看看到底有什么call</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-10-11%20234323.png"></p>
+<p>先看第一个call</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-10-11%20234410.png"></p>
+<p>这个call的数据格式很像在IDA里面看到的常量的格式，于是在内存中跟到这个ebp地址看看得到一个全FF的内容</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-10-11%20234745.png"></p>
+<p>似乎没什么作用</p>
+<p>那么继续走一走</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-10-11%20234842.png"></p>
+<p>那么这里就有收获了</p>
+<p>这就是我们刚刚看到的那些常量，以及一些奇奇怪怪的汇编</p>
+<p>由于这些常量应该是有用的，那么我们就可以把他们按照Little Endian拿出来备用</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-10-11%20235022.png"></p>
+<p>接下来看汇编</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-10-11%20235113.png"></p>
+<p>值得注意的是三个指令</p>
+<p>vpxor、vpshufb和vpcmpeqb</p>
+<p>根据字面意思，应该能推断第一和第二个的作用</p>
+<p>即异或运算和比较运算</p>
+<p>至于中间这个，参考文章开头所述</p>
+<p>那么就可以知道，最后一段的数据是用来比较的，第二段的数据是用来重排的，第一段的数据是用来异或的</p>
+<p>知道这些那么题目就好做了</p>
+<p>这里放上python代码</p>
+<pre><code class="python">a = [0xCD, 0xEB, 0x5E, 0x76, 0x0F, 0x22, 0xAF, 0x31, 0x82, 0x92, 0x3C, 0xEF, 0xB8, 0xC1, 0x76, 0x06,
+     0x18, 0x2F, 0xB5, 0x7D, 0x7F, 0x0A, 0xEA, 0x85, 0x92, 0x00, 0x89, 0xA3, 0x2C, 0xE2, 0xE7, 0x32]
+t = [0x0A, 0x07, 0x06, 0x0E, 0x02, 0x0B, 0x03, 0x0D, 0x01, 0x09, 0x00, 0x05, 0x04, 0x0F, 0x08, 0x0C,
+     0x1B, 0x18, 0x17, 0x1F, 0x14, 0x1E, 0x12, 0x13, 0x15, 0x1D, 0x16, 0x1C, 0x11, 0x10, 0x19, 0x1A]
+c = [0x5F, 0x91, 0x99, 0xE8, 0x4E, 0xD0, 0xB0, 0x92, 0xB1, 0x3C, 0x4F, 0xF4, 0x17, 0x76, 0xDA, 0x12,
+     0x2A, 0x35, 0x01, 0x15, 0xF9, 0x97, 0x5E, 0x19, 0x9D, 0xC2, 0x15, 0x99, 0x70, 0x7D, 0x9F, 0xCC]
+
+cc = [0]*32
+for i in range(32):
+    idx = t[i]
+    cc[idx] = c[i]
+
+for i in range(32):
+    cc[i] ^= a[i]
+
+print(bytearray(cc).hex().upper())
+</code></pre>
+<p>最后结果放入源程序中就可以得到flag了</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-10-11%20235442.png"></p>
+
+  </article>
+
+  
+      
+    <div class="nexmoe-post-copyright">
+        <strong>本文作者：</strong>WoaW04<br>
+        <strong>本文链接：</strong><a href="http://example.com/2023/10/11/%E6%A0%A2%E9%B9%AD%E6%9D%AF2023RE/" title="http:&#x2F;&#x2F;example.com&#x2F;2023&#x2F;10&#x2F;11&#x2F;%E6%A0%A2%E9%B9%AD%E6%9D%AF2023RE&#x2F;" target="_blank" rel="noopener">http:&#x2F;&#x2F;example.com&#x2F;2023&#x2F;10&#x2F;11&#x2F;%E6%A0%A2%E9%B9%AD%E6%9D%AF2023RE&#x2F;</a><br>
+        
+            <strong>版权声明：</strong>本文采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/cn/deed.zh" target="_blank">CC BY-NC-SA 3.0 CN</a> 协议进行许可
+        
+    </div>
+
+
+  
+  
+  <div class="nexmoe-post-meta nexmoe-rainbow">
+    
+    
+        <a class="nexmoefont icon-tag-fill -none-link" href="/tags/RE/" rel="tag">RE</a>
+    
+</div>
+
+  
+      <div class="nexmoe-post-footer">
+          <section class="nexmoe-comment">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.css">
+<div id="gitalk"></div>
+<script src="https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: '80b2453b6d5f37ad6225',
+        clientSecret: '43e99fa852795c9a7b3eb924b2558c64b84bbdeb',
+        id: window.location.pathname,
+        repo: 'nexmoe.github.io',
+        owner: 'nexmoe',
+        admin: 'nexmoe'
+    })
+    gitalk.render('gitalk')
+</script>
+</section>
+      </div>
+  
+</div>
+            <div class="nexmoe-post-right">
+              <div class="nexmoe-fixed">
+                  <div class="nexmoe-tool"> 
+                    
+                      
+                    
+                      <a href="#nexmoe-content" class="toc-link" aria-label="回到顶部" title="top"><button class="mdui-fab mdui-ripple"><i class="nexmoefont icon-caret-top"></i></button></a>
+                  </div>
+              </div>
+            </div>
+        </div>
+    </div>
+     
+    <div id="nexmoe-search-space">
+        <div class="search-container">
+            <div class="search-header">
+                <div class="search-input-container">
+                    <input class="search-input" type="text" placeholder="搜索" oninput="sinput();">
+                </div>
+                <a class="search-close" onclick="sclose();">×</a>
+            </div>
+            <div class="search-body"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/combine/npm/lazysizes@5.1.0/lazysizes.min.js,npm/mdui@0.4.3/dist/js/mdui.min.js?v=1"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+
+ 
+
+<script async src="/js/app.js?v=1697039785425"></script>
+
+
+	<script async src="/js/search.js?v=1697039785425"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js"></script>
+<script>
+	$(".justified-gallery").justifiedGallery({
+		rowHeight: 160,
+		margins: 10,
+	});
+</script>
+
+
+    
+
+
+
+
+
+</body>
+
+</html>
