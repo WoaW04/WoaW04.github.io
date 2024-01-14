@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+
+<head>
+    
+    <title>2023巅峰极客m1_read - The Blog of WoaW04</title>
+    <meta charset="UTF-8">
+    <meta name="keywords" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+    
+    
+
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <meta name="description" content="复现此题学习一下AES算法、DFA攻击和Frida的食用方法 0x00 AES算法参考：https:&#x2F;&#x2F;zhuanlan.zhihu.com&#x2F;p&#x2F;397940508 0x01 DFA攻击参考：https:&#x2F;&#x2F;blog.csdn.net&#x2F;fenfei331&#x2F;article&#x2F;details&#x2F;126385120 关键：在倒数第一轮列混合和倒数第二轮列混合之间（在AES-128中也就是第8轮和第9轮之间，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2023巅峰极客m1_read">
+<meta property="og:url" content="http://example.com/2024/01/14/2023%E5%B7%85%E5%B3%B0%E6%9E%81%E5%AE%A2m1-read/index.html">
+<meta property="og:site_name" content="The Blog of WoaW04">
+<meta property="og:description" content="复现此题学习一下AES算法、DFA攻击和Frida的食用方法 0x00 AES算法参考：https:&#x2F;&#x2F;zhuanlan.zhihu.com&#x2F;p&#x2F;397940508 0x01 DFA攻击参考：https:&#x2F;&#x2F;blog.csdn.net&#x2F;fenfei331&#x2F;article&#x2F;details&#x2F;126385120 关键：在倒数第一轮列混合和倒数第二轮列混合之间（在AES-128中也就是第8轮和第9轮之间，">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202024-01-14%20181124.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202024-01-14%20180636.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202024-01-14%20180854.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202024-01-14%20195602.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202024-01-14%20195937.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202024-01-14%20200139.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202024-01-14%20210157.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202024-01-14%20210446.png">
+<meta property="article:published_time" content="2024-01-14T04:00:52.000Z">
+<meta property="article:modified_time" content="2024-01-14T13:20:36.130Z">
+<meta property="article:author" content="WoaW04">
+<meta property="article:tag" content="RE 巅峰极客">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202024-01-14%20181124.png">
+    <link rel="stylesheet" href="/lib/jquery.fancybox.min.css?v=1705238476964">
+    
+    <link rel="stylesheet" href="/lib/mdui_043tiny/css/mdui.css?v=1705238476964">
+    <link rel="stylesheet" href="/lib/iconfont/iconfont.css?v=1705238476964">
+    <link rel="stylesheet" href="/css/style.css?v=1705238476964">
+    
+        <link rel="stylesheet" href="/css/dark.css?v=1705238476964">
+     
+    
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+<body class="mdui-drawer-body-left">
+    
+    <div id="nexmoe-background">
+        <div class="nexmoe-bg" style="background-image: url(https://cdn.jsdelivr.net/gh/WoaW04/Picture/image95796589_p0.jpg)"></div>
+        <div class="mdui-appbar mdui-shadow-0">
+            <div class="mdui-toolbar">
+                <a mdui-drawer="{target: '#drawer', swipe: true}" title="menu" class="mdui-btn mdui-btn-icon mdui-ripple"><i class="mdui-icon nexmoefont icon-menu"></i></a>
+                <div class="mdui-toolbar-spacer"></div>
+                <!--<a href="javascript:;" class="mdui-btn mdui-btn-icon"><i class="mdui-icon material-icons">search</i></a>-->
+                <a href="/" title="WoaW04" class="mdui-btn mdui-btn-icon"><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image04CTF.png" alt="WoaW04"></a>
+            </div>
+        </div>
+    </div>
+    <div id="nexmoe-header">
+        <div class="nexmoe-drawer mdui-drawer" id="drawer">
+    <div class="nexmoe-avatar mdui-ripple">
+        <a href="/" title="WoaW04">
+            <img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image04CTF.png" alt="WoaW04" alt="WoaW04">
+        </a>
+    </div>
+    <div class="nexmoe-count">
+        <div><span>文章</span>6</div>
+        <div><span>标签</span>5</div>
+        <div><span>分类</span>0</div>
+    </div>
+    <div class="nexmoe-list mdui-list" mdui-collapse="{accordion: true}">
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/" title="回到首页">
+            <i class="mdui-list-item-icon nexmoefont icon-home"></i>
+            <div class="mdui-list-item-content">
+                回到首页
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/about.html" title="关于博客">
+            <i class="mdui-list-item-icon nexmoefont icon-info-circle"></i>
+            <div class="mdui-list-item-content">
+                关于博客
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/PY.html" title="我的朋友">
+            <i class="mdui-list-item-icon nexmoefont icon-unorderedlist"></i>
+            <div class="mdui-list-item-content">
+                我的朋友
+            </div>
+        </a>
+        
+    </div>
+    <aside id="nexmoe-sidebar">
+    
+    <div class="nexmoe-widget-wrap">
+    <div class="nexmoe-widget nexmoe-search">
+        
+            <form id="search_form">
+                <label><input class="st-default-search-input" id="search_value" name="q" type="search" placeholder="搜索" style="
+                    font-size: 15px !important;
+                    height: 56px !important;
+                    background-image: none;
+                "></label>
+            </form>
+         
+    </div>
+</div>
+    
+    <div class="nexmoe-widget-wrap">
+    <div class="nexmoe-widget nexmoe-social">
+        <a class="mdui-ripple" href="https://space.bilibili.com/3096846" target="_blank" mdui-tooltip="{content: '哔哩哔哩'}" style="color: rgb(231, 106, 141);background-color: rgba(231, 106, 141, .15);">
+            <i class="nexmoefont icon-bilibili"></i>
+        </a><a class="mdui-ripple" href="https://github.com/WoaW04" target="_blank" mdui-tooltip="{content: 'GitHub'}" style="color: rgb(255, 255, 255);background-color: rgba(255, 255, 255, .15);">
+            <i class="nexmoefont icon-github"></i>
+        </a>
+    </div>
+</div>
+    
+    
+
+    
+    
+  <div class="nexmoe-widget-wrap">
+    <div id="randomtagcloud" class="nexmoe-widget tagcloud nexmoe-rainbow">
+      <a href="/tags/Learning/" style="font-size: 20px;">Learning</a> <a href="/tags/Misc/" style="font-size: 10px;">Misc</a> <a href="/tags/RE/" style="font-size: 10px;">RE</a> <a href="/tags/RE-%E5%B7%85%E5%B3%B0%E6%9E%81%E5%AE%A2/" style="font-size: 10px;">RE 巅峰极客</a> <a href="/tags/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8/" style="font-size: 10px;">软件安全</a>
+    </div>
+    
+  </div>
+
+    
+</aside>
+    <div class="nexmoe-copyright">
+        &copy; 2024 WoaW04
+        Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+        & <a href="https://github.com/theme-nexmoe/hexo-theme-nexmoe" target="_blank">Nexmoe</a>
+        
+    </div>
+</div><!-- .nexmoe-drawer -->
+    </div>
+    <div id="nexmoe-content">
+        <div class="nexmoe-primary">
+            <div class="nexmoe-post">
+
+  <article>
+      
+          <div class="nexmoe-post-cover" style="padding-bottom: NaN%;"> 
+              <img data-src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202024-01-14%20120400.png" data-sizes="auto" alt="2023巅峰极客m1_read" class="lazyload">
+              <h1>2023巅峰极客m1_read</h1>
+          </div>
+      
+      
+      <div class="nexmoe-post-meta nexmoe-rainbow" style="margin:10px 0!important;">
+    <a><i class="nexmoefont icon-calendar-fill"></i>2024年01月14日</a>
+</div>
+
+      
+
+      <p>复现此题学习一下AES算法、DFA攻击和Frida的食用方法</p>
+<h2 id="0x00-AES算法"><a href="#0x00-AES算法" class="headerlink" title="0x00 AES算法"></a>0x00 AES算法</h2><p>参考：<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/397940508">https://zhuanlan.zhihu.com/p/397940508</a></p>
+<h2 id="0x01-DFA攻击"><a href="#0x01-DFA攻击" class="headerlink" title="0x01 DFA攻击"></a>0x01 DFA攻击</h2><p>参考：<a target="_blank" rel="noopener" href="https://blog.csdn.net/fenfei331/article/details/126385120">https://blog.csdn.net/fenfei331/article/details/126385120</a></p>
+<p>关键：在倒数第一轮列混合和倒数第二轮列混合之间（在AES-128中也就是第8轮和第9轮之间，因为最后第10轮不做列混合），修改此时中间结果的一个字节，会导致最终密文和正确密文有4个字节的不同。通过多次的修改，得到多组错误的密文，然后通过正确密文和这些错误密文能够推算出第10轮的密钥（加密模式下），继而能推算出原始密钥。</p>
+<p>实际应用中，<strong>需要先找准列混合的函数位置</strong>，然后在他之前去插入缺陷数据。</p>
+<h2 id="0x02-Frida"><a href="#0x02-Frida" class="headerlink" title="0x02 Frida"></a>0x02 Frida</h2><p>参考：<a target="_blank" rel="noopener" href="https://www.52pojie.cn/thread-1128884-1-1.html">https://www.52pojie.cn/thread-1128884-1-1.html</a></p>
+<p>就是用来HOOK的（</p>
+<h2 id="0x03-题目分析"><a href="#0x03-题目分析" class="headerlink" title="0x03 题目分析"></a>0x03 题目分析</h2><p>先上Findcrypt，可以找到AES的S盒，但是没有调用的地方</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202024-01-14%20181124.png"></p>
+<p>函数不多，一个个找可以找到类似AES的函数</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202024-01-14%20180636.png"></p>
+<p>函数结尾有AES-128的特征，16B参与运算</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202024-01-14%20180854.png"></p>
+<p>找不到密钥和具体调用S盒的地方，但是根据已存在的AES的S盒和函数结构推测使用的就是AES算法，考虑使用DFA获取密钥</p>
+<p>上Frida写脚本</p>
+<pre><code class="python"># getKey.py
+import frida
+import os
+
+session = frida.attach(&quot;m1_read.exe&quot;)
+currentDir = os.getcwd()
+
+
+def getJsScript(fileName=&quot;getKey.js&quot;, fileDir=currentDir) -&gt; str:
+    with open(fileDir + &quot;\\&quot; + fileName, encoding=&#39;utf-8&#39;) as jsScript:
+        return jsScript.read().rstrip()
+
+
+script = session.create_script(getJsScript())
+script.load()
+</code></pre>
+<pre><code class="javascript">// getKey.js
+var baseAddr = Module.findBaseAddress(&quot;m1_read.exe&quot;)
+// AES函数偏移：0x4BF0
+var whiteAES = new NativeFunction(baseAddr.add(0x4BF0), &#39;pointer&#39;, [&#39;pointer&#39;,&#39;pointer&#39;])
+// count = 9，这样第一轮数据恰好对应正确的数据
+var count = 9
+
+Interceptor.attach(baseAddr.add(0x4C2C),&#123;
+  // 列混合处的偏移：0x4C2C
+  // 此位置为call了au_re___security_check_cookie之后的mov rbx, rdi
+  // 详见下图
+  // 若不确定，可以通过测试来看：
+  //         1. 若正确数据与异常数据全部不同，则修改太早
+  //         2. 若正确数据与异常数据仅一个不同，则修改太晚
+  onEnter: function(args)&#123;
+    count++;
+    // 第九轮修改中间结果
+    if(count == 9)&#123;
+      // 参考汇编代码可以发现rdi记录第九轮中间数据的地址
+      // lea rdi, [rbx + 2] #详见下下图
+      // &quot;add(Math.floor(Math.random()*16))&quot;:
+      //         表示对操作的地址进行偏移，值属于&#123;1,2,3&#125;
+      //         (0，4的可能性基本为0)
+      //
+      // &quot;writeU8(Math.floor(Math.random()*256))&quot;:
+      //         表示对写入的值进行修改，值属于&#123;1,2,3,...,E,F&#125;
+      //         (0，16的可能性基本为0)
+      // 综上，这实现了对中间数据的单个Byte修改，取消注释下述代码即可看出
+      var p = ptr(this.context.rdi)
+      // console.log(&quot;ori: &quot;, p.readByteArray(16), &quot;\n&quot;)
+      p.add(Math.floor(Math.random()*16)).writeU8(Math.floor(Math.random()*256))
+      // console.log(&quot;out: &quot;, p.readByteArray(16), &quot;\n&quot;)
+    &#125;
+  &#125;,
+  onLeave:(retval) =&gt;&#123;
+
+  &#125;
+&#125;)
+
+for (let index = 0; index &lt; 33; index++)&#123;
+  // 取消注释下述代码即可得到每一轮的数据
+  var l = Memory.allocAnsiString(&quot;0123456789abcdef&quot;);
+  var b = Memory.alloc(16);
+  whiteAES(l, b);
+  console.log(hexdump(b.readByteArray(16),&#123;header:false&#125;));
+  count = 0;
+&#125;
+</code></pre>
+<p><img data-fancybox="gallery" data-sizes="auto" data-src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202024-01-14%20195602.png" alt="图1" class="lazyload"></p>
+<p><img data-fancybox="gallery" data-sizes="auto" data-src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202024-01-14%20195937.png" alt="图2" class="lazyload"></p>
+<p>运行脚本的结果如下：</p>
+<pre><code>00000000  72 93 98 12 0f 00 94 f4 03 7a 44 ee dd 99 20 6f  r........zD... o
+00000000  72 93 98 5a 0f 00 aa f4 03 2d 44 ee 16 99 20 6f  r..Z.....-D... o
+00000000  72 56 98 12 b6 00 94 f4 03 7a 44 30 dd 99 b9 6f  rV.......zD0...o
+00000000  1c 93 98 12 0f 00 94 89 03 7a ce ee dd c8 20 6f  .........z.... o
+00000000  72 93 98 c4 0f 00 d4 f4 03 d4 44 ee ac 99 20 6f  r.........D... o
+00000000  72 17 98 12 c1 00 94 f4 03 7a 44 7a dd 99 02 6f  r........zDz...o
+00000000  72 93 98 e5 0f 00 ad f4 03 0a 44 ee 08 99 20 6f  r.........D... o
+00000000  72 84 98 12 6a 00 94 f4 03 7a 44 68 dd 99 a6 6f  r...j....zDh...o
+00000000  d2 93 98 12 0f 00 94 57 03 7a 31 ee dd 36 20 6f  .......W.z1..6 o
+00000000  72 93 65 12 0f 7c 94 f4 90 7a 44 ee dd 99 20 0f  r.e..|...zD... .
+00000000  72 93 98 3a 0f 00 e8 f4 03 aa 44 ee 98 99 20 6f  r..:......D... o
+00000000  72 93 98 44 0f 00 49 f4 03 b2 44 ee 24 99 20 6f  r..D..I...D.$. o
+00000000  73 93 98 12 0f 00 94 1f 03 7a 76 ee dd 6b 20 6f  s........zv..k o
+00000000  72 7d 98 12 7e 00 94 f4 03 7a 44 bf dd 99 23 6f  r&#125;..~....zD...#o
+00000000  72 20 98 12 8a 00 94 f4 03 7a 44 c4 dd 99 35 6f  r .......zD...5o
+00000000  5e 93 98 12 0f 00 94 35 03 7a 1a ee dd 20 20 6f  ^......5.z...  o
+00000000  72 93 98 a5 0f 00 1e f4 03 77 44 ee 15 99 20 6f  r........wD... o
+00000000  72 93 98 5c 0f 00 07 f4 03 a5 44 ee 06 99 20 6f  r..\......D... o
+00000000  72 93 eb 12 0f e0 94 f4 13 7a 44 ee dd 99 20 2a  r........zD... *
+00000000  72 93 98 97 0f 00 f8 f4 03 c5 44 ee 2a 99 20 6f  r.........D.*. o
+00000000  72 93 98 ab 0f 00 99 f4 03 d0 44 ee 5b 99 20 6f  r.........D.[. o
+00000000  72 93 98 cb 0f 00 bd f4 03 9d 44 ee 58 99 20 6f  r.........D.X. o
+00000000  72 73 98 12 05 00 94 f4 03 7a 44 c5 dd 99 3d 6f  rs.......zD...=o
+00000000  72 dd 98 12 bf 00 94 f4 03 7a 44 b9 dd 99 45 6f  r........zD...Eo
+00000000  72 93 67 12 0f 5c 94 f4 d6 7a 44 ee dd 99 20 bb  r.g..\...zD... .
+00000000  72 84 98 12 42 00 94 f4 03 7a 44 da dd 99 f3 6f  r...B....zD....o
+00000000  72 68 98 12 b2 00 94 f4 03 7a 44 5c dd 99 b1 6f  rh.......zD\...o
+00000000  72 e5 98 12 66 00 94 f4 03 7a 44 27 dd 99 42 6f  r...f....zD&#39;..Bo
+00000000  72 fb 98 12 6e 00 94 f4 03 7a 44 7c dd 99 cc 6f  r...n....zD|...o
+00000000  72 93 98 86 0f 00 27 f4 03 18 44 ee e0 99 20 6f  r.....&#39;...D... o
+00000000  72 93 63 12 0f 29 94 f4 8a 7a 44 ee dd 99 20 b0  r.c..)...zD... .
+00000000  72 93 98 10 0f 00 cc f4 03 01 44 ee cd 99 20 6f  r.........D... o
+00000000  72 e0 98 12 77 00 94 f4 03 7a 44 ba dd 99 9a 6f  r...w....zD....o
+</code></pre>
+<p>程序最后有一步异或0x66，因此上面的数据需要进行异或后才能使用</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202024-01-14%20200139.png"></p>
+<pre><code class="python"># 异或处理脚本
+data = &quot;&quot;&quot;
+00000000  72 93 98 12 0f 00 94 f4 03 7a 44 ee dd 99 20 6f  r........zD... o
+00000000  72 93 98 5a 0f 00 aa f4 03 2d 44 ee 16 99 20 6f  r..Z.....-D... o
+00000000  72 56 98 12 b6 00 94 f4 03 7a 44 30 dd 99 b9 6f  rV.......zD0...o
+00000000  1c 93 98 12 0f 00 94 89 03 7a ce ee dd c8 20 6f  .........z.... o
+00000000  72 93 98 c4 0f 00 d4 f4 03 d4 44 ee ac 99 20 6f  r.........D... o
+00000000  72 17 98 12 c1 00 94 f4 03 7a 44 7a dd 99 02 6f  r........zDz...o
+00000000  72 93 98 e5 0f 00 ad f4 03 0a 44 ee 08 99 20 6f  r.........D... o
+00000000  72 84 98 12 6a 00 94 f4 03 7a 44 68 dd 99 a6 6f  r...j....zDh...o
+00000000  d2 93 98 12 0f 00 94 57 03 7a 31 ee dd 36 20 6f  .......W.z1..6 o
+00000000  72 93 65 12 0f 7c 94 f4 90 7a 44 ee dd 99 20 0f  r.e..|...zD... .
+00000000  72 93 98 3a 0f 00 e8 f4 03 aa 44 ee 98 99 20 6f  r..:......D... o
+00000000  72 93 98 44 0f 00 49 f4 03 b2 44 ee 24 99 20 6f  r..D..I...D.$. o
+00000000  73 93 98 12 0f 00 94 1f 03 7a 76 ee dd 6b 20 6f  s........zv..k o
+00000000  72 7d 98 12 7e 00 94 f4 03 7a 44 bf dd 99 23 6f  r&#125;..~....zD...#o
+00000000  72 20 98 12 8a 00 94 f4 03 7a 44 c4 dd 99 35 6f  r .......zD...5o
+00000000  5e 93 98 12 0f 00 94 35 03 7a 1a ee dd 20 20 6f  ^......5.z...  o
+00000000  72 93 98 a5 0f 00 1e f4 03 77 44 ee 15 99 20 6f  r........wD... o
+00000000  72 93 98 5c 0f 00 07 f4 03 a5 44 ee 06 99 20 6f  r..\......D... o
+00000000  72 93 eb 12 0f e0 94 f4 13 7a 44 ee dd 99 20 2a  r........zD... *
+00000000  72 93 98 97 0f 00 f8 f4 03 c5 44 ee 2a 99 20 6f  r.........D.*. o
+00000000  72 93 98 ab 0f 00 99 f4 03 d0 44 ee 5b 99 20 6f  r.........D.[. o
+00000000  72 93 98 cb 0f 00 bd f4 03 9d 44 ee 58 99 20 6f  r.........D.X. o
+00000000  72 73 98 12 05 00 94 f4 03 7a 44 c5 dd 99 3d 6f  rs.......zD...=o
+00000000  72 dd 98 12 bf 00 94 f4 03 7a 44 b9 dd 99 45 6f  r........zD...Eo
+00000000  72 93 67 12 0f 5c 94 f4 d6 7a 44 ee dd 99 20 bb  r.g..\...zD... .
+00000000  72 84 98 12 42 00 94 f4 03 7a 44 da dd 99 f3 6f  r...B....zD....o
+00000000  72 68 98 12 b2 00 94 f4 03 7a 44 5c dd 99 b1 6f  rh.......zD\...o
+00000000  72 e5 98 12 66 00 94 f4 03 7a 44 27 dd 99 42 6f  r...f....zD&#39;..Bo
+00000000  72 fb 98 12 6e 00 94 f4 03 7a 44 7c dd 99 cc 6f  r...n....zD|...o
+00000000  72 93 98 86 0f 00 27 f4 03 18 44 ee e0 99 20 6f  r.....&#39;...D... o
+00000000  72 93 63 12 0f 29 94 f4 8a 7a 44 ee dd 99 20 b0  r.c..)...zD... .
+00000000  72 93 98 10 0f 00 cc f4 03 01 44 ee cd 99 20 6f  r.........D... o
+00000000  72 e0 98 12 77 00 94 f4 03 7a 44 ba dd 99 9a 6f  r...w....zD....o
+&quot;&quot;&quot;
+
+
+def cut(obj, sec):
+    return [obj[i:i+sec] for i in range(0, len(obj), sec)]
+
+
+data = cut(data, 76)
+data = data[:-1]
+for i in range(len(data)):
+    data[i] = data[i][11:-18]
+for i in data:
+    tmp = i.split(&#39; &#39;)
+    res = &#39;&#39;
+    for j in tmp:
+        res += &#39;&#123;:02x&#125;&#39;.format(int(j, 16) ^ int(&quot;66&quot;, 16))
+    print(res)
+</code></pre>
+<p>异或结果</p>
+<pre><code>14f5fe746966f292651c2288bbff4609
+14f5fe3c6966cc92654b228870ff4609
+1430fe74d066f292651c2256bbffdf09
+7af5fe746966f2ef651ca888bbae4609
+14f5fea26966b29265b22288caff4609
+1471fe74a766f292651c221cbbff6409
+14f5fe836966cb92656c22886eff4609
+14e2fe740c66f292651c220ebbffc009
+b4f5fe746966f231651c5788bb504609
+14f50374691af292f61c2288bbff4669
+14f5fe5c69668e9265cc2288feff4609
+14f5fe2269662f9265d4228842ff4609
+15f5fe746966f279651c1088bb0d4609
+141bfe741866f292651c22d9bbff4509
+1446fe74ec66f292651c22a2bbff5309
+38f5fe746966f253651c7c88bb464609
+14f5fec3696678926511228873ff4609
+14f5fe3a6966619265c3228860ff4609
+14f58d746986f292751c2288bbff464c
+14f5fef169669e9265a322884cff4609
+14f5fecd6966ff9265b622883dff4609
+14f5fead6966db9265fb22883eff4609
+1415fe746366f292651c22a3bbff5b09
+14bbfe74d966f292651c22dfbbff2309
+14f50174693af292b01c2288bbff46dd
+14e2fe742466f292651c22bcbbff9509
+140efe74d466f292651c223abbffd709
+1483fe740066f292651c2241bbff2409
+149dfe740866f292651c221abbffaa09
+14f5fee069664192657e228886ff4609
+14f50574694ff292ec1c2288bbff46d6
+14f5fe766966aa9265672288abff4609
+1486fe741166f292651c22dcbbfffc09
+</code></pre>
+<p>利用phoenixAES实现DFA</p>
+<pre><code># s1是前文中的33轮数据，以字符串形式存储（包含换行，否则无法识别）
+import phoenixAES
+s1 = &quot;&quot;&quot;
+14f5fe746966f292651c2288bbff4609
+14f5fe3c6966cc92654b228870ff4609
+1430fe74d066f292651c2256bbffdf09
+7af5fe746966f2ef651ca888bbae4609
+14f5fea26966b29265b22288caff4609
+1471fe74a766f292651c221cbbff6409
+14f5fe836966cb92656c22886eff4609
+14e2fe740c66f292651c220ebbffc009
+b4f5fe746966f231651c5788bb504609
+14f50374691af292f61c2288bbff4669
+14f5fe5c69668e9265cc2288feff4609
+14f5fe2269662f9265d4228842ff4609
+15f5fe746966f279651c1088bb0d4609
+141bfe741866f292651c22d9bbff4509
+1446fe74ec66f292651c22a2bbff5309
+38f5fe746966f253651c7c88bb464609
+14f5fec3696678926511228873ff4609
+14f5fe3a6966619265c3228860ff4609
+14f58d746986f292751c2288bbff464c
+14f5fef169669e9265a322884cff4609
+14f5fecd6966ff9265b622883dff4609
+14f5fead6966db9265fb22883eff4609
+1415fe746366f292651c22a3bbff5b09
+14bbfe74d966f292651c22dfbbff2309
+14f50174693af292b01c2288bbff46dd
+14e2fe742466f292651c22bcbbff9509
+140efe74d466f292651c223abbffd709
+1483fe740066f292651c2241bbff2409
+149dfe740866f292651c221abbffaa09
+14f5fee069664192657e228886ff4609
+14f50574694ff292ec1c2288bbff46d6
+14f5fe766966aa9265672288abff4609
+1486fe741166f292651c22dcbbfffc09
+&quot;&quot;&quot;
+with open(&quot;testfile&quot;, &quot;wb&quot;) as t:
+    t.write(s1.encode())
+
+phoenixAES.crack_file(&quot;testfile&quot;)
+# 自动打印出来第10轮的密钥
+# 结果如下
+# B4EF5BCB3E92E21123E951CF6F8F188E
+</code></pre>
+<p>参考：<a target="_blank" rel="noopener" href="https://github.com/SideChannelMarvels/Stark">https://github.com/SideChannelMarvels/Stark</a></p>
+<p>使用Stark（自行编译）提供一轮密钥暴力破解AES-128</p>
+<p>设定好轮数即可</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202024-01-14%20210157.png"></p>
+<p>使用010editor查看提供的out.bin</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202024-01-14%20210446.png"></p>
+<p>根据M1卡的存储格式，第一行中，<strong>4B为卡号，1B为校验位，剩下为厂商信息</strong>，因此需要解密的部分为第三行</p>
+<p>解密脚本如下：</p>
+<pre><code class="python">from Crypto.Cipher import AES
+
+s = &quot;0B987EF5D94DD679592C4D2FADD4EB89&quot;
+# key长度注意要写够16B的长度，否则AES识别不正确
+key = bytes.fromhex(&quot;00000000000000000000000000000000&quot;)
+enc = bytearray(bytes.fromhex(s))
+cipher = AES.new(key, AES.MODE_ECB)
+
+# 别忘了首先要处理异或
+for i in range(16):
+    enc[i] ^= 0x66
+
+flag = cipher.decrypt(enc)
+print(flag)
+</code></pre>
+<p>flag{cddc8d28dabb4ea9}</p>
+<p><del>复现过程很是痛苦（</del></p>
+
+  </article>
+
+  
+      
+    <div class="nexmoe-post-copyright">
+        <strong>本文作者：</strong>WoaW04<br>
+        <strong>本文链接：</strong><a href="http://example.com/2024/01/14/2023%E5%B7%85%E5%B3%B0%E6%9E%81%E5%AE%A2m1-read/" title="http:&#x2F;&#x2F;example.com&#x2F;2024&#x2F;01&#x2F;14&#x2F;2023%E5%B7%85%E5%B3%B0%E6%9E%81%E5%AE%A2m1-read&#x2F;" target="_blank" rel="noopener">http:&#x2F;&#x2F;example.com&#x2F;2024&#x2F;01&#x2F;14&#x2F;2023%E5%B7%85%E5%B3%B0%E6%9E%81%E5%AE%A2m1-read&#x2F;</a><br>
+        
+            <strong>版权声明：</strong>本文采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/cn/deed.zh" target="_blank">CC BY-NC-SA 3.0 CN</a> 协议进行许可
+        
+    </div>
+
+
+  
+  
+  <div class="nexmoe-post-meta nexmoe-rainbow">
+    
+    
+        <a class="nexmoefont icon-tag-fill -none-link" href="/tags/RE-%E5%B7%85%E5%B3%B0%E6%9E%81%E5%AE%A2/" rel="tag">RE 巅峰极客</a>
+    
+</div>
+
+  
+      <div class="nexmoe-post-footer">
+          <section class="nexmoe-comment">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.css">
+<div id="gitalk"></div>
+<script src="https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: '80b2453b6d5f37ad6225',
+        clientSecret: '43e99fa852795c9a7b3eb924b2558c64b84bbdeb',
+        id: window.location.pathname,
+        repo: 'nexmoe.github.io',
+        owner: 'nexmoe',
+        admin: 'nexmoe'
+    })
+    gitalk.render('gitalk')
+</script>
+</section>
+      </div>
+  
+</div>
+            <div class="nexmoe-post-right">
+              <div class="nexmoe-fixed">
+                  <div class="nexmoe-tool"> 
+                    
+                      
+                    
+                      <a href="#nexmoe-content" class="toc-link" aria-label="回到顶部" title="top"><button class="mdui-fab mdui-ripple"><i class="nexmoefont icon-caret-top"></i></button></a>
+                  </div>
+              </div>
+            </div>
+        </div>
+    </div>
+     
+    <div id="nexmoe-search-space">
+        <div class="search-container">
+            <div class="search-header">
+                <div class="search-input-container">
+                    <input class="search-input" type="text" placeholder="搜索" oninput="sinput();">
+                </div>
+                <a class="search-close" onclick="sclose();">×</a>
+            </div>
+            <div class="search-body"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/combine/npm/lazysizes@5.1.0/lazysizes.min.js,npm/mdui@0.4.3/dist/js/mdui.min.js?v=1"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+
+ 
+
+<script async src="/js/app.js?v=1705238476965"></script>
+
+
+	<script async src="/js/search.js?v=1705238476965"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js"></script>
+<script>
+	$(".justified-gallery").justifiedGallery({
+		rowHeight: 160,
+		margins: 10,
+	});
+</script>
+
+
+    
+
+
+
+
+
+</body>
+
+</html>
