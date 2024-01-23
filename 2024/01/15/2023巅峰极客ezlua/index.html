@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+
+<head>
+    
+    <title>2023巅峰极客ezlua - The Blog of WoaW04</title>
+    <meta charset="UTF-8">
+    <meta name="keywords" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+    
+    
+
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <meta name="description" content="关于lua：https:&#x2F;&#x2F;woaw04.github.io&#x2F;2024&#x2F;01&#x2F;15&#x2F;lua&#x2F; 0x00 题目分析一道luajit 涉及有lua虚拟机，lua结构，lua执行流程 使用了ASLR，地址不可信，方法更重要 博客断断续续写了一段时间，所以可能图内的地址对不上，不过方法思路应该是没问题的（ 0x01 输入数据的处理进入main函数，翻到最下面，可以找到一个函数：luaL_loadbuffe">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2023巅峰极客ezlua">
+<meta property="og:url" content="http://example.com/2024/01/15/2023%E5%B7%85%E5%B3%B0%E6%9E%81%E5%AE%A2ezlua/index.html">
+<meta property="og:site_name" content="The Blog of WoaW04">
+<meta property="og:description" content="关于lua：https:&#x2F;&#x2F;woaw04.github.io&#x2F;2024&#x2F;01&#x2F;15&#x2F;lua&#x2F; 0x00 题目分析一道luajit 涉及有lua虚拟机，lua结构，lua执行流程 使用了ASLR，地址不可信，方法更重要 博客断断续续写了一段时间，所以可能图内的地址对不上，不过方法思路应该是没问题的（ 0x01 输入数据的处理进入main函数，翻到最下面，可以找到一个函数：luaL_loadbuffe">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401220041664.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401220101086.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401220109869.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401220121274.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401220122885.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401220126589.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401220127261.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401222046489.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401220131415.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401220134919.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401220135558.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401221014807.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401221018191.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401220959524.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401221002930.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401221005584.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401221010167.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401221021721.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401232218735.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401232218501.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401232219049.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401232237381.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401232240748.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401232249717.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401232254647.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401232304801.png">
+<meta property="article:published_time" content="2024-01-15T05:14:46.000Z">
+<meta property="article:modified_time" content="2024-01-23T15:05:33.723Z">
+<meta property="article:author" content="WoaW04">
+<meta property="article:tag" content="RE">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401220041664.png">
+    <link rel="stylesheet" href="/lib/jquery.fancybox.min.css?v=1706022376937">
+    
+    <link rel="stylesheet" href="/lib/mdui_043tiny/css/mdui.css?v=1706022376937">
+    <link rel="stylesheet" href="/lib/iconfont/iconfont.css?v=1706022376937">
+    <link rel="stylesheet" href="/css/style.css?v=1706022376937">
+    
+        <link rel="stylesheet" href="/css/dark.css?v=1706022376937">
+     
+    
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+<body class="mdui-drawer-body-left">
+    
+    <div id="nexmoe-background">
+        <div class="nexmoe-bg" style="background-image: url(https://cdn.jsdelivr.net/gh/WoaW04/Picture/image95796589_p0.jpg)"></div>
+        <div class="mdui-appbar mdui-shadow-0">
+            <div class="mdui-toolbar">
+                <a mdui-drawer="{target: '#drawer', swipe: true}" title="menu" class="mdui-btn mdui-btn-icon mdui-ripple"><i class="mdui-icon nexmoefont icon-menu"></i></a>
+                <div class="mdui-toolbar-spacer"></div>
+                <!--<a href="javascript:;" class="mdui-btn mdui-btn-icon"><i class="mdui-icon material-icons">search</i></a>-->
+                <a href="/" title="WoaW04" class="mdui-btn mdui-btn-icon"><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image04CTF.png" alt="WoaW04"></a>
+            </div>
+        </div>
+    </div>
+    <div id="nexmoe-header">
+        <div class="nexmoe-drawer mdui-drawer" id="drawer">
+    <div class="nexmoe-avatar mdui-ripple">
+        <a href="/" title="WoaW04">
+            <img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image04CTF.png" alt="WoaW04" alt="WoaW04">
+        </a>
+    </div>
+    <div class="nexmoe-count">
+        <div><span>文章</span>8</div>
+        <div><span>标签</span>5</div>
+        <div><span>分类</span>0</div>
+    </div>
+    <div class="nexmoe-list mdui-list" mdui-collapse="{accordion: true}">
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/" title="回到首页">
+            <i class="mdui-list-item-icon nexmoefont icon-home"></i>
+            <div class="mdui-list-item-content">
+                回到首页
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/about.html" title="关于博客">
+            <i class="mdui-list-item-icon nexmoefont icon-info-circle"></i>
+            <div class="mdui-list-item-content">
+                关于博客
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/PY.html" title="我的朋友">
+            <i class="mdui-list-item-icon nexmoefont icon-unorderedlist"></i>
+            <div class="mdui-list-item-content">
+                我的朋友
+            </div>
+        </a>
+        
+    </div>
+    <aside id="nexmoe-sidebar">
+    
+    <div class="nexmoe-widget-wrap">
+    <div class="nexmoe-widget nexmoe-search">
+        
+            <form id="search_form">
+                <label><input class="st-default-search-input" id="search_value" name="q" type="search" placeholder="搜索" style="
+                    font-size: 15px !important;
+                    height: 56px !important;
+                    background-image: none;
+                "></label>
+            </form>
+         
+    </div>
+</div>
+    
+    <div class="nexmoe-widget-wrap">
+    <div class="nexmoe-widget nexmoe-social">
+        <a class="mdui-ripple" href="https://space.bilibili.com/3096846" target="_blank" mdui-tooltip="{content: '哔哩哔哩'}" style="color: rgb(231, 106, 141);background-color: rgba(231, 106, 141, .15);">
+            <i class="nexmoefont icon-bilibili"></i>
+        </a><a class="mdui-ripple" href="https://github.com/WoaW04" target="_blank" mdui-tooltip="{content: 'GitHub'}" style="color: rgb(255, 255, 255);background-color: rgba(255, 255, 255, .15);">
+            <i class="nexmoefont icon-github"></i>
+        </a>
+    </div>
+</div>
+    
+    
+
+    
+    
+  <div class="nexmoe-widget-wrap">
+    <div id="randomtagcloud" class="nexmoe-widget tagcloud nexmoe-rainbow">
+      <a href="/tags/Learning/" style="font-size: 15px;">Learning</a> <a href="/tags/Misc/" style="font-size: 10px;">Misc</a> <a href="/tags/RE/" style="font-size: 20px;">RE</a> <a href="/tags/%E5%B7%85%E5%B3%B0%E6%9E%81%E5%AE%A22023/" style="font-size: 10px;">巅峰极客2023</a> <a href="/tags/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8/" style="font-size: 10px;">软件安全</a>
+    </div>
+    
+  </div>
+
+    
+</aside>
+    <div class="nexmoe-copyright">
+        &copy; 2024 WoaW04
+        Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+        & <a href="https://github.com/theme-nexmoe/hexo-theme-nexmoe" target="_blank">Nexmoe</a>
+        
+    </div>
+</div><!-- .nexmoe-drawer -->
+    </div>
+    <div id="nexmoe-content">
+        <div class="nexmoe-primary">
+            <div class="nexmoe-post">
+
+  <article>
+      
+          <div class="nexmoe-post-cover" style="padding-bottom: NaN%;"> 
+              <img data-src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401151142821.png" data-sizes="auto" alt="2023巅峰极客ezlua" class="lazyload">
+              <h1>2023巅峰极客ezlua</h1>
+          </div>
+      
+      
+      <div class="nexmoe-post-meta nexmoe-rainbow" style="margin:10px 0!important;">
+    <a><i class="nexmoefont icon-calendar-fill"></i>2024年01月15日</a>
+</div>
+
+      
+
+      <p>关于lua：<a target="_blank" rel="noopener" href="https://woaw04.github.io/2024/01/15/lua/">https://woaw04.github.io/2024/01/15/lua/</a></p>
+<h2 id="0x00-题目分析"><a href="#0x00-题目分析" class="headerlink" title="0x00 题目分析"></a>0x00 题目分析</h2><p>一道luajit</p>
+<p>涉及有lua虚拟机，lua结构，lua执行流程</p>
+<p>使用了ASLR，地址不可信，方法更重要</p>
+<p>博客断断续续写了一段时间，所以可能图内的地址对不上，不过方法思路应该是没问题的（</p>
+<h2 id="0x01-输入数据的处理"><a href="#0x01-输入数据的处理" class="headerlink" title="0x01 输入数据的处理"></a>0x01 输入数据的处理</h2><p>进入main函数，翻到最下面，可以找到一个函数：luaL_loadbuffer</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401220041664.png"></p>
+<p>此函数需结合luajit2.1的源码进行分析</p>
+<p>从lj_load.c中可以找到关于luaL_loadbuffer的定义</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401220101086.png"></p>
+<p>此处为了方便观看，我将这三个函数放在一起，并按调用的顺序进行了排列，可以看到，在luajit中，luaL_loadbuffer函数是调用了luaL_loadbufferx函数，而luaL_loadbufferx函数中又调用了lua_loadx函数</p>
+<p>这条调用链的作用是<strong>载入并编译内存中的一段Lua代码</strong>，然后作为一个代码块 (称为chunk)压入栈中。</p>
+<p>在lua_loadx函数中变量status有一项为cpparser，其作用是将 Lua 源代码解析为 Lua 函数，并将其保存在 Lua 虚拟机中，以供后续执行</p>
+<p>函数cpparser如下：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401220109869.png"></p>
+<p>在函数中，变量pt用于判断加载的Buffer是binary文件还是text文件，如果为binary文件，则调用lj_bcread进行处理，否则调用lj_parse处理</p>
+<p>有些题目会对lj_bcread或lj_parse进行改造，从而实现一些操作，但这题没有，以后遇到了可能改一下这篇博客（</p>
+<p>由于这题没有在这里做文章，因此需要动调来看看输入的数据怎么处理了</p>
+<p>由于luajit使用了虚拟机，因此会将数据另外放到内存的一个位置，然后再进行处理，这个位置便是luajit划分出来的字节码区域，而用户输入的数据自然也需要经过处理后放到这，所以在进行输入数据的跟踪时，需要等到程序将用户输入的数据处理完、放入字节码区域后再去跟踪放入字节码区域的数据，否则跟踪原来的未经处理的数据是进不去luajit的虚拟机内部的</p>
+<p>因此可以在loadbuffer这个位置下一个断点，等待数据传入到VM内</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401220121274.png"></p>
+<p>由于程序有字符串长度判断和格式判断，所以在构造数据的时候尽量符合这些判断条件，以免带来不必要的麻烦（</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401220122885.png"></p>
+<p>在这里首先使用<code>1123456789112345678911234567891123456789</code>作为输入，如果后面有其他需求再进行更改</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401220126589.png"></p>
+<p>直接跑，让程序断下</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401220127261.png"></p>
+<p>然后在内存中搜索输入的字符串</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401222046489.png"></p>
+<p>可以看到字符串前面和中间多了一个03，这个说明这段数据可能就是处理后的数据了，因此可以在数据开始的位置下一个内存访问断点，从而看看这段数据后面被怎么处理了</p>
+<p>下完内存断点后继续运行，可以发现断在了这个inc rdx的位置，这个位置非常奇怪，因为上面没有函数头，所以可能是IDA没有识别出来，可以在上面很多0CCh之后的第一个48h处将此位置识别为函数</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401220131415.png"></p>
+<p>可以看到识别是成功的，而且函数能被正确地进行反汇编</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401220134919.png"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401220135558.png"></p>
+<p>这个函数是对 <code>uleb128</code>格式数据的解码，据此去luajit中查找，可以在lj_buf.c中找到lj_buf_ruleb128这个函数，对比发现一致</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401221014807.png"></p>
+<p>在此补充一下uleb（Unsigned Little Endian Base）编码：uleb通过字节的最高位来决定是否用到下一个字节。如果最高位为1，则用到下一个字节，直到某个字节最高位为0或已经读取了5个字节为止。对于函数<code>lj_buf_ruleb128</code>而言，它读取1-5字节。</p>
+<p>举个例子，uleb128解码</p>
+<pre><code>假设有以下经过uleb128编码的数据(都为16进制)--81 80 04
+首先来看第一个字节81，他的二进制为10000001，他的最高位为1，则说明还要用到下一个字节，它存放的数据则为0000001；
+再来看第二个字节80，它的二进制为10000000，它的最高位为1，则说明还需要用到第三个字节，存放的数据为0000000；
+再来看第三个字节04，它的二进制为00000100，最高位为0，说明一共使用了三个字节，它存放的数据为0000100；
+通过上面的数据我们已经获取了存放的数据，接下来就是把这些bit组合起来获取解码后的数据。
+dex文件里面的数据都是采用的小端序的方式，uleb128也不例外，在这三个字节，也不例外，
+第三个字节04存放的数据0000100作为解码后的数据的高7位，
+第二个字节80存放的数据0000000作为解码后的数据的中7位，
+第一个字节81存放的数据0000001作为解码后的数据的低7位；
+那么解码后的数据二进制则为0000100 0000000 0000001，转换为16进制则为0x10001。其他使用5个字节、4个字节照此类推即可。
+</code></pre>
+<p>再举个例子，uleb128编码</p>
+<pre><code>C0 83 92 25计算uleb128值：
+C0:1100 0000
+83:1000 0011
+92:1001 0010
+25:0010 0101
+1100 0000 1000 0011 1001 0010 0010 0101
+第1个七位为010 0101，有剩余字节，高位补1。result1 = 1010 0101 = 0xA5
+剩余字节为1100 0000 1000 0011 1001 0010 0
+第2个七位为01 0010 0，有剩余字节，高位补1。result2 = result1 &lt;&lt; 8 + 0xA4 = 0xA5A4
+剩余字节为1100 0000 1000 0011 10
+第3个七位为0 0011 10，有剩余字节，高位补1。result3 = result2 &lt;&lt; 8 + 0x8E = 0xA5A48E
+剩余字节为1100 0000 100
+第4个七位为0000 100，有剩余字节，高位补1。result4 = result3 &lt;&lt; 8 + 0x84 = 0xA5A48E
+剩余字节为1100 
+第5个七位为1100，无剩余字节，高位补0。result4 = result3 &lt;&lt; 8 + 0x0C = 0xA5A48E840C
+最后计算结果为A5 A4 8E 84 0C
+</code></pre>
+<p>再补充一下，luajit中<code>lj_buf_ruleb128</code>并不直接使用，而是像上面提到的loadbuffer一样有个调用链，在lj_bcread.c中可以找到函数<code>bcread_uleb128</code>调用了<code>lj_buf_ruleb128</code>，因此在对源码进行查找的时候不能直接搜<code>lj_buf_ruleb128</code>，而是应该搜<code>bcread_uleb128</code></p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401221018191.png"></p>
+<p>接下来就是向上跟，看看哪个函数调用了这个函数，在return的地方下一个断点，跟过去看看</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401220959524.png"></p>
+<p>出去之后可以看到这个</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401221002930.png"></p>
+<p>上面的sub_7FFB769B7880就是刚才调用的函数（函数名不同因为重新运行了一次）</p>
+<p>但是在这个函数内向上翻会发现函数头缺失，而且无法进行反编译，因此需要重新设定函数头</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401221005584.png"></p>
+<p>至于在什么位置设定就见仁见智了，主要是需要知道调用刚刚的函数作用是什么，也就是知道这个函数被调用的上下几段就行，不需要太纠结，<del>简单来说就是先反编译再说（</del></p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401221010167.png"></p>
+<p>随便设了个函数头，出来的结果是这个</p>
+<p>使用<code>bcread_uleb128</code>去luajit源码中搜索，可以在lj_bcread.c中找到函数bcread_kgc，这是一个加载常量的函数</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401221021721.png"></p>
+<p>根据调试结果，发现函数将输入的数据（ <code>uleb128</code>编码的<code>u64</code> 类型的数字）使用解码成<code>u32</code> 的值。类型的判断依据是 <code>tp</code>的值均为 <code>3</code>（这就是为什么前面和中间都有一个 <code>03</code>）</p>
+<p>在lj_bcdump.c文件中可以看到tp的取值来源</p>
+<pre><code class="c">/* Type codes for the GC constants of a prototype. Plus length for strings. */
+enum &#123;
+  BCDUMP_KGC_CHILD, BCDUMP_KGC_TAB, BCDUMP_KGC_I64, BCDUMP_KGC_U64,
+  BCDUMP_KGC_COMPLEX, BCDUMP_KGC_STR
+&#125;;
+</code></pre>
+<p>因此需要我们输入的内容实际上应该是使用<code>uleb128</code>编码的160位十六进制数据，它在此程序中将以<code>u64</code>类型、80位（10字节）为单位存储在常量部分</p>
+<h2 id="0x02-反编译"><a href="#0x02-反编译" class="headerlink" title="0x02 反编译"></a>0x02 反编译</h2><p>参考：<a target="_blank" rel="noopener" href="https://www.52pojie.cn/thread-1378796-1-1.html">https://www.52pojie.cn/thread-1378796-1-1.html</a></p>
+<p>首先dump出luajit字节码文件，具体位置和大小存储可以在lua_loadx的第三个参数中找到</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401232218735.png"></p>
+<p>而这个第三个参数来自于luaL_loadbufferx中的StringReaderCtx ctx</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401232218501.png"></p>
+<p>而ctx这个参数的值来自于luaL_loadbuffer中的buf和size参数，这两个参数分别是字节码的起始位置和大小</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401232219049.png"></p>
+<p>参考：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/lordtianqiyi/articles/17000585.html%E8%8E%B7%E5%8F%96%E5%AD%97%E8%8A%82%E7%A0%81%E6%96%87%E4%BB%B6">https://www.cnblogs.com/lordtianqiyi/articles/17000585.html获取字节码文件</a></p>
+<blockquote>
+<p>lua_load int lua_load (lua_State *L, lua_Reader reader, void *data, const char *chunkname, const char *mode); </p>
+<p>加载一段 Lua 代码块，但不运行它。 如果没有错误， lua_load 把一个编译好的代码块作为一个 Lua 函数压到栈顶。 否则，压入错误消息</p>
+<p>参数 reader，用来读取数据，比如 luaL_loadfilex 内部调用 lua_load 函数，reader 就是getF函数，其通过fread函数读取文件</p>
+<p>参数 data，是指向可选数据结构的指针，可以传递给reader函数</p>
+<p>参数 chunkname，是一个字符串，标识了正在加载的块了名字</p>
+<p>参数 mode是一个字符串，指定如何编译数据块。可能取值为:”b”(二进制):该块是预编译的二进制块，加载速度比源块快。”t” (text):</p>
+</blockquote>
+<p>dump出来的字节码经过010editor的bt模板识别后如下：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401232237381.png"></p>
+<p>bt模板来源：<a target="_blank" rel="noopener" href="https://github.com/feicong/lua_re/blob/master/LuaJit.bt">https://github.com/feicong/lua_re/blob/master/LuaJit.bt</a></p>
+<p>由此可以判断：</p>
+<p>Luajit版本为2</p>
+<p>是64位的luajit字节码文件，（第5字节为0x0E&#x3D;b1110，其中采用<code>2-slot frame info</code> 模式（FLAG_FR2 &#x3D; 0b00001000），后者是 64 位引入的新特性。）</p>
+<p>dump出字节码之后就能反编译了</p>
+<p>反编译脚本参考：<a target="_blank" rel="noopener" href="https://github.com/Dr-MTN/luajit-decompiler">https://github.com/Dr-MTN/luajit-decompiler</a></p>
+<p>直接对字节码进行反编译：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401232240748.png"></p>
+<p>效果不理想（</p>
+<p>此处参考佬的wp：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/gaoyucan/p/17577858.html">https://www.cnblogs.com/gaoyucan/p/17577858.html</a></p>
+<p>luajit中有问题的代码</p>
+<pre><code class="assembly">CALL     7   0   3 ； bit.lshift(9, 10)
+</code></pre>
+<p>第二个参数应是返回值个数+1，对于此函数来说结果应该是2，但在这里是0</p>
+<p>佬说其他地方基本都是2，0和2好像没啥区别，所以在反编译代码中让它将这里当2处理（</p>
+<p>代码位置为.\luajit-decompiler-master\ljd\rawdump\code.py第47行</p>
+<pre><code class="python">if instruction.B_type is not None:
+        instruction.B = _process_operand(parser, instruction.B_type, B)
+        if instruction.name == &#39;CALL&#39; and instruction.B == 0:
+            instruction.B = 2
+</code></pre>
+<p>然后就反编译出来了（</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401232249717.png"></p>
+<p>但是这个结果不对，因为slot0、slot1这些变量应该是u64类型的，所以还得改（</p>
+<p>根据佬的wp，将.\luajit-decompiler-master\ljd\rawdump\constants.py第114行的函数返回值进行更改</p>
+<pre><code class="python">def _assemble_number(lo, hi):
+    if sys.byteorder == &#39;big&#39;:
+        float_as_int = lo &lt;&lt; 32 | hi
+    else:
+        float_as_int = hi &lt;&lt; 32 | lo
+
+    #raw_bytes = struct.pack(&quot;=Q&quot;, float_as_int)
+    #return struct.unpack(&quot;=d&quot;, raw_bytes)[0]
+    return float_as_int
+</code></pre>
+<p>再运行可以得到</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401232254647.png"></p>
+<p>这次正常不少</p>
+<p>将结果另存为out.lua</p>
+<p>有个很坑的就是第四行一长串运算省略了中间值，需要补上</p>
+<p>将</p>
+<pre><code class="lua">slot0 = bit.bxor(bit.bor(bit.lshift(slot0, 3), bit.rshift(slot0, 61)), bit.bxor(slot0 + bit.bor(bit.rshift(slot1, 8), bit.lshift(slot1, 56)), slot2))
+</code></pre>
+<p>改为</p>
+<pre><code>slot1 = bor(rshift(slot1, 8), lshift(slot1, 56));
+slot1 = bxor(slot0 + slot1, slot2);
+slot0 = bor(lshift(slot0, 3), rshift(slot0, 61));
+slot0 = bxor(slot0, slot1);
+</code></pre>
+<p>再分析IDA反汇编代码，<code>luaL_checkcdata</code>函数表示从栈底开始取值，取到的分别是slot0与slot1，并判断是否是某个值。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401232304801.png"></p>
+<p>通过运行<code>out.lua</code>，可以得到一共运行了32次上述4行代码，其中slot2都不同，最终可以写脚本：</p>
+<pre><code class="python">import leb128
+ 
+def decrypt(_slot0, _slot1, _slot2):
+    _slot0 ^= _slot1
+    _slot0 = ((_slot0 &gt;&gt; 3) | (_slot0 &lt;&lt; 61)) &amp; 0xffffffffffffffff
+    slot1_and_slot0 = _slot1 ^ _slot2
+    _slot1 = slot1_and_slot0 - _slot0
+    _slot1 &amp;= 0xffffffffffffffff
+    _slot1 = ((_slot1 &gt;&gt; 56) | (_slot1 &lt;&lt; 8)) &amp; 0xffffffffffffffff
+    return _slot0, _slot1
+ 
+def u64_to_uleb128(u):
+    high = u &gt;&gt; 32
+    low = u &amp; 0xffffffff
+    return leb128.u.encode(low).hex() + leb128.u.encode(high).hex()
+ 
+slot2_array = [0xdeadbeef12345678, 0x28539dc5904d8141, 0xf2ac321ccf237a7b, 0xf03df21e866b1a36, 0x584cde754c325b4b, 0x97407269ac231f8b,
+ 0xd2960ba60ee82d09, 0xb34efc0e8d197592, 0x15011adba4d8613d, 0x1598470b72677cea, 0xb497efc6db87c606, 0xae0f3ba8a4eeb218,
+ 0xab6036ab64121254, 0x663ae5cc72c5eb7f, 0x71af0f7e9c371b0e, 0xeb97fc6b58f9eb33, 0x774108a83f7c75f6, 0x5a6542d5c9968681,
+ 0x5e6fb973117ccfb1, 0xea8134ba653ce534, 0xfc92946aa1cc9678, 0x38af8cc9553071e4, 0x99f7a1b258084992, 0x82e920e890bb99da,
+ 0xc67f72528ed05d6c, 0x4cab3a53d2598281, 0x517358620b3249f9, 0xcf3d41fd5e5e0786, 0x626be66ab995efe3, 0x24d85b01f54e2ab1,
+ 0xe9cd3a65e3f95992, 0x4bf5996751882d17]
+ 
+slot2_array.reverse()
+ 
+ 
+slot0 = 0xdd26c29515a28396
+slot1 = 0xbd722d4baf99b9c7
+ 
+for slot2 in slot2_array:
+    slot0, slot1 = decrypt(slot0, slot1, slot2)
+ 
+print(u64_to_uleb128(slot1) + u64_to_uleb128(slot0))
+ 
+</code></pre>
+
+  </article>
+
+  
+      
+    <div class="nexmoe-post-copyright">
+        <strong>本文作者：</strong>WoaW04<br>
+        <strong>本文链接：</strong><a href="http://example.com/2024/01/15/2023%E5%B7%85%E5%B3%B0%E6%9E%81%E5%AE%A2ezlua/" title="http:&#x2F;&#x2F;example.com&#x2F;2024&#x2F;01&#x2F;15&#x2F;2023%E5%B7%85%E5%B3%B0%E6%9E%81%E5%AE%A2ezlua&#x2F;" target="_blank" rel="noopener">http:&#x2F;&#x2F;example.com&#x2F;2024&#x2F;01&#x2F;15&#x2F;2023%E5%B7%85%E5%B3%B0%E6%9E%81%E5%AE%A2ezlua&#x2F;</a><br>
+        
+            <strong>版权声明：</strong>本文采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/cn/deed.zh" target="_blank">CC BY-NC-SA 3.0 CN</a> 协议进行许可
+        
+    </div>
+
+
+  
+  
+  <div class="nexmoe-post-meta nexmoe-rainbow">
+    
+    
+        <a class="nexmoefont icon-tag-fill -none-link" href="/tags/RE/" rel="tag">RE</a>
+    
+</div>
+
+  
+      <div class="nexmoe-post-footer">
+          <section class="nexmoe-comment">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.css">
+<div id="gitalk"></div>
+<script src="https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: '80b2453b6d5f37ad6225',
+        clientSecret: '43e99fa852795c9a7b3eb924b2558c64b84bbdeb',
+        id: window.location.pathname,
+        repo: 'nexmoe.github.io',
+        owner: 'nexmoe',
+        admin: 'nexmoe'
+    })
+    gitalk.render('gitalk')
+</script>
+</section>
+      </div>
+  
+</div>
+            <div class="nexmoe-post-right">
+              <div class="nexmoe-fixed">
+                  <div class="nexmoe-tool"> 
+                    
+                      
+                    
+                      <a href="#nexmoe-content" class="toc-link" aria-label="回到顶部" title="top"><button class="mdui-fab mdui-ripple"><i class="nexmoefont icon-caret-top"></i></button></a>
+                  </div>
+              </div>
+            </div>
+        </div>
+    </div>
+     
+    <div id="nexmoe-search-space">
+        <div class="search-container">
+            <div class="search-header">
+                <div class="search-input-container">
+                    <input class="search-input" type="text" placeholder="搜索" oninput="sinput();">
+                </div>
+                <a class="search-close" onclick="sclose();">×</a>
+            </div>
+            <div class="search-body"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/combine/npm/lazysizes@5.1.0/lazysizes.min.js,npm/mdui@0.4.3/dist/js/mdui.min.js?v=1"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+
+ 
+
+<script async src="/js/app.js?v=1706022376938"></script>
+
+
+	<script async src="/js/search.js?v=1706022376938"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js"></script>
+<script>
+	$(".justified-gallery").justifiedGallery({
+		rowHeight: 160,
+		margins: 10,
+	});
+</script>
+
+
+    
+
+
+
+
+
+</body>
+
+</html>
