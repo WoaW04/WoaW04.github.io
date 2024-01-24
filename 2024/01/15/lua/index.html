@@ -27,16 +27,16 @@
 <meta property="article:tag" content="RE">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202401151223157.png">
-    <link rel="stylesheet" href="/lib/jquery.fancybox.min.css?v=1706074193061">
+    <link rel="stylesheet" href="/lib/jquery.fancybox.min.css?v=1706075092939">
     
-    <link rel="stylesheet" href="/lib/mdui_043tiny/css/mdui.css?v=1706074193061">
-    <link rel="stylesheet" href="/lib/iconfont/iconfont.css?v=1706074193061">
-    <link rel="stylesheet" href="/css/style.css?v=1706074193061">
+    <link rel="stylesheet" href="/lib/mdui_043tiny/css/mdui.css?v=1706075092939">
+    <link rel="stylesheet" href="/lib/iconfont/iconfont.css?v=1706075092939">
+    <link rel="stylesheet" href="/css/style.css?v=1706075092939">
     
-        <link rel="stylesheet" href="/css/dark.css?v=1706074193061">
+        <link rel="stylesheet" href="/css/dark.css?v=1706075092939">
      
     
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body class="mdui-drawer-body-left">
     
@@ -224,8 +224,8 @@ pop a
 <p>其中，<code>next</code>是指向下一个GC链表的成员，<code>tt</code>表示数据类型、<code>marked</code>为GC相关的标志位。</p>
 <p>Lua的基本数据表示方式是type + union的方式，根据不同类型映射到union的不同结构上面, 统一的表示结构lua_TValue：</p>
 <pre><code class="c">struct lua_TValue&#123;
-    Value value_;     //实际存储的值
-    int tt;         //存储当前数据类型
+    Value value_; 	//实际存储的值
+    int tt; 		//存储当前数据类型
 &#125;TValue;
 
 typedef union Value &#123;
@@ -416,7 +416,7 @@ static void checkHeader (LoadState *S) &#123;
     FLAG_HAS_ILOOP = 0b00010000
 &#125; PROTO_FLAG;
 </code></pre>
-<p>​        各取值的含义如下：</p>
+<p>​		各取值的含义如下：</p>
 <p>  （a）<code>FLAG_HAS_CHILD</code>标识当前<code>proto</code>是一个子函数，也就是闭包（closure）。举个例子来理解一下：</p>
 <pre><code class="lua">function Create(n) 
     local function foo1()
@@ -555,10 +555,10 @@ G global。全局。
 
  
 
-<script async src="/js/app.js?v=1706074193063"></script>
+<script async src="/js/app.js?v=1706075092941"></script>
 
 
-	<script async src="/js/search.js?v=1706074193063"></script>
+	<script async src="/js/search.js?v=1706075092941"></script>
 
 
 <script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js"></script>

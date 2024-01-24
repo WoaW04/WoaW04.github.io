@@ -34,16 +34,16 @@
 <meta property="article:tag" content="巅峰极客2023">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202024-01-14%20181124.png">
-    <link rel="stylesheet" href="/lib/jquery.fancybox.min.css?v=1706074193064">
+    <link rel="stylesheet" href="/lib/jquery.fancybox.min.css?v=1706075092942">
     
-    <link rel="stylesheet" href="/lib/mdui_043tiny/css/mdui.css?v=1706074193064">
-    <link rel="stylesheet" href="/lib/iconfont/iconfont.css?v=1706074193064">
-    <link rel="stylesheet" href="/css/style.css?v=1706074193064">
+    <link rel="stylesheet" href="/lib/mdui_043tiny/css/mdui.css?v=1706075092942">
+    <link rel="stylesheet" href="/lib/iconfont/iconfont.css?v=1706075092942">
+    <link rel="stylesheet" href="/css/style.css?v=1706075092942">
     
-        <link rel="stylesheet" href="/css/dark.css?v=1706074193064">
+        <link rel="stylesheet" href="/css/dark.css?v=1706075092942">
      
     
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body class="mdui-drawer-body-left">
     
@@ -202,8 +202,8 @@ Interceptor.attach(baseAddr.add(0x4C2C),&#123;
   // 此位置为call了au_re___security_check_cookie之后的mov rbx, rdi
   // 详见下图
   // 若不确定，可以通过测试来看：
-  //         1. 若正确数据与异常数据全部不同，则修改太早
-  //         2. 若正确数据与异常数据仅一个不同，则修改太晚
+  // 		1. 若正确数据与异常数据全部不同，则修改太早
+  // 		2. 若正确数据与异常数据仅一个不同，则修改太晚
   onEnter: function(args)&#123;
     count++;
     // 第九轮修改中间结果
@@ -211,12 +211,12 @@ Interceptor.attach(baseAddr.add(0x4C2C),&#123;
       // 参考汇编代码可以发现rdi记录第九轮中间数据的地址
       // lea rdi, [rbx + 2] #详见下下图
       // &quot;add(Math.floor(Math.random()*16))&quot;:
-      //         表示对操作的地址进行偏移，值属于&#123;1,2,3&#125;
-      //         (0，4的可能性基本为0)
+      // 		表示对操作的地址进行偏移，值属于&#123;1,2,3&#125;
+      // 		(0，4的可能性基本为0)
       //
       // &quot;writeU8(Math.floor(Math.random()*256))&quot;:
-      //         表示对写入的值进行修改，值属于&#123;1,2,3,...,E,F&#125;
-      //         (0，16的可能性基本为0)
+      // 		表示对写入的值进行修改，值属于&#123;1,2,3,...,E,F&#125;
+      // 		(0，16的可能性基本为0)
       // 综上，这实现了对中间数据的单个Byte修改，取消注释下述代码即可看出
       var p = ptr(this.context.rdi)
       // console.log(&quot;ori: &quot;, p.readByteArray(16), &quot;\n&quot;)
@@ -511,10 +511,10 @@ print(flag)
 
  
 
-<script async src="/js/app.js?v=1706074193065"></script>
+<script async src="/js/app.js?v=1706075092943"></script>
 
 
-	<script async src="/js/search.js?v=1706074193065"></script>
+	<script async src="/js/search.js?v=1706075092943"></script>
 
 
 <script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js"></script>
