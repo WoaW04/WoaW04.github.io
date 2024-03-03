@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+
+<head>
+    
+    <title>2023DASCTF七月赛controlflow - The Blog of WoaW04</title>
+    <meta charset="UTF-8">
+    <meta name="keywords" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+    
+    
+
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <meta name="description" content="0x00 题目分析题为ControlFlow，即控制流，说明此题可能在控制流上做文章，因此要时刻注意堆栈的内容和变化 0x01 解先查壳  没壳，拖IDA 可以找到main函数  F5反编译  看起来好像很简单，只是将40字节长的输入与0x401进行异或加密，但是这里并没有与正确密文进行比较，结合控制流有问题的可能性，这个ret可能存在问题 获取main函数入口地址  上x32dbg动调看看  开">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2023DASCTF七月赛controlflow">
+<meta property="og:url" content="http://example.com/2024/03/03/2023DASCTF%E4%B8%83%E6%9C%88%E8%B5%9Bcontrolflow/index.html">
+<meta property="og:site_name" content="The Blog of WoaW04">
+<meta property="og:description" content="0x00 题目分析题为ControlFlow，即控制流，说明此题可能在控制流上做文章，因此要时刻注意堆栈的内容和变化 0x01 解先查壳  没壳，拖IDA 可以找到main函数  F5反编译  看起来好像很简单，只是将40字节长的输入与0x401进行异或加密，但是这里并没有与正确密文进行比较，结合控制流有问题的可能性，这个ret可能存在问题 获取main函数入口地址  上x32dbg动调看看  开">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403031314690.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403031316557.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403031316609.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403031319614.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403031320930.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403031326238.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403031327003.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403031333308.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403031336739.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403031342637.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403031344706.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403031347597.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403031349950.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403031355345.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403031316609.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403031410132.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403031347597.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403031421430.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403031444263.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403031427138.png">
+<meta property="article:published_time" content="2024-03-03T03:41:00.000Z">
+<meta property="article:modified_time" content="2024-03-03T07:02:01.280Z">
+<meta property="article:author" content="WoaW04">
+<meta property="article:tag" content="RE">
+<meta property="article:tag" content="2023DASCTF七月赛">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403031314690.png">
+    <link rel="stylesheet" href="/lib/jquery.fancybox.min.css?v=1709449357191">
+    
+    <link rel="stylesheet" href="/lib/mdui_043tiny/css/mdui.css?v=1709449357191">
+    <link rel="stylesheet" href="/lib/iconfont/iconfont.css?v=1709449357191">
+    <link rel="stylesheet" href="/css/style.css?v=1709449357191">
+    
+        <link rel="stylesheet" href="/css/dark.css?v=1709449357191">
+     
+    
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="mdui-drawer-body-left">
+    
+    <div id="nexmoe-background">
+        <div class="nexmoe-bg" style="background-image: url(https://cdn.jsdelivr.net/gh/WoaW04/Picture/image95796589_p0.jpg)"></div>
+        <div class="mdui-appbar mdui-shadow-0">
+            <div class="mdui-toolbar">
+                <a mdui-drawer="{target: '#drawer', swipe: true}" title="menu" class="mdui-btn mdui-btn-icon mdui-ripple"><i class="mdui-icon nexmoefont icon-menu"></i></a>
+                <div class="mdui-toolbar-spacer"></div>
+                <!--<a href="javascript:;" class="mdui-btn mdui-btn-icon"><i class="mdui-icon material-icons">search</i></a>-->
+                <a href="/" title="WoaW04" class="mdui-btn mdui-btn-icon"><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image04CTF.png" alt="WoaW04"></a>
+            </div>
+        </div>
+    </div>
+    <div id="nexmoe-header">
+        <div class="nexmoe-drawer mdui-drawer" id="drawer">
+    <div class="nexmoe-avatar mdui-ripple">
+        <a href="/" title="WoaW04">
+            <img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image04CTF.png" alt="WoaW04" alt="WoaW04">
+        </a>
+    </div>
+    <div class="nexmoe-count">
+        <div><span>文章</span>9</div>
+        <div><span>标签</span>6</div>
+        <div><span>分类</span>0</div>
+    </div>
+    <div class="nexmoe-list mdui-list" mdui-collapse="{accordion: true}">
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/" title="回到首页">
+            <i class="mdui-list-item-icon nexmoefont icon-home"></i>
+            <div class="mdui-list-item-content">
+                回到首页
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/about.html" title="关于博客">
+            <i class="mdui-list-item-icon nexmoefont icon-info-circle"></i>
+            <div class="mdui-list-item-content">
+                关于博客
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/PY.html" title="我的朋友">
+            <i class="mdui-list-item-icon nexmoefont icon-unorderedlist"></i>
+            <div class="mdui-list-item-content">
+                我的朋友
+            </div>
+        </a>
+        
+    </div>
+    <aside id="nexmoe-sidebar">
+    
+    <div class="nexmoe-widget-wrap">
+    <div class="nexmoe-widget nexmoe-search">
+        
+            <form id="search_form">
+                <label><input class="st-default-search-input" id="search_value" name="q" type="search" placeholder="搜索" style="
+                    font-size: 15px !important;
+                    height: 56px !important;
+                    background-image: none;
+                "></label>
+            </form>
+         
+    </div>
+</div>
+    
+    <div class="nexmoe-widget-wrap">
+    <div class="nexmoe-widget nexmoe-social">
+        <a class="mdui-ripple" href="https://space.bilibili.com/3096846" target="_blank" mdui-tooltip="{content: '哔哩哔哩'}" style="color: rgb(231, 106, 141);background-color: rgba(231, 106, 141, .15);">
+            <i class="nexmoefont icon-bilibili"></i>
+        </a><a class="mdui-ripple" href="https://github.com/WoaW04" target="_blank" mdui-tooltip="{content: 'GitHub'}" style="color: rgb(255, 255, 255);background-color: rgba(255, 255, 255, .15);">
+            <i class="nexmoefont icon-github"></i>
+        </a>
+    </div>
+</div>
+    
+    
+
+    
+    
+  <div class="nexmoe-widget-wrap">
+    <div id="randomtagcloud" class="nexmoe-widget tagcloud nexmoe-rainbow">
+      <a href="/tags/2023DASCTF%E4%B8%83%E6%9C%88%E8%B5%9B/" style="font-size: 10px;">2023DASCTF七月赛</a> <a href="/tags/Learning/" style="font-size: 15px;">Learning</a> <a href="/tags/Misc/" style="font-size: 10px;">Misc</a> <a href="/tags/RE/" style="font-size: 20px;">RE</a> <a href="/tags/%E5%B7%85%E5%B3%B0%E6%9E%81%E5%AE%A22023/" style="font-size: 15px;">巅峰极客2023</a> <a href="/tags/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8/" style="font-size: 10px;">软件安全</a>
+    </div>
+    
+  </div>
+
+    
+</aside>
+    <div class="nexmoe-copyright">
+        &copy; 2024 WoaW04
+        Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+        & <a href="https://github.com/theme-nexmoe/hexo-theme-nexmoe" target="_blank">Nexmoe</a>
+        
+    </div>
+</div><!-- .nexmoe-drawer -->
+    </div>
+    <div id="nexmoe-content">
+        <div class="nexmoe-primary">
+            <div class="nexmoe-post">
+
+  <article>
+      
+          <div class="nexmoe-post-cover" style="padding-bottom: 66.66666666666666%;"> 
+              <img data-src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image95796589_p0.jpg" data-sizes="auto" alt="2023DASCTF七月赛controlflow" class="lazyload">
+              <h1>2023DASCTF七月赛controlflow</h1>
+          </div>
+      
+      
+      <div class="nexmoe-post-meta nexmoe-rainbow" style="margin:10px 0!important;">
+    <a><i class="nexmoefont icon-calendar-fill"></i>2024年03月03日</a>
+</div>
+
+      
+
+      <h2 id="0x00-题目分析"><a href="#0x00-题目分析" class="headerlink" title="0x00 题目分析"></a>0x00 题目分析</h2><p>题为ControlFlow，即控制流，说明此题可能在控制流上做文章，因此要时刻注意堆栈的内容和变化</p>
+<h2 id="0x01-解"><a href="#0x01-解" class="headerlink" title="0x01 解"></a>0x01 解</h2><p>先查壳</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403031314690.png"></p>
+<p>没壳，拖IDA</p>
+<p>可以找到main函数</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403031316557.png"></p>
+<p>F5反编译</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403031316609.png"></p>
+<p>看起来好像很简单，只是将40字节长的输入与0x401进行异或加密，但是这里并没有与正确密文进行比较，结合控制流有问题的可能性，这个ret可能存在问题</p>
+<p>获取main函数入口地址</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403031319614.png"></p>
+<p>上x32dbg动调看看</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403031320930.png"></p>
+<p>开头几个push（push &lt;consoleapplication1.sub_CA….&gt;）将函数的地址压入了栈中，当main函数执行至ret的时候则返回到这些地址中执行这些函数</p>
+<p>随便输入一个40字节长的数进去再跟到ret处，此时的栈内容如下（有三个函数）</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403031326238.png"></p>
+<p>ret跟进去后进入第一个函数（相对地址为1220）</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403031327003.png"></p>
+<p>这些个函数可能用IDA会比较好看，遂上IDA</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403031333308.png"></p>
+<p>函数1220将接受的数据与i（i&gt;&#x3D;0||i&lt;40）平方进行逐位相加</p>
+<p>之后return进1560这个函数（注意输入函数1560的数据是偏移了10位的！）</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403031336739.png"></p>
+<p>函数1560将接受的数据与i*(i+1)（i&gt;&#x3D;0||i&lt;20）进行逐位异或</p>
+<p>最后return</p>
+<p>根据堆栈，后面应该还有两个函数，遂回到x32dbg查看</p>
+<p>运行至函数1220的ret处，发现多了一个函数1290，回看函数1220的汇编（上图），可以发现函数1220执行过程中将函数1290压入了堆栈<del>（这程序流有够乱）</del></p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403031342637.png"></p>
+<p>跟进查看函数11A0</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403031344706.png"></p>
+<p>看不太懂，IDA内也是没什么结果，应该也是对程序流做了点操作，直接跟到ret处查看</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403031347597.png"></p>
+<p>对比上面那个堆栈发现栈中多了15AF和11E4的地址，合理推断是和main函数一样压了两个新的函数地址进堆栈了</p>
+<p>跟进查看15AF</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403031349950.png"></p>
+<p>似乎不是一个函数，而且在IDA中也没有反汇编出来<del>（那就硬读汇编呗）</del></p>
+<p>通过阅读汇编<del>（痛苦）</del>可以发现此段一直对4370这个地址进行操作，转内存窗口</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403031355345.png"></p>
+<p>由汇编看出，执行过程中会将edx的值不断+1，然后存到4370这个地址，并将4370地址的内容与0x28（40）这个立即数进行比较，看来4370这个地址存放的就是循环次数了</p>
+<p>单步运行并查看内存，可以发现15AF这一段一直在将43A8中的值减去循环次数（i），那么这个43A8存的是个啥呢</p>
+<p>这就要回到main函数去看一看了（参照上面IDA的main函数反汇编）</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403031316609.png"></p>
+<p>从main函数我们可以看出，这里存放的就是进行变换后的输入，而后续的所有操作都对43A8这个地址内的数据进行操作，因此43A8里面存的就是加密的结果了</p>
+<p>因此这个15AF就是将每一位都减i（i&gt;&#x3D;0||i&lt;40）</p>
+<p>然后再跟进到15AF的ret，下一个跳转到了11E4</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403031410132.png"></p>
+<p>看得出来11E4和15AF一样都不是完整的函数，所以要继续看汇编了</p>
+<p>这里需要注意imul的意思，参考<a target="_blank" rel="noopener" href="https://www.felixcloutier.com/x86/%EF%BC%8C%E6%B3%A8%E6%84%8F%E6%AC%A1%E5%A4%84%E7%94%A8%E5%88%B0%E4%BA%86%E4%B8%89%E4%B8%AA%E5%80%BC">https://www.felixcloutier.com/x86/，注意次处用到了三个值</a></p>
+<pre><code>IMUL — Signed Multiply
+
+Performs a signed multiplication of two operands. This instruction has three forms, depending on the number of operands.
+
+Three-operand form — This form requires a destination operand (the first operand) and two source operands (the second and the third operands). Here, the first source operand (which can be a general-purpose register or a memory location) is multiplied by the second source operand (an immediate value). The intermediate product (twice the size of the first source operand) is truncated and stored in the destination operand (a general-purpose register).
+</code></pre>
+<p>根据指南，可以知道这个地方是将43A8地址内的值乘3，然后放入eax寄存器中，后面再将eax寄存器中的值放回43A8地址中</p>
+<p>因此可以知道11E4这一段的作用是将上一步的结果逐位乘3</p>
+<p>跟到11E4的ret处，可以发现ret的位置是1100了（此处借用11A0函数之后的图，实际情况是运行到了下面的1100）</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403031347597.png"></p>
+<p>这个1100是一个完整的函数，因此到IDA去看看</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403031421430.png"></p>
+<p>这是一个0空间实现两值交换的函数，作用就是将20位的值两两一组进行互换，即123456变为214365</p>
+<p>值得注意的是，这个交换函数是对加密过程中的值偏移10之后进行的交换，即前面10位不进行交换，对第11~30个数据进行操作</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403031444263.png"></p>
+<p>最后就是1290了，这也是一个完整的函数，而且密文就在其中</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403031427138.png"></p>
+<p>最后这个函数1290就是与密文相比较，所以根据以上的所有操作，可以获得这样一张表</p>
+<table>
+<thead>
+<tr>
+<th>函数</th>
+<th>作用</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>main</td>
+<td>^&#x3D;0x401</td>
+<td>存入函数1220，11A0，1100到栈中</td>
+</tr>
+<tr>
+<td>1220</td>
+<td>+&#x3D;i*i</td>
+<td>存入函数1290到1100之后，并调用了函数1560</td>
+</tr>
+<tr>
+<td>1560</td>
+<td>^&#x3D;i*(i+1)</td>
+<td>从偏移10开始操作，i&gt;&#x3D;0 || i&lt;20</td>
+</tr>
+<tr>
+<td>11A0</td>
+<td></td>
+<td>存入15AF和11E4这两个非完整函数的段</td>
+</tr>
+<tr>
+<td>15AF</td>
+<td>-&#x3D;i</td>
+<td></td>
+</tr>
+<tr>
+<td>11E4</td>
+<td>*&#x3D;3</td>
+<td></td>
+</tr>
+<tr>
+<td>1100</td>
+<td>交换</td>
+<td>从偏移10开始，对20个数进行两两交换</td>
+</tr>
+<tr>
+<td>1290</td>
+<td>与密文做比较</td>
+<td></td>
+</tr>
+</tbody></table>
+<p>将1290中的密文dump下来然后写脚本就好了</p>
+<pre><code class="python">enc = [3279, 3264, 3324, 3288, 3363, 3345, 3528, 3453, 3498, 3627, 3708, 3675, 3753, 3786, 3930, 3930, 4017, 4173, 4245, 4476, 4989, 4851, 5166, 5148, 4659, 4743, 4596, 5976, 5217, 4650, 6018, 6135, 6417, 6477, 6672, 6891, 7056, 7398, 7650, 7890]
+flag = &quot;&quot;
+# 先交换
+i = 0
+k = 0
+while i &lt; 40:
+    if i &gt; 9 and k &lt; 20:
+        t = enc[i]
+        enc[i] = enc[i+1]
+        enc[i+1] = t
+        k += 2
+        i += 2
+        continue
+    i = i+1
+k = 0
+for i in range(0, 40):
+    # 除3
+    x = int(enc[i]/3)
+    # +=i
+    x = x+i
+    # ^=i*(i+1)
+    if i &gt; 9 and k &lt; 20:
+        x ^= k*(k+1)
+        k = k+1
+    # -=i*i
+    x = x-(i*i)
+    # ^=0x401
+    x ^= 0x401
+    flag += chr(x)
+print(flag)
+# b&#39;DASCTF&#123;TWpnemRuSTRkVzVsWVhOMmJqZzNOREoy&#125;&#39;
+</code></pre>
+
+  </article>
+
+  
+      
+    <div class="nexmoe-post-copyright">
+        <strong>本文作者：</strong>WoaW04<br>
+        <strong>本文链接：</strong><a href="http://example.com/2024/03/03/2023DASCTF%E4%B8%83%E6%9C%88%E8%B5%9Bcontrolflow/" title="http:&#x2F;&#x2F;example.com&#x2F;2024&#x2F;03&#x2F;03&#x2F;2023DASCTF%E4%B8%83%E6%9C%88%E8%B5%9Bcontrolflow&#x2F;" target="_blank" rel="noopener">http:&#x2F;&#x2F;example.com&#x2F;2024&#x2F;03&#x2F;03&#x2F;2023DASCTF%E4%B8%83%E6%9C%88%E8%B5%9Bcontrolflow&#x2F;</a><br>
+        
+            <strong>版权声明：</strong>本文采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/cn/deed.zh" target="_blank">CC BY-NC-SA 3.0 CN</a> 协议进行许可
+        
+    </div>
+
+
+  
+  
+  <div class="nexmoe-post-meta nexmoe-rainbow">
+    
+    
+        <a class="nexmoefont icon-tag-fill -none-link" href="/tags/2023DASCTF%E4%B8%83%E6%9C%88%E8%B5%9B/" rel="tag">2023DASCTF七月赛</a> <a class="nexmoefont icon-tag-fill -none-link" href="/tags/RE/" rel="tag">RE</a>
+    
+</div>
+
+  
+      <div class="nexmoe-post-footer">
+          <section class="nexmoe-comment">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.css">
+<div id="gitalk"></div>
+<script src="https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: '80b2453b6d5f37ad6225',
+        clientSecret: '43e99fa852795c9a7b3eb924b2558c64b84bbdeb',
+        id: window.location.pathname,
+        repo: 'nexmoe.github.io',
+        owner: 'nexmoe',
+        admin: 'nexmoe'
+    })
+    gitalk.render('gitalk')
+</script>
+</section>
+      </div>
+  
+</div>
+            <div class="nexmoe-post-right">
+              <div class="nexmoe-fixed">
+                  <div class="nexmoe-tool"> 
+                    
+                      
+                    
+                      <a href="#nexmoe-content" class="toc-link" aria-label="回到顶部" title="top"><button class="mdui-fab mdui-ripple"><i class="nexmoefont icon-caret-top"></i></button></a>
+                  </div>
+              </div>
+            </div>
+        </div>
+    </div>
+     
+    <div id="nexmoe-search-space">
+        <div class="search-container">
+            <div class="search-header">
+                <div class="search-input-container">
+                    <input class="search-input" type="text" placeholder="搜索" oninput="sinput();">
+                </div>
+                <a class="search-close" onclick="sclose();">×</a>
+            </div>
+            <div class="search-body"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/combine/npm/lazysizes@5.1.0/lazysizes.min.js,npm/mdui@0.4.3/dist/js/mdui.min.js?v=1"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+
+ 
+
+<script async src="/js/app.js?v=1709449357192"></script>
+
+
+	<script async src="/js/search.js?v=1709449357192"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js"></script>
+<script>
+	$(".justified-gallery").justifiedGallery({
+		rowHeight: 160,
+		margins: 10,
+	});
+</script>
+
+
+    
+
+
+
+
+
+</body>
+
+</html>
