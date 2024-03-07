@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+
+<head>
+    
+    <title>2023羊城杯CSGO - The Blog of WoaW04</title>
+    <meta charset="UTF-8">
+    <meta name="keywords" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+    
+    
+
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <meta name="description" content="0x00 分析这题是go语言（是没见过的语言） 用了IDA8.3（かみ さま），标志什么的好像都有，所以就稀里糊涂地做了 有空一定要专门出一篇GO语言的逆向 然后这题还有反调试（也是第一次见上这个的） 不过还是SharpOD技高一筹 0x01 解查壳省略（not packed） 上IDA直接搜字符串  可能是go语言的特性（？），字符串并没有直接出现在函数内，而是经过了一个转换   因为这个特性不">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2023羊城杯CSGO">
+<meta property="og:url" content="http://example.com/2024/03/07/2023%E7%BE%8A%E5%9F%8E%E6%9D%AFCSGO/index.html">
+<meta property="og:site_name" content="The Blog of WoaW04">
+<meta property="og:description" content="0x00 分析这题是go语言（是没见过的语言） 用了IDA8.3（かみ さま），标志什么的好像都有，所以就稀里糊涂地做了 有空一定要专门出一篇GO语言的逆向 然后这题还有反调试（也是第一次见上这个的） 不过还是SharpOD技高一筹 0x01 解查壳省略（not packed） 上IDA直接搜字符串  可能是go语言的特性（？），字符串并没有直接出现在函数内，而是经过了一个转换   因为这个特性不">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403071632130.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403071633054.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403071634137.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403071636407.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403071636595.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403071638298.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403071640137.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403071641795.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403071643971.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403071646163.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403071653953.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403071654086.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403071656030.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403071701334.png">
+<meta property="article:published_time" content="2024-03-07T08:26:16.000Z">
+<meta property="article:modified_time" content="2024-03-07T09:09:55.686Z">
+<meta property="article:author" content="WoaW04">
+<meta property="article:tag" content="RE">
+<meta property="article:tag" content="2023羊城杯">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403071632130.png">
+    <link rel="stylesheet" href="/lib/jquery.fancybox.min.css?v=1709802632725">
+    
+    <link rel="stylesheet" href="/lib/mdui_043tiny/css/mdui.css?v=1709802632725">
+    <link rel="stylesheet" href="/lib/iconfont/iconfont.css?v=1709802632725">
+    <link rel="stylesheet" href="/css/style.css?v=1709802632725">
+    
+        <link rel="stylesheet" href="/css/dark.css?v=1709802632725">
+     
+    
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="mdui-drawer-body-left">
+    
+    <div id="nexmoe-background">
+        <div class="nexmoe-bg" style="background-image: url(https://cdn.jsdelivr.net/gh/WoaW04/Picture/image95796589_p0.jpg)"></div>
+        <div class="mdui-appbar mdui-shadow-0">
+            <div class="mdui-toolbar">
+                <a mdui-drawer="{target: '#drawer', swipe: true}" title="menu" class="mdui-btn mdui-btn-icon mdui-ripple"><i class="mdui-icon nexmoefont icon-menu"></i></a>
+                <div class="mdui-toolbar-spacer"></div>
+                <!--<a href="javascript:;" class="mdui-btn mdui-btn-icon"><i class="mdui-icon material-icons">search</i></a>-->
+                <a href="/" title="WoaW04" class="mdui-btn mdui-btn-icon"><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image04CTF.png" alt="WoaW04"></a>
+            </div>
+        </div>
+    </div>
+    <div id="nexmoe-header">
+        <div class="nexmoe-drawer mdui-drawer" id="drawer">
+    <div class="nexmoe-avatar mdui-ripple">
+        <a href="/" title="WoaW04">
+            <img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image04CTF.png" alt="WoaW04" alt="WoaW04">
+        </a>
+    </div>
+    <div class="nexmoe-count">
+        <div><span>文章</span>13</div>
+        <div><span>标签</span>7</div>
+        <div><span>分类</span>0</div>
+    </div>
+    <div class="nexmoe-list mdui-list" mdui-collapse="{accordion: true}">
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/" title="回到首页">
+            <i class="mdui-list-item-icon nexmoefont icon-home"></i>
+            <div class="mdui-list-item-content">
+                回到首页
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/about.html" title="关于博客">
+            <i class="mdui-list-item-icon nexmoefont icon-info-circle"></i>
+            <div class="mdui-list-item-content">
+                关于博客
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/PY.html" title="我的朋友">
+            <i class="mdui-list-item-icon nexmoefont icon-unorderedlist"></i>
+            <div class="mdui-list-item-content">
+                我的朋友
+            </div>
+        </a>
+        
+    </div>
+    <aside id="nexmoe-sidebar">
+    
+    <div class="nexmoe-widget-wrap">
+    <div class="nexmoe-widget nexmoe-search">
+        
+            <form id="search_form">
+                <label><input class="st-default-search-input" id="search_value" name="q" type="search" placeholder="搜索" style="
+                    font-size: 15px !important;
+                    height: 56px !important;
+                    background-image: none;
+                "></label>
+            </form>
+         
+    </div>
+</div>
+    
+    <div class="nexmoe-widget-wrap">
+    <div class="nexmoe-widget nexmoe-social">
+        <a class="mdui-ripple" href="https://space.bilibili.com/3096846" target="_blank" mdui-tooltip="{content: '哔哩哔哩'}" style="color: rgb(231, 106, 141);background-color: rgba(231, 106, 141, .15);">
+            <i class="nexmoefont icon-bilibili"></i>
+        </a><a class="mdui-ripple" href="https://github.com/WoaW04" target="_blank" mdui-tooltip="{content: 'GitHub'}" style="color: rgb(255, 255, 255);background-color: rgba(255, 255, 255, .15);">
+            <i class="nexmoefont icon-github"></i>
+        </a>
+    </div>
+</div>
+    
+    
+
+    
+    
+  <div class="nexmoe-widget-wrap">
+    <div id="randomtagcloud" class="nexmoe-widget tagcloud nexmoe-rainbow">
+      <a href="/tags/2023DASCTF%E4%B8%83%E6%9C%88%E8%B5%9B/" style="font-size: 16.67px;">2023DASCTF七月赛</a> <a href="/tags/2023%E7%BE%8A%E5%9F%8E%E6%9D%AF/" style="font-size: 13.33px;">2023羊城杯</a> <a href="/tags/Learning/" style="font-size: 13.33px;">Learning</a> <a href="/tags/Misc/" style="font-size: 10px;">Misc</a> <a href="/tags/RE/" style="font-size: 20px;">RE</a> <a href="/tags/%E5%B7%85%E5%B3%B0%E6%9E%81%E5%AE%A22023/" style="font-size: 13.33px;">巅峰极客2023</a> <a href="/tags/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8/" style="font-size: 10px;">软件安全</a>
+    </div>
+    
+  </div>
+
+    
+</aside>
+    <div class="nexmoe-copyright">
+        &copy; 2024 WoaW04
+        Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+        & <a href="https://github.com/theme-nexmoe/hexo-theme-nexmoe" target="_blank">Nexmoe</a>
+        
+    </div>
+</div><!-- .nexmoe-drawer -->
+    </div>
+    <div id="nexmoe-content">
+        <div class="nexmoe-primary">
+            <div class="nexmoe-post">
+
+  <article>
+      
+          <div class="nexmoe-post-cover" style="padding-bottom: NaN%;"> 
+              <img data-src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403071630275.png" data-sizes="auto" alt="2023羊城杯CSGO" class="lazyload">
+              <h1>2023羊城杯CSGO</h1>
+          </div>
+      
+      
+      <div class="nexmoe-post-meta nexmoe-rainbow" style="margin:10px 0!important;">
+    <a><i class="nexmoefont icon-calendar-fill"></i>2024年03月07日</a>
+</div>
+
+      
+
+      <h2 id="0x00-分析"><a href="#0x00-分析" class="headerlink" title="0x00 分析"></a>0x00 分析</h2><p>这题是go语言<del>（是没见过的语言）</del></p>
+<p>用了IDA8.3（かみ さま），标志什么的好像都有，所以就稀里糊涂地做了</p>
+<p>有空一定要专门出一篇GO语言的逆向</p>
+<p>然后这题还有反调试（也是第一次见上这个的）</p>
+<p>不过还是SharpOD技高一筹</p>
+<h2 id="0x01-解"><a href="#0x01-解" class="headerlink" title="0x01 解"></a>0x01 解</h2><p>查壳省略（not packed）</p>
+<p>上IDA直接搜字符串</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403071632130.png"></p>
+<p>可能是go语言的特性（？），字符串并没有直接出现在函数内，而是经过了一个转换</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403071633054.png"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403071634137.png"></p>
+<p>因为这个特性不是很好找密文、加密方法</p>
+<p>不过还是试一试</p>
+<p>上一下findcrypt</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403071636407.png"></p>
+<p>看来有个base64</p>
+<p>跟出去发现在main函数中</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403071636595.png"></p>
+<p>这个runtime_intstring比较可疑，进去看看</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403071638298.png"></p>
+<p>这个v就是base64的表，看来可能是一个换表base64</p>
+<p>但是具体怎么换的不太清楚</p>
+<p>再回到main函数看看</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403071640137.png"></p>
+<p>这个base64换表下面有个equal，猜测是进行对比</p>
+<p>然后下面有个main__stmp_3</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403071641795.png"></p>
+<p>看来确实是，那么密文呢？</p>
+<p>有一说一这个地方蛮麻烦的，不知道是不是go语言的原因</p>
+<p>要去到汇编才能看到</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403071643971.png"></p>
+<p>这个就是密文了</p>
+<p><code>cPQebAcRp+n+ZeP+YePEWfP7bej4YefCYd/7cuP7WfcPb/URYeMRbesObi/=</code></p>
+<p>看起来就是个base64换表</p>
+<p>所以去动调看看表</p>
+<p>记录一下位置</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403071646163.png"></p>
+<p>开IDA发现运行不起来</p>
+<p>查了一下有个这个</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403071653953.png"></p>
+<p>看来是加了个反调试，普通的调试不太行</p>
+<p>上x64dbg了</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403071654086.png"></p>
+<p>下个断运行一下</p>
+<p>看来不是一次就出表</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403071656030.png"></p>
+<p>那就运行到整个表出来</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403071701334.png"></p>
+<p>得到表是</p>
+<p><code>LMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/ABCDEFGHIJK  </code></p>
+<p>写脚本咯</p>
+<pre><code class="python">import base64
+enc = &quot;cPQebAcRp+n+ZeP+YePEWfP7bej4YefCYd/7cuP7WfcPb/URYeMRbesObi/=&quot;
+tab1 = &quot;ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/&quot;
+tab2 = &quot;LMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/ABCDEFGHIJK&quot;
+print(base64.b64decode(enc.translate(enc.maketrans(tab2, tab1))))
+
+# DASCTF&#123;73913519-A0A6-5575-0F10-DDCBF50FA8CA&#125;
+</code></pre>
+
+  </article>
+
+  
+      
+    <div class="nexmoe-post-copyright">
+        <strong>本文作者：</strong>WoaW04<br>
+        <strong>本文链接：</strong><a href="http://example.com/2024/03/07/2023%E7%BE%8A%E5%9F%8E%E6%9D%AFCSGO/" title="http:&#x2F;&#x2F;example.com&#x2F;2024&#x2F;03&#x2F;07&#x2F;2023%E7%BE%8A%E5%9F%8E%E6%9D%AFCSGO&#x2F;" target="_blank" rel="noopener">http:&#x2F;&#x2F;example.com&#x2F;2024&#x2F;03&#x2F;07&#x2F;2023%E7%BE%8A%E5%9F%8E%E6%9D%AFCSGO&#x2F;</a><br>
+        
+            <strong>版权声明：</strong>本文采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/cn/deed.zh" target="_blank">CC BY-NC-SA 3.0 CN</a> 协议进行许可
+        
+    </div>
+
+
+  
+  
+  <div class="nexmoe-post-meta nexmoe-rainbow">
+    
+    
+        <a class="nexmoefont icon-tag-fill -none-link" href="/tags/2023%E7%BE%8A%E5%9F%8E%E6%9D%AF/" rel="tag">2023羊城杯</a> <a class="nexmoefont icon-tag-fill -none-link" href="/tags/RE/" rel="tag">RE</a>
+    
+</div>
+
+  
+      <div class="nexmoe-post-footer">
+          <section class="nexmoe-comment">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.css">
+<div id="gitalk"></div>
+<script src="https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: '80b2453b6d5f37ad6225',
+        clientSecret: '43e99fa852795c9a7b3eb924b2558c64b84bbdeb',
+        id: window.location.pathname,
+        repo: 'nexmoe.github.io',
+        owner: 'nexmoe',
+        admin: 'nexmoe'
+    })
+    gitalk.render('gitalk')
+</script>
+</section>
+      </div>
+  
+</div>
+            <div class="nexmoe-post-right">
+              <div class="nexmoe-fixed">
+                  <div class="nexmoe-tool"> 
+                    
+                      
+                    
+                      <a href="#nexmoe-content" class="toc-link" aria-label="回到顶部" title="top"><button class="mdui-fab mdui-ripple"><i class="nexmoefont icon-caret-top"></i></button></a>
+                  </div>
+              </div>
+            </div>
+        </div>
+    </div>
+     
+    <div id="nexmoe-search-space">
+        <div class="search-container">
+            <div class="search-header">
+                <div class="search-input-container">
+                    <input class="search-input" type="text" placeholder="搜索" oninput="sinput();">
+                </div>
+                <a class="search-close" onclick="sclose();">×</a>
+            </div>
+            <div class="search-body"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/combine/npm/lazysizes@5.1.0/lazysizes.min.js,npm/mdui@0.4.3/dist/js/mdui.min.js?v=1"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+
+ 
+
+<script async src="/js/app.js?v=1709802632726"></script>
+
+
+	<script async src="/js/search.js?v=1709802632726"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js"></script>
+<script>
+	$(".justified-gallery").justifiedGallery({
+		rowHeight: 160,
+		margins: 10,
+	});
+</script>
+
+
+    
+
+
+
+
+
+</body>
+
+</html>
