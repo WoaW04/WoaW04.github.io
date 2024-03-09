@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+
+<head>
+    
+    <title>2023羊城杯vm_wo - The Blog of WoaW04</title>
+    <meta charset="UTF-8">
+    <meta name="keywords" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+    
+    
+
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <meta name="description" content="0x00 题目分析一个Mach-O ARM64程序 使用自制的VMP进行加密 关于VMP介绍可以看这个：https:&#x2F;&#x2F;www.52pojie.cn&#x2F;thread-1564978-1-1.html 虚拟化可以看这个：https:&#x2F;&#x2F;www.cnblogs.com&#x2F;theseventhson&#x2F;p&#x2F;14240373.html： 变异可以看这个：https:&#x2F;&#x2F;www.52pojie.cn&#x2F;thread">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2023羊城杯vm_wo">
+<meta property="og:url" content="http://example.com/2024/03/09/2023%E7%BE%8A%E5%9F%8E%E6%9D%AFvm-wo/index.html">
+<meta property="og:site_name" content="The Blog of WoaW04">
+<meta property="og:description" content="0x00 题目分析一个Mach-O ARM64程序 使用自制的VMP进行加密 关于VMP介绍可以看这个：https:&#x2F;&#x2F;www.52pojie.cn&#x2F;thread-1564978-1-1.html 虚拟化可以看这个：https:&#x2F;&#x2F;www.cnblogs.com&#x2F;theseventhson&#x2F;p&#x2F;14240373.html： 变异可以看这个：https:&#x2F;&#x2F;www.52pojie.cn&#x2F;thread">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403091338441.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403091339547.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403091339198.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403091340352.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403091341029.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403091342678.png">
+<meta property="article:published_time" content="2024-03-09T03:06:09.000Z">
+<meta property="article:modified_time" content="2024-03-09T09:44:24.169Z">
+<meta property="article:author" content="WoaW04">
+<meta property="article:tag" content="RE">
+<meta property="article:tag" content="2023羊城杯">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403091338441.png">
+    <link rel="stylesheet" href="/lib/jquery.fancybox.min.css?v=1709977503852">
+    
+    <link rel="stylesheet" href="/lib/mdui_043tiny/css/mdui.css?v=1709977503852">
+    <link rel="stylesheet" href="/lib/iconfont/iconfont.css?v=1709977503852">
+    <link rel="stylesheet" href="/css/style.css?v=1709977503852">
+    
+        <link rel="stylesheet" href="/css/dark.css?v=1709977503852">
+     
+    
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="mdui-drawer-body-left">
+    
+    <div id="nexmoe-background">
+        <div class="nexmoe-bg" style="background-image: url(https://cdn.jsdelivr.net/gh/WoaW04/Picture/image95796589_p0.jpg)"></div>
+        <div class="mdui-appbar mdui-shadow-0">
+            <div class="mdui-toolbar">
+                <a mdui-drawer="{target: '#drawer', swipe: true}" title="menu" class="mdui-btn mdui-btn-icon mdui-ripple"><i class="mdui-icon nexmoefont icon-menu"></i></a>
+                <div class="mdui-toolbar-spacer"></div>
+                <!--<a href="javascript:;" class="mdui-btn mdui-btn-icon"><i class="mdui-icon material-icons">search</i></a>-->
+                <a href="/" title="WoaW04" class="mdui-btn mdui-btn-icon"><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image04CTF.png" alt="WoaW04"></a>
+            </div>
+        </div>
+    </div>
+    <div id="nexmoe-header">
+        <div class="nexmoe-drawer mdui-drawer" id="drawer">
+    <div class="nexmoe-avatar mdui-ripple">
+        <a href="/" title="WoaW04">
+            <img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image04CTF.png" alt="WoaW04" alt="WoaW04">
+        </a>
+    </div>
+    <div class="nexmoe-count">
+        <div><span>文章</span>15</div>
+        <div><span>标签</span>7</div>
+        <div><span>分类</span>0</div>
+    </div>
+    <div class="nexmoe-list mdui-list" mdui-collapse="{accordion: true}">
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/" title="回到首页">
+            <i class="mdui-list-item-icon nexmoefont icon-home"></i>
+            <div class="mdui-list-item-content">
+                回到首页
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/about.html" title="关于博客">
+            <i class="mdui-list-item-icon nexmoefont icon-info-circle"></i>
+            <div class="mdui-list-item-content">
+                关于博客
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/PY.html" title="我的朋友">
+            <i class="mdui-list-item-icon nexmoefont icon-unorderedlist"></i>
+            <div class="mdui-list-item-content">
+                我的朋友
+            </div>
+        </a>
+        
+    </div>
+    <aside id="nexmoe-sidebar">
+    
+    <div class="nexmoe-widget-wrap">
+    <div class="nexmoe-widget nexmoe-search">
+        
+            <form id="search_form">
+                <label><input class="st-default-search-input" id="search_value" name="q" type="search" placeholder="搜索" style="
+                    font-size: 15px !important;
+                    height: 56px !important;
+                    background-image: none;
+                "></label>
+            </form>
+         
+    </div>
+</div>
+    
+    <div class="nexmoe-widget-wrap">
+    <div class="nexmoe-widget nexmoe-social">
+        <a class="mdui-ripple" href="https://space.bilibili.com/3096846" target="_blank" mdui-tooltip="{content: '哔哩哔哩'}" style="color: rgb(231, 106, 141);background-color: rgba(231, 106, 141, .15);">
+            <i class="nexmoefont icon-bilibili"></i>
+        </a><a class="mdui-ripple" href="https://github.com/WoaW04" target="_blank" mdui-tooltip="{content: 'GitHub'}" style="color: rgb(255, 255, 255);background-color: rgba(255, 255, 255, .15);">
+            <i class="nexmoefont icon-github"></i>
+        </a>
+    </div>
+</div>
+    
+    
+
+    
+    
+  <div class="nexmoe-widget-wrap">
+    <div id="randomtagcloud" class="nexmoe-widget tagcloud nexmoe-rainbow">
+      <a href="/tags/2023DASCTF%E4%B8%83%E6%9C%88%E8%B5%9B/" style="font-size: 15px;">2023DASCTF七月赛</a> <a href="/tags/2023%E7%BE%8A%E5%9F%8E%E6%9D%AF/" style="font-size: 17.5px;">2023羊城杯</a> <a href="/tags/Learning/" style="font-size: 12.5px;">Learning</a> <a href="/tags/Misc/" style="font-size: 10px;">Misc</a> <a href="/tags/RE/" style="font-size: 20px;">RE</a> <a href="/tags/%E5%B7%85%E5%B3%B0%E6%9E%81%E5%AE%A22023/" style="font-size: 12.5px;">巅峰极客2023</a> <a href="/tags/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8/" style="font-size: 10px;">软件安全</a>
+    </div>
+    
+  </div>
+
+    
+</aside>
+    <div class="nexmoe-copyright">
+        &copy; 2024 WoaW04
+        Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+        & <a href="https://github.com/theme-nexmoe/hexo-theme-nexmoe" target="_blank">Nexmoe</a>
+        
+    </div>
+</div><!-- .nexmoe-drawer -->
+    </div>
+    <div id="nexmoe-content">
+        <div class="nexmoe-primary">
+            <div class="nexmoe-post">
+
+  <article>
+      
+          <div class="nexmoe-post-cover" style="padding-bottom: NaN%;"> 
+              <img data-src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403091107585.png" data-sizes="auto" alt="2023羊城杯vm_wo" class="lazyload">
+              <h1>2023羊城杯vm_wo</h1>
+          </div>
+      
+      
+      <div class="nexmoe-post-meta nexmoe-rainbow" style="margin:10px 0!important;">
+    <a><i class="nexmoefont icon-calendar-fill"></i>2024年03月09日</a>
+</div>
+
+      
+
+      <h2 id="0x00-题目分析"><a href="#0x00-题目分析" class="headerlink" title="0x00 题目分析"></a>0x00 题目分析</h2><p>一个Mach-O ARM64程序</p>
+<p>使用自制的VMP进行加密</p>
+<p>关于VMP介绍可以看这个：<a target="_blank" rel="noopener" href="https://www.52pojie.cn/thread-1564978-1-1.html">https://www.52pojie.cn/thread-1564978-1-1.html</a></p>
+<p>虚拟化可以看这个：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/theseventhson/p/14240373.html%EF%BC%9A">https://www.cnblogs.com/theseventhson/p/14240373.html：</a></p>
+<p>变异可以看这个：<a target="_blank" rel="noopener" href="https://www.52pojie.cn/thread-1565126-1-1.html">https://www.52pojie.cn/thread-1565126-1-1.html</a></p>
+<h2 id="0x01-解"><a href="#0x01-解" class="headerlink" title="0x01 解"></a>0x01 解</h2><p>查壳，没有结果，直接拖IDA（不能用8.3，因为是ARM64）可以发现函数很少</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403091338441.png"></p>
+<p>先看看main</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403091339547.png"></p>
+<p>非常简单，这个byte_10003F47就是密文了</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403091339198.png"></p>
+<p>加密过程应该就是那个myopearate了</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403091340352.png"></p>
+<p>写入了很多数据，看不太懂</p>
+<p>不过这里面有个函数interpretBytecode看起来挺重要的</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403091341029.png"></p>
+<p>函数里面很长，进行了很多操作</p>
+<p>同时使用了一个不存在的地址，应该是程序写入内存的时候才会出现</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403091342678.png"></p>
+<p>非常符合VM的定义</p>
+<p>由于没有mac系统，做不了模拟（应该有做模拟的方法的，挖个坑先）</p>
+<p>所以只能copy计算流程然后进行点修改来爆破了</p>
+<pre><code class="python">import struct
+
+
+def exec(cin, a2):
+    start = False
+    v2 = buf[0]
+    if v2 &lt; a2:
+        while True:
+            if (start):
+                buf[0] += 3
+                v2 = buf[0]
+                if (buf[0] &gt;= a2):
+                    break
+            if (not start):
+                start = True
+
+            for m in range(0, 3):
+                vm_body[m] &amp;= 0xff
+            v6 = cin[v2]
+            v7 = cin[v2+1]
+            v8 = cin[v2+1]
+            v9 = cin[v2+2]
+            v10 = v9
+
+            if v6 == 0:
+                v11 = vm_body[v8]
+                vm_body[v8] = vm_body[v10]
+                vm_body[v10] = v11
+            elif v6 == 1:
+                vm_body[v8] ^= vm_body[v9]
+            elif v6 == 2:
+                vm_body[v8] += v9
+            elif v6 == 3:
+                vm_body[v8] += vm_body[v9]
+            elif v6 == 4:
+                vm_body[v8] -= v9
+            elif v6 == 5:
+                vm_body[v8] -= vm_body[v9]
+            elif v6 == 6:
+                vm_body[v8] *= v9
+            elif v6 == 7:
+                vm_body[v8] *= vm_body[v9]
+            elif v6 == 8:
+                vm_body[v8] = vm_body[v8] / v9
+            elif v6 == 9:
+                vm_body[v8] = vm_body[v8] / vm_body[v9]
+            elif v6 == 10:
+                vm_body[v8] = vm_body[v8] % v9
+            elif v6 == 11:
+                vm_body[v8] = vm_body[v8] % vm_body[v9]
+
+            elif v6 == 12:
+                v12 = vm_body[v8]
+                vm_body[v8] = v12 &lt;&lt; v9
+
+            elif v6 == 13:
+                v12 = vm_body[0]
+                vm_body[v8] = v12 &lt;&lt; v9
+
+            elif v6 == 14:
+                v15 = vm_body[v8]
+                vm_body[buf[1] + 16] = v15
+                buf[1] += 1
+
+            elif v6 == 15:
+                v13 = vm_body[v8]
+            elif v6 == 16:
+                v14 = buf[1] - 1
+                buf[1] -= 1
+                v13 = vm_body[v14 + 16]
+                # print(v13)
+
+            elif v6 == 17:
+                if not vm_body[v8]:
+                    buf[0] = v9
+
+            elif v6 == 18:
+                if vm_body[v8]:
+                    buf[0] = v9
+
+            elif v6 == 19:
+                buf[0] = v7
+
+            elif v6 == 20:
+                v8 = vm_body[v8]
+                v15 = vm_body[v8]
+                vm_body[buf[1] + 16] = v15
+                buf[1] += 1
+
+            elif v6 == 21:
+                v16 = buf[1] - 1
+                buf[1] -= 1
+                vm_body[0] = vm_body[v16 + 16]
+
+            elif v6 == 22:
+                v15 = v7
+                vm_body[buf[1] + 16] = v15
+                buf[1] += 1
+
+            elif v6 == 23:
+                buf[0] -= 3
+
+            elif v6 == 24:
+                vm_body[0] = vm_body[2] | vm_body[1]
+
+            elif v6 == 25:
+                #    print(vm_body[0], v9)
+                vm_body[v8] = vm_body[0] &gt;&gt; v9
+
+            elif v6 == 26:
+                vm_body[v8] = v9
+
+            else:
+                continue
+
+    buf[0] = 0
+    return
+
+
+enc = [0xDF, 0xD5, 0xF1, 0xD1, 0xFF, 0xDB, 0xA1, 0xA5, 0x89, 0xBD, 0xE9, 0x95, 0xB3, 0x9D,
+       0xE9, 0xB3, 0x85, 0x99, 0x87, 0xBF, 0xE9, 0xB1, 0x89, 0xE9, 0x91, 0x89, 0x89, 0x8F, 0xAD]
+alpht = &quot;0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_&#123;|&#125;~&quot;
+flag = [0]*30
+index = 0
+while ((index) &lt; 29):
+    for i in alpht:
+        vm_body = [0]*0x10
+        buf = [0]*2
+        flag[index] = ord(i)
+        out = [0]*30
+        vm_body[3:3+4] = 0xBEEDBEEF.to_bytes(4, byteorder=&quot;little&quot;)
+        a1 = 0
+        v2 = index+1
+        code = [0]*64
+        while (v2):
+            v2 -= 1
+            code[48:48+8] = 0x20D01011903001A.to_bytes(8, byteorder=&quot;little&quot;)
+            code[55:55+8] = 0x300010201180702.to_bytes(8, byteorder=&quot;little&quot;)
+            code[50] = flag[a1]
+            exec(code[48:], 15)
+            code[32:32+8] = 0x20D02011903001A.to_bytes(8, byteorder=&quot;little&quot;)
+            code[39:39+8] = 0x400010201180602.to_bytes(8, byteorder=&quot;little&quot;)
+            code[34] = vm_body[0]
+            exec(code[32:], 15)
+            code[16:16+8] = 0x20D03011903001A.to_bytes(8, byteorder=&quot;little&quot;)
+            code[23:23+8] = 0x500010201180502.to_bytes(8, byteorder=&quot;little&quot;)
+            code[18] = vm_body[0]
+            exec(code[16:], 15)
+            code[0:0+8] = 0x20D04011903001A.to_bytes(8, byteorder=&quot;little&quot;)
+            code[7:7+8] = 0x600010201180402.to_bytes(8, byteorder=&quot;little&quot;)
+            code[2] = vm_body[0]
+            exec(code, 15)
+            out[a1] = ((vm_body[0] &gt;&gt; 5) | (vm_body[0] &lt;&lt; 3)) &amp; 0xff
+            a1 += 1
+
+        for u in range(index, index+1):
+            if index &gt;= 29:
+                exit(0)
+            if out[index] != enc[index]:
+                break
+            else:
+                print(chr(flag[index]), end=&#39;&#39;)
+                index += 1
+                break
+        else:
+            break
+#DASCTF&#123;you_are_right_so_cool&#125;
+</code></pre>
+
+  </article>
+
+  
+      
+    <div class="nexmoe-post-copyright">
+        <strong>本文作者：</strong>WoaW04<br>
+        <strong>本文链接：</strong><a href="http://example.com/2024/03/09/2023%E7%BE%8A%E5%9F%8E%E6%9D%AFvm-wo/" title="http:&#x2F;&#x2F;example.com&#x2F;2024&#x2F;03&#x2F;09&#x2F;2023%E7%BE%8A%E5%9F%8E%E6%9D%AFvm-wo&#x2F;" target="_blank" rel="noopener">http:&#x2F;&#x2F;example.com&#x2F;2024&#x2F;03&#x2F;09&#x2F;2023%E7%BE%8A%E5%9F%8E%E6%9D%AFvm-wo&#x2F;</a><br>
+        
+            <strong>版权声明：</strong>本文采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/cn/deed.zh" target="_blank">CC BY-NC-SA 3.0 CN</a> 协议进行许可
+        
+    </div>
+
+
+  
+  
+  <div class="nexmoe-post-meta nexmoe-rainbow">
+    
+    
+        <a class="nexmoefont icon-tag-fill -none-link" href="/tags/2023%E7%BE%8A%E5%9F%8E%E6%9D%AF/" rel="tag">2023羊城杯</a> <a class="nexmoefont icon-tag-fill -none-link" href="/tags/RE/" rel="tag">RE</a>
+    
+</div>
+
+  
+      <div class="nexmoe-post-footer">
+          <section class="nexmoe-comment">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.css">
+<div id="gitalk"></div>
+<script src="https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: '80b2453b6d5f37ad6225',
+        clientSecret: '43e99fa852795c9a7b3eb924b2558c64b84bbdeb',
+        id: window.location.pathname,
+        repo: 'nexmoe.github.io',
+        owner: 'nexmoe',
+        admin: 'nexmoe'
+    })
+    gitalk.render('gitalk')
+</script>
+</section>
+      </div>
+  
+</div>
+            <div class="nexmoe-post-right">
+              <div class="nexmoe-fixed">
+                  <div class="nexmoe-tool"> 
+                    
+                      
+                    
+                      <a href="#nexmoe-content" class="toc-link" aria-label="回到顶部" title="top"><button class="mdui-fab mdui-ripple"><i class="nexmoefont icon-caret-top"></i></button></a>
+                  </div>
+              </div>
+            </div>
+        </div>
+    </div>
+     
+    <div id="nexmoe-search-space">
+        <div class="search-container">
+            <div class="search-header">
+                <div class="search-input-container">
+                    <input class="search-input" type="text" placeholder="搜索" oninput="sinput();">
+                </div>
+                <a class="search-close" onclick="sclose();">×</a>
+            </div>
+            <div class="search-body"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/combine/npm/lazysizes@5.1.0/lazysizes.min.js,npm/mdui@0.4.3/dist/js/mdui.min.js?v=1"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+
+ 
+
+<script async src="/js/app.js?v=1709977503852"></script>
+
+
+	<script async src="/js/search.js?v=1709977503852"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js"></script>
+<script>
+	$(".justified-gallery").justifiedGallery({
+		rowHeight: 160,
+		margins: 10,
+	});
+</script>
+
+
+    
+
+
+
+
+
+</body>
+
+</html>
