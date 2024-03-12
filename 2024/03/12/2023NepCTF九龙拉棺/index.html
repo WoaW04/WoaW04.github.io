@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+
+<head>
+    
+    <title>2023NepCTF九龙拉棺 - The Blog of WoaW04</title>
+    <meta charset="UTF-8">
+    <meta name="keywords" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+    
+    
+
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <meta name="description" content="0x00 题目分析8线程+1进程+反调试+多重加密+SMC 难度：easy …… 0x01 解照例，查壳（Not packed） 没壳就拖进IDA直接到main函数看  多个线程+长度限制 还有看到个提权：https:&#x2F;&#x2F;www.jianshu.com&#x2F;p&#x2F;232fbd1a3cfb 感觉挺麻烦的 接下来看看每个线程都执行了什么函数 StartAddress函数  这个函数里面有个CreatePro">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2023NepCTF九龙拉棺">
+<meta property="og:url" content="http://example.com/2024/03/12/2023NepCTF%E4%B9%9D%E9%BE%99%E6%8B%89%E6%A3%BA/index.html">
+<meta property="og:site_name" content="The Blog of WoaW04">
+<meta property="og:description" content="0x00 题目分析8线程+1进程+反调试+多重加密+SMC 难度：easy …… 0x01 解照例，查壳（Not packed） 没壳就拖进IDA直接到main函数看  多个线程+长度限制 还有看到个提权：https:&#x2F;&#x2F;www.jianshu.com&#x2F;p&#x2F;232fbd1a3cfb 感觉挺麻烦的 接下来看看每个线程都执行了什么函数 StartAddress函数  这个函数里面有个CreatePro">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121042141.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121107763.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121223945.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121142513.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121144388.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121219703.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121144731.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121225614.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121144006.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121227867.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121145683.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121228132.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121142590.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121232940.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121145363.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121233036.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121400439.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121544101.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121232940.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121142590.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121918306.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121422348.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121107763.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121548104.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121402752.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121944469.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121945586.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121949017.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121950679.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121952019.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121952272.png">
+<meta property="article:published_time" content="2024-03-12T02:06:52.000Z">
+<meta property="article:modified_time" content="2024-03-12T12:10:22.572Z">
+<meta property="article:author" content="WoaW04">
+<meta property="article:tag" content="RE">
+<meta property="article:tag" content="NepCTF">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121042141.png">
+    <link rel="stylesheet" href="/lib/jquery.fancybox.min.css?v=1710245485564">
+    
+    <link rel="stylesheet" href="/lib/mdui_043tiny/css/mdui.css?v=1710245485564">
+    <link rel="stylesheet" href="/lib/iconfont/iconfont.css?v=1710245485564">
+    <link rel="stylesheet" href="/css/style.css?v=1710245485564">
+    
+        <link rel="stylesheet" href="/css/dark.css?v=1710245485564">
+     
+    
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="mdui-drawer-body-left">
+    
+    <div id="nexmoe-background">
+        <div class="nexmoe-bg" style="background-image: url(https://cdn.jsdelivr.net/gh/WoaW04/Picture/image95796589_p0.jpg)"></div>
+        <div class="mdui-appbar mdui-shadow-0">
+            <div class="mdui-toolbar">
+                <a mdui-drawer="{target: '#drawer', swipe: true}" title="menu" class="mdui-btn mdui-btn-icon mdui-ripple"><i class="mdui-icon nexmoefont icon-menu"></i></a>
+                <div class="mdui-toolbar-spacer"></div>
+                <!--<a href="javascript:;" class="mdui-btn mdui-btn-icon"><i class="mdui-icon material-icons">search</i></a>-->
+                <a href="/" title="WoaW04" class="mdui-btn mdui-btn-icon"><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image04CTF.png" alt="WoaW04"></a>
+            </div>
+        </div>
+    </div>
+    <div id="nexmoe-header">
+        <div class="nexmoe-drawer mdui-drawer" id="drawer">
+    <div class="nexmoe-avatar mdui-ripple">
+        <a href="/" title="WoaW04">
+            <img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image04CTF.png" alt="WoaW04" alt="WoaW04">
+        </a>
+    </div>
+    <div class="nexmoe-count">
+        <div><span>文章</span>17</div>
+        <div><span>标签</span>8</div>
+        <div><span>分类</span>0</div>
+    </div>
+    <div class="nexmoe-list mdui-list" mdui-collapse="{accordion: true}">
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/" title="回到首页">
+            <i class="mdui-list-item-icon nexmoefont icon-home"></i>
+            <div class="mdui-list-item-content">
+                回到首页
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/about.html" title="关于博客">
+            <i class="mdui-list-item-icon nexmoefont icon-info-circle"></i>
+            <div class="mdui-list-item-content">
+                关于博客
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/PY.html" title="我的朋友">
+            <i class="mdui-list-item-icon nexmoefont icon-unorderedlist"></i>
+            <div class="mdui-list-item-content">
+                我的朋友
+            </div>
+        </a>
+        
+    </div>
+    <aside id="nexmoe-sidebar">
+    
+    <div class="nexmoe-widget-wrap">
+    <div class="nexmoe-widget nexmoe-search">
+        
+            <form id="search_form">
+                <label><input class="st-default-search-input" id="search_value" name="q" type="search" placeholder="搜索" style="
+                    font-size: 15px !important;
+                    height: 56px !important;
+                    background-image: none;
+                "></label>
+            </form>
+         
+    </div>
+</div>
+    
+    <div class="nexmoe-widget-wrap">
+    <div class="nexmoe-widget nexmoe-social">
+        <a class="mdui-ripple" href="https://space.bilibili.com/3096846" target="_blank" mdui-tooltip="{content: '哔哩哔哩'}" style="color: rgb(231, 106, 141);background-color: rgba(231, 106, 141, .15);">
+            <i class="nexmoefont icon-bilibili"></i>
+        </a><a class="mdui-ripple" href="https://github.com/WoaW04" target="_blank" mdui-tooltip="{content: 'GitHub'}" style="color: rgb(255, 255, 255);background-color: rgba(255, 255, 255, .15);">
+            <i class="nexmoefont icon-github"></i>
+        </a>
+    </div>
+</div>
+    
+    
+
+    
+    
+  <div class="nexmoe-widget-wrap">
+    <div id="randomtagcloud" class="nexmoe-widget tagcloud nexmoe-rainbow">
+      <a href="/tags/2023DASCTF%E4%B8%83%E6%9C%88%E8%B5%9B/" style="font-size: 15px;">2023DASCTF七月赛</a> <a href="/tags/2023%E7%BE%8A%E5%9F%8E%E6%9D%AF/" style="font-size: 17.5px;">2023羊城杯</a> <a href="/tags/Learning/" style="font-size: 12.5px;">Learning</a> <a href="/tags/Misc/" style="font-size: 10px;">Misc</a> <a href="/tags/NepCTF/" style="font-size: 12.5px;">NepCTF</a> <a href="/tags/RE/" style="font-size: 20px;">RE</a> <a href="/tags/%E5%B7%85%E5%B3%B0%E6%9E%81%E5%AE%A22023/" style="font-size: 12.5px;">巅峰极客2023</a> <a href="/tags/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8/" style="font-size: 10px;">软件安全</a>
+    </div>
+    
+  </div>
+
+    
+</aside>
+    <div class="nexmoe-copyright">
+        &copy; 2024 WoaW04
+        Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+        & <a href="https://github.com/theme-nexmoe/hexo-theme-nexmoe" target="_blank">Nexmoe</a>
+        
+    </div>
+</div><!-- .nexmoe-drawer -->
+    </div>
+    <div id="nexmoe-content">
+        <div class="nexmoe-primary">
+            <div class="nexmoe-post">
+
+  <article>
+      
+          <div class="nexmoe-post-cover" style="padding-bottom: 66.66666666666666%;"> 
+              <img data-src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image95796589_p0.jpg" data-sizes="auto" alt="2023NepCTF九龙拉棺" class="lazyload">
+              <h1>2023NepCTF九龙拉棺</h1>
+          </div>
+      
+      
+      <div class="nexmoe-post-meta nexmoe-rainbow" style="margin:10px 0!important;">
+    <a><i class="nexmoefont icon-calendar-fill"></i>2024年03月12日</a>
+</div>
+
+      
+
+      <h2 id="0x00-题目分析"><a href="#0x00-题目分析" class="headerlink" title="0x00 题目分析"></a>0x00 题目分析</h2><p>8线程+1进程+反调试+多重加密+SMC</p>
+<p>难度：easy</p>
+<p>……</p>
+<h2 id="0x01-解"><a href="#0x01-解" class="headerlink" title="0x01 解"></a>0x01 解</h2><p>照例，查壳（Not packed）</p>
+<p>没壳就拖进IDA直接到main函数看</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121042141.png"></p>
+<p>多个线程+长度限制</p>
+<p>还有看到个提权：<a target="_blank" rel="noopener" href="https://www.jianshu.com/p/232fbd1a3cfb">https://www.jianshu.com/p/232fbd1a3cfb</a></p>
+<p>感觉挺麻烦的</p>
+<p>接下来看看每个线程都执行了什么函数</p>
+<p>StartAddress函数</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121107763.png"></p>
+<p>这个函数里面有个CreateProcessA，创建了一个进程，估计有一部分的操作是在创建的子进程里面进行的</p>
+<p>sub_402460</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121223945.png"></p>
+<p>下面有这个</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121142513.png"></p>
+<p>这个byte_404210有点怪，里面是空的</p>
+<p>sub_402630</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121144388.png"></p>
+<p>这里面有个sub_401120</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121219703.png"></p>
+<p>base64</p>
+<p>结合这个base64和上面那个函数的1.37+1，可以知道上面那个函数应该是base58</p>
+<p>参考：<a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_34258782/article/details/88830132">https://blog.csdn.net/weixin_34258782/article/details/88830132</a></p>
+<p>sub_4020B0</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121144731.png"></p>
+<p>看不太懂，但是应该是什么算法，下面有很多操作</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121225614.png"></p>
+<p>结合WP，这应该是一个反调试（</p>
+<blockquote>
+<p>反调试动态读取.text（第一个段）并通过累加的方式，不断读取对比的方式，来实现反调试。如果程序一开始就存在断点，则该反调试无效，若在调试中突然增加int3断点，则该程序直接退出</p>
+</blockquote>
+<p>sub_401700</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121144006.png"></p>
+<p>这些应该就是密文了，往下滑滑可以看到老朋友TEA</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121227867.png"></p>
+<p>但是这个和原版不太一样，是XTEA</p>
+<p>sub_4023A0</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121145683.png"></p>
+<p>里面的这个sub_4012B0是这样的</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121228132.png"></p>
+<p>看来是个base32的操作</p>
+<p>sub_401E60</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121142590.png"></p>
+<p>看不太懂，但是这个byte_406018有一大堆乱码，合理怀疑是被加密的什么东西</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121232940.png"></p>
+<p>sub_4018F0</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121145363.png"></p>
+<p>结合WP，这应该就是</p>
+<p>上动调，会发现一下断点或者下了断点运行后程序会自动退出</p>
+<p>看来有反调试，先干一下</p>
+<p>刚刚那些进程里面的函数基本都有调用这个sub_4015E0</p>
+<p>进这个函数看看</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121233036.png"></p>
+<p>Dr7，看来这个是反调试了</p>
+<p>参考：<a target="_blank" rel="noopener" href="http://www.jybase.net/ruanjianpojie/20111221725.html">http://www.jybase.net/ruanjianpojie/20111221725.html</a></p>
+<p>ExitProcess这个地方nop掉应该就行了</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121400439.png"></p>
+<p>别忘了还要处理sub_4020B0</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121544101.png"></p>
+<p>搞完之后就可以正常下断点调试了</p>
+<p>看了一下官方WP发现有一个子线程是进行判断的，如果判断不对会直接退出程序</p>
+<p>行吧，那就只能从上面的加密下手了</p>
+<p>结合CreateProcessA和byte_406018的长度可以知道</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121232940.png"></p>
+<p>这里应该是用了SMC</p>
+<p>参考：<a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000043519957">https://segmentfault.com/a/1190000043519957</a></p>
+<p>所以这串代码就要解密了</p>
+<p>现在有两个方法进行解密</p>
+<p>第一种是直接dump这段byte然后根据算法解密</p>
+<p>第二种是直接动调然后在内存中找</p>
+<p>第一种要注意解密顺序</p>
+<p>可以根据各函数开头的while(dword_409804)来看，同时也要结合dword_409804来判断下一个执行的解密函数</p>
+<p>以sub_401E60为例</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121142590.png"></p>
+<p>这个算法是RC4，key是”MessageBoxA”<del>（很有迷惑性）</del></p>
+<p>它是第一个进行的解密，因为它的while (dword_409804 !&#x3D; 1)</p>
+<p>它的下一个解密流程是dword_409804为3的函数</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121918306.png"></p>
+<p>其他函数同理，顺序应该是</p>
+<p>RC4 → Base32 → Base58 → Base64</p>
+<p>解出结果是这样的</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121422348.png"></p>
+<p>第二种方法就是直接动调然后在内存里找到解密后的代码</p>
+<p>在CreateProcessA处下断点</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121107763.png"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121548104.png"></p>
+<p>之后在主线程中的WaitForMultipleObjects后会断下来</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121402752.png"></p>
+<p>然后找到CreateProcessA下面的SetThreadContext</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121944469.png"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121945586.png"></p>
+<p>上图注意内存窗口的地址和ECX的值</p>
+<p>然后就可以dump出来分析了</p>
+<p>直接上IDA吧</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121949017.png"></p>
+<p>函数很少，有用的就那么两个</p>
+<p>主要是sub_2B2</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121950679.png"></p>
+<p>往下滑滑，老朋友XTEA了</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121952019.png"></p>
+<p>这里有点坑，数组长度要看v11，是4*i&#x3D;64&#x3D;0x40</p>
+<p>看看这个函数的交叉引用</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403121952272.png"></p>
+<p>看来这个函数操作之后是用了MapViewOfFile传递给主函数的</p>
+<p>然后就可以写脚本了</p>
+<p><del>XTEA的抄抄大哥的</del></p>
+<pre><code class="C++">#include &lt;iostream&gt;
+
+int main() &#123;
+    int v12[16];
+    v12[0] = 0x88AFD2D6;
+    v12[1] = 0x3FBE45A7;
+    v12[2] = 0x27AAD1B9;
+    v12[3] = 0x8CB3E51E;
+    v12[4] = 0x9348FFA;
+    v12[5] = 0xE19F3C42;
+    v12[6] = 0xFFDD0D86;
+    v12[7] = 0xEDB97383;
+    v12[8] = 0x12C4C0BF;
+    v12[9] = 0x1B67BD19;
+    v12[10] = 0xF7A514D6;
+    v12[11] = 0x18F95254;
+    v12[12] = 0xAB100CB0;
+    v12[13] = 0xCBA137;
+    v12[14] = 0x2A91712;
+    v12[15] = 0xC58D0D9E;
+    int idx = 0;
+    do
+    &#123;
+        unsigned int m0 = v12[2 * idx];
+        int sum = (-0x61C88647)*32;
+        unsigned int m1 = v12[2 * idx + 1];
+        int round = 32;
+        do
+        &#123;
+            m1 -= (sum + m0) ^ (16 * m0 + 3) ^ ((m0 &gt;&gt; 5) + 4);
+            m0 -= (sum + m1) ^ (16 * m1 + 1) ^ ((m1 &gt;&gt; 5) + 2);
+            sum += 0x61C88647;
+            --round;
+        &#125;
+        while ( round );
+        v12[2*idx] = m0;
+        v12[2*idx+1] = m1;
+        idx+=1;
+    &#125;
+    while ( idx &lt; 8 );
+    for(int i =0;i&lt;16;i++)&#123;
+        int n = v12[i];
+        for(int j = 0;j&lt;4;j++)&#123;
+            printf(&quot;%02X&quot;,(n&gt;&gt;(8*j))&amp;0xff);
+        &#125;
+    &#125;
+    // 4E65704354467B633963646E77646933697534316D3070763378376B6C6C7A7538706471366D74396E326E776A6470366B617438656E743464686E3572313538
+    printf(&quot;\n========================================\n&quot;);
+
+
+    unsigned char vv[]=&#123;0x89,0x49,0x0C7,0x1D,0x77,0x0AF,0x79,0x0D9,0x6D,0x13,0x8D,0x88,0x7F,0x0DB,0x26,0x8E,0x0C9,0x3C,0x0C,0x0C1,0x40,0x5D,0x84,0x0C3,0x59,0x44,0x0E0,0x0C6,0x7,0x0DF,0x0EB,0x0A2,0x8D,0x38,0x84,0x0D4,0x0A2,0x56,0x0F9,0x12,0x59,0x0EE,0x0D7,0x5E,0x85,0x7F,0x13,0x43,0x0F0,0x0F9,0x43,0x0EF,0x0AA,0x83,0x96,0x0B2,0x0B4,0x40,0x36,0x8E,0x77,0x61,0x0D3,0x0C2&#125;;
+    int *v = (int*)vv;
+    int key[4];
+    key[0] = 18;
+    key[1] = 52;
+    key[2] = 86;
+    key[3] = 120;
+    for (int j = 0; j &lt; 8; ++j )
+    &#123;
+        unsigned int m0 = v[2 * j];
+        unsigned int m1 = v[2 * j + 1];
+        int sum = (-0x61C88647)*32;
+        for (int  k = 0; k &lt; 0x20; ++k )
+        &#123;
+            m1 -= (key[3] + (m0 &gt;&gt; 5)) ^ (sum + m0) ^ (key[2] + 16 * m0);
+            m0 -= (key[1] + (m1 &gt;&gt; 5)) ^ (m1 + sum) ^ (key[0] + 16 * m1);
+            sum += 0x61C88647;
+
+        &#125;
+        v[2 * j] = m0;
+        v[2 * j + 1] = m1;
+    &#125;
+    for(int i =0;i&lt;16;i++)&#123;
+        int n = v[i];
+        for(int j = 0;j&lt;4;j++)&#123;
+            printf(&quot;%02X&quot;,(n&gt;&gt;(8*j))&amp;0xff);
+        &#125;
+    &#125;
+    
+    // 697534316D3070763378376B6C6C7A7538706471366D74396E326E776A6470366B617438656E743464686E3572313538697A326630636D72307537797879717D
+
+
+    return 0;
+&#125;
+</code></pre>
+<p>python转换自己写写了（</p>
+<pre><code class="python">c1 = bytes.fromhex(&quot;4E65704354467B633963646E77646933697534316D3070763378376B6C6C7A7538706471366D74396E326E776A6470366B617438656E743464686E3572313538&quot;)
+c2 = bytes.fromhex(&quot;697534316D3070763378376B6C6C7A7538706471366D74396E326E776A6470366B617438656E743464686E3572313538697A326630636D72307537797879717D&quot;)
+# c2仅有后16字节与c1不同，取的时候记得去掉前面的
+print(c1 + c2[-16:])
+
+# b&#39;NepCTF&#123;c9cdnwdi3iu41m0pv3x7kllzu8pdq6mt9n2nwjdp6kat8ent4dhn5r158iz2f0cmr0u7yxyq&#125;&#39;
+</code></pre>
+
+  </article>
+
+  
+      
+    <div class="nexmoe-post-copyright">
+        <strong>本文作者：</strong>WoaW04<br>
+        <strong>本文链接：</strong><a href="http://example.com/2024/03/12/2023NepCTF%E4%B9%9D%E9%BE%99%E6%8B%89%E6%A3%BA/" title="http:&#x2F;&#x2F;example.com&#x2F;2024&#x2F;03&#x2F;12&#x2F;2023NepCTF%E4%B9%9D%E9%BE%99%E6%8B%89%E6%A3%BA&#x2F;" target="_blank" rel="noopener">http:&#x2F;&#x2F;example.com&#x2F;2024&#x2F;03&#x2F;12&#x2F;2023NepCTF%E4%B9%9D%E9%BE%99%E6%8B%89%E6%A3%BA&#x2F;</a><br>
+        
+            <strong>版权声明：</strong>本文采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/cn/deed.zh" target="_blank">CC BY-NC-SA 3.0 CN</a> 协议进行许可
+        
+    </div>
+
+
+  
+  
+  <div class="nexmoe-post-meta nexmoe-rainbow">
+    
+    
+        <a class="nexmoefont icon-tag-fill -none-link" href="/tags/NepCTF/" rel="tag">NepCTF</a> <a class="nexmoefont icon-tag-fill -none-link" href="/tags/RE/" rel="tag">RE</a>
+    
+</div>
+
+  
+      <div class="nexmoe-post-footer">
+          <section class="nexmoe-comment">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.css">
+<div id="gitalk"></div>
+<script src="https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: '80b2453b6d5f37ad6225',
+        clientSecret: '43e99fa852795c9a7b3eb924b2558c64b84bbdeb',
+        id: window.location.pathname,
+        repo: 'nexmoe.github.io',
+        owner: 'nexmoe',
+        admin: 'nexmoe'
+    })
+    gitalk.render('gitalk')
+</script>
+</section>
+      </div>
+  
+</div>
+            <div class="nexmoe-post-right">
+              <div class="nexmoe-fixed">
+                  <div class="nexmoe-tool"> 
+                    
+                      
+                    
+                      <a href="#nexmoe-content" class="toc-link" aria-label="回到顶部" title="top"><button class="mdui-fab mdui-ripple"><i class="nexmoefont icon-caret-top"></i></button></a>
+                  </div>
+              </div>
+            </div>
+        </div>
+    </div>
+     
+    <div id="nexmoe-search-space">
+        <div class="search-container">
+            <div class="search-header">
+                <div class="search-input-container">
+                    <input class="search-input" type="text" placeholder="搜索" oninput="sinput();">
+                </div>
+                <a class="search-close" onclick="sclose();">×</a>
+            </div>
+            <div class="search-body"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/combine/npm/lazysizes@5.1.0/lazysizes.min.js,npm/mdui@0.4.3/dist/js/mdui.min.js?v=1"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+
+ 
+
+<script async src="/js/app.js?v=1710245485565"></script>
+
+
+	<script async src="/js/search.js?v=1710245485565"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js"></script>
+<script>
+	$(".justified-gallery").justifiedGallery({
+		rowHeight: 160,
+		margins: 10,
+	});
+</script>
+
+
+    
+
+
+
+
+
+</body>
+
+</html>
