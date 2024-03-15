@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+
+<head>
+    
+    <title>2023starCTFez_code - The Blog of WoaW04</title>
+    <meta charset="UTF-8">
+    <meta name="keywords" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+    
+    
+
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <meta name="description" content="0x00 题目分析powershell混淆 关于powershell脚本：https:&#x2F;&#x2F;learn.microsoft.com&#x2F;zh-cn&#x2F;powershell&#x2F;module&#x2F;microsoft.powershell.core&#x2F;about&#x2F;about_scripts?view&#x3D;powershell-7.4 powershell的使用：https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_418749">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2023starCTFez_code">
+<meta property="og:url" content="http://example.com/2024/03/15/2023starCTFez-code/index.html">
+<meta property="og:site_name" content="The Blog of WoaW04">
+<meta property="og:description" content="0x00 题目分析powershell混淆 关于powershell脚本：https:&#x2F;&#x2F;learn.microsoft.com&#x2F;zh-cn&#x2F;powershell&#x2F;module&#x2F;microsoft.powershell.core&#x2F;about&#x2F;about_scripts?view&#x3D;powershell-7.4 powershell的使用：https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_418749">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403151015848.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403151122966.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403151125109.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403151129802.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403151131830.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403151136961.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403151136008.png">
+<meta property="article:published_time" content="2024-03-15T01:52:47.000Z">
+<meta property="article:modified_time" content="2024-03-15T03:41:49.684Z">
+<meta property="article:author" content="WoaW04">
+<meta property="article:tag" content="RE">
+<meta property="article:tag" content="2023starCTF">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403151015848.png">
+    <link rel="stylesheet" href="/lib/jquery.fancybox.min.css?v=1710474139581">
+    
+    <link rel="stylesheet" href="/lib/mdui_043tiny/css/mdui.css?v=1710474139581">
+    <link rel="stylesheet" href="/lib/iconfont/iconfont.css?v=1710474139581">
+    <link rel="stylesheet" href="/css/style.css?v=1710474139581">
+    
+        <link rel="stylesheet" href="/css/dark.css?v=1710474139581">
+     
+    
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="mdui-drawer-body-left">
+    
+    <div id="nexmoe-background">
+        <div class="nexmoe-bg" style="background-image: url(https://cdn.jsdelivr.net/gh/WoaW04/Picture/image95796589_p0.jpg)"></div>
+        <div class="mdui-appbar mdui-shadow-0">
+            <div class="mdui-toolbar">
+                <a mdui-drawer="{target: '#drawer', swipe: true}" title="menu" class="mdui-btn mdui-btn-icon mdui-ripple"><i class="mdui-icon nexmoefont icon-menu"></i></a>
+                <div class="mdui-toolbar-spacer"></div>
+                <!--<a href="javascript:;" class="mdui-btn mdui-btn-icon"><i class="mdui-icon material-icons">search</i></a>-->
+                <a href="/" title="WoaW04" class="mdui-btn mdui-btn-icon"><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image04CTF.png" alt="WoaW04"></a>
+            </div>
+        </div>
+    </div>
+    <div id="nexmoe-header">
+        <div class="nexmoe-drawer mdui-drawer" id="drawer">
+    <div class="nexmoe-avatar mdui-ripple">
+        <a href="/" title="WoaW04">
+            <img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image04CTF.png" alt="WoaW04" alt="WoaW04">
+        </a>
+    </div>
+    <div class="nexmoe-count">
+        <div><span>文章</span>20</div>
+        <div><span>标签</span>9</div>
+        <div><span>分类</span>0</div>
+    </div>
+    <div class="nexmoe-list mdui-list" mdui-collapse="{accordion: true}">
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/" title="回到首页">
+            <i class="mdui-list-item-icon nexmoefont icon-home"></i>
+            <div class="mdui-list-item-content">
+                回到首页
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/about.html" title="关于博客">
+            <i class="mdui-list-item-icon nexmoefont icon-info-circle"></i>
+            <div class="mdui-list-item-content">
+                关于博客
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/PY.html" title="我的朋友">
+            <i class="mdui-list-item-icon nexmoefont icon-unorderedlist"></i>
+            <div class="mdui-list-item-content">
+                我的朋友
+            </div>
+        </a>
+        
+    </div>
+    <aside id="nexmoe-sidebar">
+    
+    <div class="nexmoe-widget-wrap">
+    <div class="nexmoe-widget nexmoe-search">
+        
+            <form id="search_form">
+                <label><input class="st-default-search-input" id="search_value" name="q" type="search" placeholder="搜索" style="
+                    font-size: 15px !important;
+                    height: 56px !important;
+                    background-image: none;
+                "></label>
+            </form>
+         
+    </div>
+</div>
+    
+    <div class="nexmoe-widget-wrap">
+    <div class="nexmoe-widget nexmoe-social">
+        <a class="mdui-ripple" href="https://space.bilibili.com/3096846" target="_blank" mdui-tooltip="{content: '哔哩哔哩'}" style="color: rgb(231, 106, 141);background-color: rgba(231, 106, 141, .15);">
+            <i class="nexmoefont icon-bilibili"></i>
+        </a><a class="mdui-ripple" href="https://github.com/WoaW04" target="_blank" mdui-tooltip="{content: 'GitHub'}" style="color: rgb(255, 255, 255);background-color: rgba(255, 255, 255, .15);">
+            <i class="nexmoefont icon-github"></i>
+        </a>
+    </div>
+</div>
+    
+    
+
+    
+    
+  <div class="nexmoe-widget-wrap">
+    <div id="randomtagcloud" class="nexmoe-widget tagcloud nexmoe-rainbow">
+      <a href="/tags/2023DASCTF%E4%B8%83%E6%9C%88%E8%B5%9B/" style="font-size: 15px;">2023DASCTF七月赛</a> <a href="/tags/2023NepCTF/" style="font-size: 12.5px;">2023NepCTF</a> <a href="/tags/2023starCTF/" style="font-size: 15px;">2023starCTF</a> <a href="/tags/2023%E7%BE%8A%E5%9F%8E%E6%9D%AF/" style="font-size: 17.5px;">2023羊城杯</a> <a href="/tags/Learning/" style="font-size: 12.5px;">Learning</a> <a href="/tags/Misc/" style="font-size: 10px;">Misc</a> <a href="/tags/RE/" style="font-size: 20px;">RE</a> <a href="/tags/%E5%B7%85%E5%B3%B0%E6%9E%81%E5%AE%A22023/" style="font-size: 12.5px;">巅峰极客2023</a> <a href="/tags/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8/" style="font-size: 10px;">软件安全</a>
+    </div>
+    
+  </div>
+
+    
+</aside>
+    <div class="nexmoe-copyright">
+        &copy; 2024 WoaW04
+        Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+        & <a href="https://github.com/theme-nexmoe/hexo-theme-nexmoe" target="_blank">Nexmoe</a>
+        
+    </div>
+</div><!-- .nexmoe-drawer -->
+    </div>
+    <div id="nexmoe-content">
+        <div class="nexmoe-primary">
+            <div class="nexmoe-post">
+
+  <article>
+      
+          <div class="nexmoe-post-cover" style="padding-bottom: NaN%;"> 
+              <img data-src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403150955197.png" data-sizes="auto" alt="2023starCTFez_code" class="lazyload">
+              <h1>2023starCTFez_code</h1>
+          </div>
+      
+      
+      <div class="nexmoe-post-meta nexmoe-rainbow" style="margin:10px 0!important;">
+    <a><i class="nexmoefont icon-calendar-fill"></i>2024年03月15日</a>
+</div>
+
+      
+
+      <h2 id="0x00-题目分析"><a href="#0x00-题目分析" class="headerlink" title="0x00 题目分析"></a>0x00 题目分析</h2><p>powershell混淆</p>
+<p>关于powershell脚本：<a target="_blank" rel="noopener" href="https://learn.microsoft.com/zh-cn/powershell/module/microsoft.powershell.core/about/about_scripts?view=powershell-7.4">https://learn.microsoft.com/zh-cn/powershell/module/microsoft.powershell.core/about/about_scripts?view=powershell-7.4</a></p>
+<p>powershell的使用：<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_41874930/article/details/108146932">https://blog.csdn.net/qq_41874930/article/details/108146932</a></p>
+<p>用ISE调试</p>
+<h2 id="0x01-解"><a href="#0x01-解" class="headerlink" title="0x01 解"></a>0x01 解</h2><p>后缀改为.ps1运行下看看</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403151015848.png"></p>
+<p>010开来看看</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403151122966.png"></p>
+<p>混淆</p>
+<p>把末尾的<code>| .$&#123;-``&#125;</code>去掉可以拿到假flag，而且还有个信息：<code>$&#123;-``&#125;=&quot;iex&quot;</code></p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403151125109.png"></p>
+<p>解出来看看</p>
+<pre><code class="python">import re
+c = &quot;[CHar]70+[CHar]117+[CHar]110+[CHar]99+[CHar]116+[CHar]105+[CHar]111+[CHar]110+[CHar]32+[CHar]95+[CHar]47+[CHar]61+[CHar]61+[CHar]47+[CHar]61+[CHar]95+[CHar]95+[CHar]61+[CHar]95+[CHar]123+[CHar]10+[CHar]32+[CHar]32+[CHar]32+[CHar]32+[CHar]91+[CHar]67+[CHar]109+[CHar]100+[CHar]108+[CHar]101+[CHar]116+[CHar]66+[CHar]105+[CHar]110+[CHar]100+[CHar]105+[CHar]110+[CHar]103+[CHar]40+[CHar]41+[CHar]93+[CHar]32+[CHar]112+[CHar]97+[CHar]114+[CHar]97+[CHar]109+[CHar]40+[CHar]10+[CHar]32+[CHar]32+[CHar]32+[CHar]32+[CHar]32+[CHar]32+[CHar]32+[CHar]32+[CHar]91+[CHar]80+[CHar]97+[CHar]114+[CHar]97+[CHar]109+[CHar]101+[CHar]116+[CHar]101+[CHar]114+[CHar]40+[CHar]80+[CHar]111+[CHar]115+[CHar]105+[CHar]116+[CHar]105+[CHar]111+[CHar]110+[CHar]32+[CHar]61+[CHar]32+[CHar]48+[CHar]41+[CHar]93+[CHar]10+[CHar]32+[CHar]32+[CHar]32+[CHar]32+[CHar]32+[CHar]32+[CHar]32+[CHar]32+[CHar]91+[CHar]83+[CHar]116+[CHar]114+[CHar]105+[CHar]110+[CHar]103+[CHar]93+[CHar]10+[CHar]32+[CHar]32+[CHar]32+[CHar]32+[CHar]32+[CHar]32+[CHar]32+[CHar]32+[CHar]36+[CHar]112+[CHar]97+[CHar]114+[CHar]97+[CHar]109+[CHar]49+[CHar]10+[CHar]32+[CHar]32+[CHar]32+[CHar]32+[CHar]41+[CHar]10+[CHar]32+[CHar]32+[CHar]32+[CHar]32+[CHar]36+[CHar]114+[CHar]101+[CHar]115+[CHar]117+[CHar]108+[CHar]116+[CHar]32+[CHar]61+[CHar]32+[CHar]91+[CHar]84+[CHar]101+[CHar]120+[CHar]116+[CHar]46+[CHar]69+[CHar]110+[CHar]99+[CHar]111+[CHar]100+[CHar]105+[CHar]110+[CHar]103+[CHar]93+[CHar]58+[CHar]58+[CHar]85+[CHar]84+[CHar]70+[CHar]56+[CHar]46+[CHar]71+[CHar]101+[CHar]116+[CHar]83+[CHar]116+[CHar]114+[CHar]105+[CHar]110+[CHar]103+[CHar]40+[CHar]91+[CHar]67+[CHar]111+[CHar]110+[CHar]118+[CHar]101+[CHar]114+[CHar]116+[CHar]93+[CHar]58+[CHar]58+[CHar]70+[CHar]114+[CHar]111+[CHar]109+[CHar]66+[CHar]97+[CHar]115+[CHar]101+[CHar]54+[CHar]52+[CHar]83+[CHar]116+[CHar]114+[CHar]105+[CHar]110+[CHar]103+[CHar]40+[CHar]36+[CHar]112+[CHar]97+[CHar]114+[CHar]97+[CHar]109+[CHar]49+[CHar]41+[CHar]41+[CHar]10+[CHar]32+[CHar]32+[CHar]32+[CHar]32+[CHar]114+[CHar]101+[CHar]116+[CHar]117+[CHar]114+[CHar]110+[CHar]32+[CHar]36+[CHar]114+[CHar]101+[CHar]115+[CHar]117+[CHar]108+[CHar]116+[CHar]10+[CHar]125+[CHar]10+[CHar]10+[CHar]70+[CHar]117+[CHar]110+[CHar]99+[CHar]116+[CHar]105+[CHar]111+[CHar]110+[CHar]32+[CHar]95+[CHar]92+[CHar]47+[CHar]95+[CHar]92+[CHar]95+[CHar]61+[CHar]123+[CHar]10+[CHar]32+[CHar]32+[CHar]32+[CHar]32+[CHar]91+[CHar]67+[CHar]109+[CHar]100+[CHar]108+[CHar]101+[CHar]116+[CHar]66+[CHar]105+[CHar]110+[CHar]100+[CHar]105+[CHar]110+[CHar]103+[CHar]40+[CHar]41+[CHar]93+[CHar]32+[CHar]112+[CHar]97+[CHar]114+[CHar]97+[CHar]109+[CHar]40+[CHar]10+[CHar]32+[CHar]32+[CHar]32+[CHar]32+[CHar]32+[CHar]32+[CHar]32+[CHar]32+[CHar]91+[CHar]80+[CHar]97+[CHar]114+[CHar]97+[CHar]109+[CHar]101+[CHar]116+[CHar]101+[CHar]114+[CHar]40+[CHar]80+[CHar]111+[CHar]115+[CHar]105+[CHar]116+[CHar]105+[CHar]111+[CHar]110+[CHar]32+[CHar]61+[CHar]32+[CHar]48+[CHar]41+[CHar]93+[CHar]10+[CHar]32+[CHar]32+[CHar]32+[CHar]32+[CHar]32+[CHar]32+[CHar]32+[CHar]32+[CHar]91+[CHar]83+[CHar]116+[CHar]114+[CHar]105+[CHar]110+[CHar]103+[CHar]93+[CHar]10+[CHar]32+[CHar]32+[CHar]32+[CHar]32+[CHar]32+[CHar]32+[CHar]32+[CHar]32+[CHar]36+[CHar]112+[CHar]97+[CHar]114+[CHar]97+[CHar]109+[CHar]49+[CHar]10+[CHar]32+[CHar]32+[CHar]32+[CHar]32+[CHar]41+[CHar]10+[CHar]10+[CHar]32+[CHar]32+[CHar]32+[CHar]32+[CHar]36+[CHar]112+[CHar]97+[CHar]114+[CHar]97+[CHar]109+[CHar]49+[CHar]32+[CHar]61+[CHar]32+[CHar]95+[CHar]47+[CHar]61+[CHar]61+[CHar]47+[CHar]61+[CHar]95+[CHar]95+[CHar]61+[CHar]95+[CHar]32+[CHar]45+[CHar]112+[CHar]97+[CHar]114+[CHar]97+[CHar]109+[CHar]49+[CHar]32+[CHar]36+[CHar]112+[CHar]97+[CHar]114+[CHar]97+[CHar]109+[CHar]49+[CHar]10+[CHar]32+[CHar]32+[CHar]32+[CHar]32+[CHar]36+[CHar]114+[CHar]101+[CHar]115+[CHar]117+[CHar]108+[CHar]116+[CHar]32+[CHar]32+[CHar]61+[CHar]32+[CHar]91+[CHar]84+[CHar]101+[CHar]120+[CHar]116+[CHar]46+[CHar]69+[CHar]110+[CHar]99+[CHar]111+[CHar]100+[CHar]105+[CHar]110+[CHar]103+[CHar]93+[CHar]58+[CHar]58+[CHar]85+[CHar]84+[CHar]70+[CHar]56+[CHar]46+[CHar]71+[CHar]101+[CHar]116+[CHar]83+[CHar]116+[CHar]114+[CHar]105+[CHar]110+[CHar]103+[CHar]40+[CHar]91+[CHar]67+[CHar]111+[CHar]110+[CHar]118+[CHar]101+[CHar]114+[CHar]116+[CHar]93+[CHar]58+[CHar]58+[CHar]70+[CHar]114+[CHar]111+[CHar]109+[CHar]66+[CHar]97+[CHar]115+[CHar]101+[CHar]54+[CHar]52+[CHar]83+[CHar]116+[CHar]114+[CHar]105+[CHar]110+[CHar]103+[CHar]40+[CHar]36+[CHar]112+[CHar]97+[CHar]114+[CHar]97+[CHar]109+[CHar]49+[CHar]41+[CHar]41+[CHar]10+[CHar]32+[CHar]32+[CHar]32+[CHar]32+[CHar]36+[CHar]114+[CHar]101+[CHar]115+[CHar]117+[CHar]108+[CHar]116+[CHar]32+[CHar]124+[CHar]32+[CHar]111+[CHar]117+[CHar]116+[CHar]45+[CHar]110+[CHar]117+[CHar]108+[CHar]108+[CHar]10+[CHar]125+[CHar]10+[CHar]10+[CHar]95+[CHar]92+[CHar]47+[CHar]95+[CHar]92+[CHar]95+[CHar]61+[CHar]32+[CHar]40+[CHar]34+[CHar]83+[CHar]50+[CHar]49+[CHar]79+[CHar]77+[CHar]70+[CHar]112+[CHar]117+[CHar]100+[CHar]71+[CHar]57+[CHar]104+[CHar]82+[CHar]50+[CHar]104+[CHar]109+[CHar]89+[CHar]48+[CHar]104+[CHar]107+[CHar]101+[CHar]109+[CHar]70+[CHar]71+[CHar]79+[CHar]88+[CHar]66+[CHar]106+[CHar]77+[CHar]84+[CHar]108+[CHar]115+[CHar]87+[CHar]86+[CHar]104+[CHar]79+[CHar]78+[CHar]86+[CHar]103+[CHar]122+[CHar]83+[CHar]110+[CHar]66+[CHar]97+[CHar]77+[CHar]109+[CHar]103+[CHar]119+[CHar]85+[CHar]68+[CHar]77+[CHar]119+[CHar]80+[CHar]81+[CHar]61+[CHar]61+[CHar]34+[CHar]41+[CHar]10+[CHar]101+[CHar]99+[CHar]104+[CHar]111+[CHar]32+[CHar]34+[CHar]68+[CHar]111+[CHar]32+[CHar]121+[CHar]111+[CHar]117+[CHar]32+[CHar]107+[CHar]111+[CHar]110+[CHar]119+[CHar]32+[CHar]80+[CHar]87+[CHar]83+[CHar]72+[CHar]63+[CHar]34&quot;
+c = re.findall(&#39;\[CHar](\d+)&#39;, c)
+for i in c:
+    print(chr(int(i)), end=&#39;&#39;)
+</code></pre>
+<p>结果如下：</p>
+<pre><code class="powershell">Function _/==/=__=_&#123;
+    [CmdletBinding()] param(
+        [Parameter(Position = 0)]
+        [String]
+        $param1
+    )
+    $result = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($param1))
+    return $result
+&#125;
+
+Function _\/_\_=&#123;
+    [CmdletBinding()] param(
+        [Parameter(Position = 0)]
+        [String]
+        $param1
+    )
+
+    $param1 = _/==/=__=_ -param1 $param1
+    $result  = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($param1))
+    $result | out-null
+&#125;
+
+_\/_\_= (&quot;S21OMFpudG9hR2hmY0hkemFGOXBjMTlsWVhONVgzSnBaMmgwUDMwPQ==&quot;)
+# 两次base64得到fakeflag = *ctf&#123;hhh_pwsh_is_easy_right?&#125;
+echo &quot;Do you konw PWSH?&quot;
+</code></pre>
+<p>根据上文已知的<code>$&#123;-``&#125;=&quot;iex&quot;</code>，在文件中搜一下<code>$&#123;-``&#125;</code></p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403151129802.png"></p>
+<p>还不少，猜测最下面的是输出假flag的，由于上面的基本都堆在一起，所以猜测倒数第二个应该就是真逻辑了</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403151131830.png"></p>
+<p>删去最后一个到后面的所有，然后加上echo，查看结果</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403151136961.png"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403151136008.png"></p>
+<p>原数据很长，这里只贴解出来的</p>
+<pre><code class="powershell">class chiper():
+    def __init__(self):
+        self.d = 0x87654321
+        k0 = 0x67452301
+        k1 = 0xefcdab89
+        k2 = 0x98badcfe
+        k3 = 0x10325476
+        self.k = [k0, k1, k2, k3]
+
+    def e(self, n, v):
+        from ctypes import c_uint32
+
+        def MX(z, y, total, key, p, e):
+            temp1 = (z.value &gt;&gt; 6 ^ y.value &lt;&lt; 4) + \
+                (y.value &gt;&gt; 2 ^ z.value &lt;&lt; 5)
+            temp2 = (total.value ^ y.value) + \
+                (key[(p &amp; 3) ^ e.value] ^ z.value)
+            return c_uint32(temp1 ^ temp2)
+        key = self.k
+        delta = self.d
+        rounds = 6 + 52//n
+        total = c_uint32(0)
+        z = c_uint32(v[n-1])
+        e = c_uint32(0)
+
+        while rounds &gt; 0:
+            total.value += delta
+            e.value = (total.value &gt;&gt; 2) &amp; 3
+            for p in range(n-1):
+                y = c_uint32(v[p+1])
+                v[p] = c_uint32(v[p] + MX(z, y, total, key, p, e).value).value
+                z.value = v[p]
+            y = c_uint32(v[0])
+            v[n-1] = c_uint32(v[n-1] + MX(z, y, total,
+                              key, n-1, e).value).value
+            z.value = v[n-1]
+            rounds -= 1
+        return v
+
+    def bytes2ints(self,cs:bytes)-&gt;list:
+        new_length=len(cs)+(8-len(cs)%8)%8
+        barray=cs.ljust(new_length,b&#39;\x00&#39;)
+        i=0
+        v=[]
+        while i &lt; new_length:
+            v0 = int.from_bytes(barray[i:i+4], &#39;little&#39;)
+            v1 = int.from_bytes(barray[i+4:i+8], &#39;little&#39;)
+            v.append(v0)
+            v.append(v1)
+            i += 8
+        return v
+
+def check(instr:str,checklist:list)-&gt;int:
+    length=len(instr)
+    if length%8:
+        print(&quot;Incorrect format.&quot;)
+        exit(1)
+    c=chiper()
+    v = c.bytes2ints(instr.encode())
+    output=list(c.e(len(v),v))
+    i=0
+    while(i&lt;len(checklist)):
+        if i&lt;len(output) and output[i]==checklist[i]:
+            i+=1
+        else:
+            break
+    if i==len(checklist):
+        return 1
+    return 0
+
+if __name__==&quot;__main__&quot;:
+    ans=[1374278842, 2136006540, 4191056815, 3248881376]
+    # generateRes()
+    flag=input(&#39;Please input flag:&#39;)
+    res=check(flag,ans)
+    if res:
+        print(&quot;Congratulations, you&#39;ve got the flag!&quot;)
+        print(&quot;Flag is *ctf&#123;your_input&#125;!&quot;)
+        exit(0)
+    else:
+        print(&#39;Nope,try again!&#39;)
+</code></pre>
+<p>魔改了delta和MX的XXTEA加密</p>
+<pre><code class="c++">#include &lt;stdio.h&gt;  
+#include &lt;stdint.h&gt;  
+#define DELTA 2271560481  
+#define MX (((z&gt;&gt;6^y&lt;&lt;4) + (y&gt;&gt;2^z&lt;&lt;5)) ^ ((sum^y) + (key[(p&amp;3)^e] ^ z)))  
+
+void btea(uint32_t* v, int n, uint32_t  key[4])
+&#123;
+    uint32_t y, z, sum;
+    unsigned p, rounds, e;
+
+    n = -n;
+    rounds = 6 + 52 / n;
+    sum = rounds * DELTA;
+    y = v[0];
+    do
+    &#123;
+        e = (sum &gt;&gt; 2) &amp; 3;
+        for (p = n - 1; p &gt; 0; p--)
+        &#123;
+            z = v[p - 1];
+            y = v[p] -= MX;
+        &#125;
+
+        z = v[n - 1];
+        y = v[0] -= MX;
+        sum -= DELTA;
+    &#125; while (--rounds);
+
+&#125;
+
+int main()
+&#123;
+ 
+    uint32_t enc[] = &#123; 1374278842, 2136006540, 4191056815, 3248881376,0 &#125;;
+    uint32_t  k[4] = &#123; 1732584193, 4023233417, 2562383102, 271733878 &#125;;
+    btea((uint32_t*)(&amp;enc), -4, k);
+    puts((char*)enc);
+    
+    
+    return 0;
+&#125;
+
+// yOUar3g0oD@tPw5H
+</code></pre>
+
+  </article>
+
+  
+      
+    <div class="nexmoe-post-copyright">
+        <strong>本文作者：</strong>WoaW04<br>
+        <strong>本文链接：</strong><a href="http://example.com/2024/03/15/2023starCTFez-code/" title="http:&#x2F;&#x2F;example.com&#x2F;2024&#x2F;03&#x2F;15&#x2F;2023starCTFez-code&#x2F;" target="_blank" rel="noopener">http:&#x2F;&#x2F;example.com&#x2F;2024&#x2F;03&#x2F;15&#x2F;2023starCTFez-code&#x2F;</a><br>
+        
+            <strong>版权声明：</strong>本文采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/cn/deed.zh" target="_blank">CC BY-NC-SA 3.0 CN</a> 协议进行许可
+        
+    </div>
+
+
+  
+  
+  <div class="nexmoe-post-meta nexmoe-rainbow">
+    
+    
+        <a class="nexmoefont icon-tag-fill -none-link" href="/tags/2023starCTF/" rel="tag">2023starCTF</a> <a class="nexmoefont icon-tag-fill -none-link" href="/tags/RE/" rel="tag">RE</a>
+    
+</div>
+
+  
+      <div class="nexmoe-post-footer">
+          <section class="nexmoe-comment">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.css">
+<div id="gitalk"></div>
+<script src="https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: '80b2453b6d5f37ad6225',
+        clientSecret: '43e99fa852795c9a7b3eb924b2558c64b84bbdeb',
+        id: window.location.pathname,
+        repo: 'nexmoe.github.io',
+        owner: 'nexmoe',
+        admin: 'nexmoe'
+    })
+    gitalk.render('gitalk')
+</script>
+</section>
+      </div>
+  
+</div>
+            <div class="nexmoe-post-right">
+              <div class="nexmoe-fixed">
+                  <div class="nexmoe-tool"> 
+                    
+                      
+                    
+                      <a href="#nexmoe-content" class="toc-link" aria-label="回到顶部" title="top"><button class="mdui-fab mdui-ripple"><i class="nexmoefont icon-caret-top"></i></button></a>
+                  </div>
+              </div>
+            </div>
+        </div>
+    </div>
+     
+    <div id="nexmoe-search-space">
+        <div class="search-container">
+            <div class="search-header">
+                <div class="search-input-container">
+                    <input class="search-input" type="text" placeholder="搜索" oninput="sinput();">
+                </div>
+                <a class="search-close" onclick="sclose();">×</a>
+            </div>
+            <div class="search-body"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/combine/npm/lazysizes@5.1.0/lazysizes.min.js,npm/mdui@0.4.3/dist/js/mdui.min.js?v=1"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+
+ 
+
+<script async src="/js/app.js?v=1710474139582"></script>
+
+
+	<script async src="/js/search.js?v=1710474139582"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js"></script>
+<script>
+	$(".justified-gallery").justifiedGallery({
+		rowHeight: 160,
+		margins: 10,
+	});
+</script>
+
+
+    
+
+
+
+
+
+</body>
+
+</html>
