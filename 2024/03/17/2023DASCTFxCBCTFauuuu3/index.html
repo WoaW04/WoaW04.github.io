@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+
+<head>
+    
+    <title>2023DASCTFxCBCTFauuuu3 - The Blog of WoaW04</title>
+    <meta charset="UTF-8">
+    <meta name="keywords" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+    
+    
+
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <meta name="description" content="0x00 题目分析关于AutoIt：https:&#x2F;&#x2F;www.autoitscript.com&#x2F;site&#x2F;autoit&#x2F; 感觉autoit可以类比为lua，都是脚本语言，而且都利用到了虚拟机技术 不过autoit设计用于Windows GUI(图形用户界面)中进行自动化操作，其他脚本语言好像不能做到 使用动调或者IDA比较耗时间，据官方说法在v3.2.5.1后autoit不再拥有自带的反编译工具，不">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2023DASCTFxCBCTFauuuu3">
+<meta property="og:url" content="http://example.com/2024/03/17/2023DASCTFxCBCTFauuuu3/index.html">
+<meta property="og:site_name" content="The Blog of WoaW04">
+<meta property="og:description" content="0x00 题目分析关于AutoIt：https:&#x2F;&#x2F;www.autoitscript.com&#x2F;site&#x2F;autoit&#x2F; 感觉autoit可以类比为lua，都是脚本语言，而且都利用到了虚拟机技术 不过autoit设计用于Windows GUI(图形用户界面)中进行自动化操作，其他脚本语言好像不能做到 使用动调或者IDA比较耗时间，据官方说法在v3.2.5.1后autoit不再拥有自带的反编译工具，不">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403171045337.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403171048868.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403171046151.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403171049642.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403171053791.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403171054031.png">
+<meta property="article:published_time" content="2024-03-17T02:24:17.000Z">
+<meta property="article:modified_time" content="2024-03-17T02:58:26.159Z">
+<meta property="article:author" content="WoaW04">
+<meta property="article:tag" content="RE">
+<meta property="article:tag" content="2023DASCTFxBCCTF">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403171045337.png">
+    <link rel="stylesheet" href="/lib/jquery.fancybox.min.css?v=1710644333074">
+    
+    <link rel="stylesheet" href="/lib/mdui_043tiny/css/mdui.css?v=1710644333074">
+    <link rel="stylesheet" href="/lib/iconfont/iconfont.css?v=1710644333074">
+    <link rel="stylesheet" href="/css/style.css?v=1710644333074">
+    
+        <link rel="stylesheet" href="/css/dark.css?v=1710644333074">
+     
+    
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="mdui-drawer-body-left">
+    
+    <div id="nexmoe-background">
+        <div class="nexmoe-bg" style="background-image: url(https://cdn.jsdelivr.net/gh/WoaW04/Picture/image95796589_p0.jpg)"></div>
+        <div class="mdui-appbar mdui-shadow-0">
+            <div class="mdui-toolbar">
+                <a mdui-drawer="{target: '#drawer', swipe: true}" title="menu" class="mdui-btn mdui-btn-icon mdui-ripple"><i class="mdui-icon nexmoefont icon-menu"></i></a>
+                <div class="mdui-toolbar-spacer"></div>
+                <!--<a href="javascript:;" class="mdui-btn mdui-btn-icon"><i class="mdui-icon material-icons">search</i></a>-->
+                <a href="/" title="WoaW04" class="mdui-btn mdui-btn-icon"><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image04CTF.png" alt="WoaW04"></a>
+            </div>
+        </div>
+    </div>
+    <div id="nexmoe-header">
+        <div class="nexmoe-drawer mdui-drawer" id="drawer">
+    <div class="nexmoe-avatar mdui-ripple">
+        <a href="/" title="WoaW04">
+            <img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image04CTF.png" alt="WoaW04" alt="WoaW04">
+        </a>
+    </div>
+    <div class="nexmoe-count">
+        <div><span>文章</span>21</div>
+        <div><span>标签</span>10</div>
+        <div><span>分类</span>0</div>
+    </div>
+    <div class="nexmoe-list mdui-list" mdui-collapse="{accordion: true}">
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/" title="回到首页">
+            <i class="mdui-list-item-icon nexmoefont icon-home"></i>
+            <div class="mdui-list-item-content">
+                回到首页
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/about.html" title="关于博客">
+            <i class="mdui-list-item-icon nexmoefont icon-info-circle"></i>
+            <div class="mdui-list-item-content">
+                关于博客
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/PY.html" title="我的朋友">
+            <i class="mdui-list-item-icon nexmoefont icon-unorderedlist"></i>
+            <div class="mdui-list-item-content">
+                我的朋友
+            </div>
+        </a>
+        
+    </div>
+    <aside id="nexmoe-sidebar">
+    
+    <div class="nexmoe-widget-wrap">
+    <div class="nexmoe-widget nexmoe-search">
+        
+            <form id="search_form">
+                <label><input class="st-default-search-input" id="search_value" name="q" type="search" placeholder="搜索" style="
+                    font-size: 15px !important;
+                    height: 56px !important;
+                    background-image: none;
+                "></label>
+            </form>
+         
+    </div>
+</div>
+    
+    <div class="nexmoe-widget-wrap">
+    <div class="nexmoe-widget nexmoe-social">
+        <a class="mdui-ripple" href="https://space.bilibili.com/3096846" target="_blank" mdui-tooltip="{content: '哔哩哔哩'}" style="color: rgb(231, 106, 141);background-color: rgba(231, 106, 141, .15);">
+            <i class="nexmoefont icon-bilibili"></i>
+        </a><a class="mdui-ripple" href="https://github.com/WoaW04" target="_blank" mdui-tooltip="{content: 'GitHub'}" style="color: rgb(255, 255, 255);background-color: rgba(255, 255, 255, .15);">
+            <i class="nexmoefont icon-github"></i>
+        </a>
+    </div>
+</div>
+    
+    
+
+    
+    
+  <div class="nexmoe-widget-wrap">
+    <div id="randomtagcloud" class="nexmoe-widget tagcloud nexmoe-rainbow">
+      <a href="/tags/2023DASCTFxBCCTF/" style="font-size: 10px;">2023DASCTFxBCCTF</a> <a href="/tags/2023DASCTF%E4%B8%83%E6%9C%88%E8%B5%9B/" style="font-size: 15px;">2023DASCTF七月赛</a> <a href="/tags/2023NepCTF/" style="font-size: 12.5px;">2023NepCTF</a> <a href="/tags/2023starCTF/" style="font-size: 15px;">2023starCTF</a> <a href="/tags/2023%E7%BE%8A%E5%9F%8E%E6%9D%AF/" style="font-size: 17.5px;">2023羊城杯</a> <a href="/tags/Learning/" style="font-size: 12.5px;">Learning</a> <a href="/tags/Misc/" style="font-size: 10px;">Misc</a> <a href="/tags/RE/" style="font-size: 20px;">RE</a> <a href="/tags/%E5%B7%85%E5%B3%B0%E6%9E%81%E5%AE%A22023/" style="font-size: 12.5px;">巅峰极客2023</a> <a href="/tags/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8/" style="font-size: 10px;">软件安全</a>
+    </div>
+    
+  </div>
+
+    
+</aside>
+    <div class="nexmoe-copyright">
+        &copy; 2024 WoaW04
+        Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+        & <a href="https://github.com/theme-nexmoe/hexo-theme-nexmoe" target="_blank">Nexmoe</a>
+        
+    </div>
+</div><!-- .nexmoe-drawer -->
+    </div>
+    <div id="nexmoe-content">
+        <div class="nexmoe-primary">
+            <div class="nexmoe-post">
+
+  <article>
+      
+          <div class="nexmoe-post-cover" style="padding-bottom: NaN%;"> 
+              <img data-src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403171027114.png" data-sizes="auto" alt="2023DASCTFxCBCTFauuuu3" class="lazyload">
+              <h1>2023DASCTFxCBCTFauuuu3</h1>
+          </div>
+      
+      
+      <div class="nexmoe-post-meta nexmoe-rainbow" style="margin:10px 0!important;">
+    <a><i class="nexmoefont icon-calendar-fill"></i>2024年03月17日</a>
+</div>
+
+      
+
+      <h2 id="0x00-题目分析"><a href="#0x00-题目分析" class="headerlink" title="0x00 题目分析"></a>0x00 题目分析</h2><p>关于AutoIt：<a target="_blank" rel="noopener" href="https://www.autoitscript.com/site/autoit/">https://www.autoitscript.com/site/autoit/</a></p>
+<p>感觉autoit可以类比为lua，都是脚本语言，而且都利用到了虚拟机技术</p>
+<p>不过autoit设计用于Windows GUI(图形用户界面)中进行自动化操作，其他脚本语言好像不能做到</p>
+<p>使用动调或者IDA比较耗时间，据官方说法在v3.2.5.1后autoit不再拥有自带的反编译工具，不过对应的虚拟指令含义有大哥分析出来了，而且有工具可以快速获取源码</p>
+<p>AutoIt-Ripper：<a target="_blank" rel="noopener" href="https://github.com/nazywam/AutoIt-Ripper">https://github.com/nazywam/AutoIt-Ripper</a></p>
+<h2 id="0x01-解"><a href="#0x01-解" class="headerlink" title="0x01 解"></a>0x01 解</h2><p>查壳，这次换个软件</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403171045337.png"></p>
+<p>运行一下，随便输点东西看看</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403171048868.png"></p>
+<p>用pip安装autoit-ripper后直接扒皮</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403171046151.png"></p>
+<p>打开.au3，搜一下”wrong”</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403171049642.png"></p>
+<p>分析加密流程，首先判断输入是否满足38位，如果满足，则将输入经过ENC函数加密，ENC函数如下</p>
+<pre><code class="autoit3">Func ENC ( $DATA , $KEY )
+    $DATA = Binary ( $DATA )
+    Local $DATALEN = BinaryLen ( $DATA )
+    If $DATALEN = 0 Then
+        Return &quot;&quot;
+    ElseIf $DATALEN &lt; 8 Then
+        $DATALEN = 8
+    EndIf
+    Local $OPCODE = &quot;0x83EC14B83400000099538B5C2420558B6C242056578B7C9DFCF7FB89C683C606C74424180000000085F68D76FF0F8EEA000000896C24288D4BFF8D549D00894C2410895424148974242081442418B979379E8B4C2418C1E90281E103000000894C241C31F6397424107E568B5424288BCF8B6CB204C1E9058D14AD0000000033CA8BD58BC7C1EA03C1E00433D003CA8B5424188BDE81E303000000335C241C8B4424308B1C9833D533DF03D333CA8B542428010CB28B0CB2463974241089CF7FAA8B5424288BCF8B2AC1E9058D14AD0000000033CA8BD58BC7C1EA03C1E00433D003CA8B5424188BDE81E303000000335C241C8B4424308B1C9833D533DF03D3FF4C242033CA8B542414014AFC8B4AFC8B54242089CF420F8F2DFFFFFF5F31C05E5D5B83C414C21000&quot;
+    Local $CODEBUFFER = DllStructCreate ( &quot;byte[&quot; &amp; BinaryLen ( $OPCODE ) &amp; &quot;]&quot; )
+    DllStructSetData ( $CODEBUFFER , 1 , $OPCODE )
+    Local $V = DllStructCreate ( &quot;byte[&quot; &amp; Ceiling ( $DATALEN / 4 ) * 4 &amp; &quot;]&quot; )
+    DllStructSetData ( $V , 1 , $DATA )
+    Local $K = DllStructCreate ( &quot;byte[16]&quot; )
+    DllStructSetData ( $K , 1 , $KEY )
+    DllCall ( &quot;user32.dll&quot; , &quot;none&quot; , &quot;CallWindowProc&quot; , &quot;ptr&quot; , DllStructGetPtr ( $CODEBUFFER ) , &quot;ptr&quot; , DllStructGetPtr ( $V ) , &quot;int&quot; , Ceiling ( $DATALEN / 4 ) , &quot;ptr&quot; , DllStructGetPtr ( $K ) , &quot;int&quot; , 0 )
+    Local $RET = DllStructGetData ( $V , 1 )
+    $CODEBUFFER = 0
+    $V = 0
+    $K = 0
+    Return $RET
+EndFunc
+</code></pre>
+<p>函数动态加载了一个dll，然后再从dll调用加密函数进行加密</p>
+<p>OPCODE写入文件再用IDA分析</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403171053791.png"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403171054031.png"></p>
+<p>老朋友TEA但是是XXTEA</p>
+<p>编脚本</p>
+<pre><code class="python">import binascii
+from ctypes import *
+import struct
+
+
+def MX(z, y, total, key, p, e):
+    temp1 = (z.value &gt;&gt; 5 ^ y.value &lt;&lt; 2) + (y.value &gt;&gt; 3 ^ z.value &lt;&lt; 4)
+    temp2 = (total.value ^ y.value) + (key[(p &amp; 3) ^ e.value] ^ z.value)
+
+    return c_uint32(temp1 ^ temp2)
+
+
+def decrypt(n, v, key):
+    delta = 0x61C88647
+    rounds = 6 + 52 // n
+
+    total = c_uint32(-rounds * delta)
+    y = c_uint32(v[0])
+    e = c_uint32(0)
+
+    while rounds &gt; 0:
+        e.value = (total.value &gt;&gt; 2) &amp; 3
+        for p in range(n - 1, 0, -1):
+            z = c_uint32(v[p - 1])
+            v[p] = c_uint32((v[p] - MX(z, y, total, key, p, e).value)).value
+            y.value = v[p]
+        z = c_uint32(v[n - 1])
+        v[0] = c_uint32(v[0] - MX(z, y, total, key, 0, e).value).value
+        y.value = v[0]
+        total.value += delta
+        rounds -= 1
+
+    return v
+
+
+if __name__ == &quot;__main__&quot;:
+    ct = &quot;7218181A02F79F4B5773E8FFE83FE732DF96259FF2B86AAB945468A132A83D83CF9D750E316C8675&quot;
+    ct = binascii.a2b_hex(ct)
+    flag = &quot;&quot;
+    key = &quot;Wowww111auUu3&quot;
+    v = struct.unpack(&#39;&lt;10I&#39;, ct)
+    k = struct.unpack(&#39;&lt;4I&#39;, key.encode() + b&#39;\x00&#39; * 3)
+    v = list(v)
+    k = list(k)
+    n = 10
+    res = decrypt(n, v, k)
+    for r in res:
+        print(r.to_bytes(4, &#39;little&#39;).decode(), end=&#39;&#39;)
+
+# DASCTF&#123;Oh1_autO1t_iS_so_Co0oL_aNd_Fun&#125;
+</code></pre>
+
+  </article>
+
+  
+      
+    <div class="nexmoe-post-copyright">
+        <strong>本文作者：</strong>WoaW04<br>
+        <strong>本文链接：</strong><a href="http://example.com/2024/03/17/2023DASCTFxCBCTFauuuu3/" title="http:&#x2F;&#x2F;example.com&#x2F;2024&#x2F;03&#x2F;17&#x2F;2023DASCTFxCBCTFauuuu3&#x2F;" target="_blank" rel="noopener">http:&#x2F;&#x2F;example.com&#x2F;2024&#x2F;03&#x2F;17&#x2F;2023DASCTFxCBCTFauuuu3&#x2F;</a><br>
+        
+            <strong>版权声明：</strong>本文采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/cn/deed.zh" target="_blank">CC BY-NC-SA 3.0 CN</a> 协议进行许可
+        
+    </div>
+
+
+  
+  
+  <div class="nexmoe-post-meta nexmoe-rainbow">
+    
+    
+        <a class="nexmoefont icon-tag-fill -none-link" href="/tags/2023DASCTFxBCCTF/" rel="tag">2023DASCTFxBCCTF</a> <a class="nexmoefont icon-tag-fill -none-link" href="/tags/RE/" rel="tag">RE</a>
+    
+</div>
+
+  
+      <div class="nexmoe-post-footer">
+          <section class="nexmoe-comment">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.css">
+<div id="gitalk"></div>
+<script src="https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: '80b2453b6d5f37ad6225',
+        clientSecret: '43e99fa852795c9a7b3eb924b2558c64b84bbdeb',
+        id: window.location.pathname,
+        repo: 'nexmoe.github.io',
+        owner: 'nexmoe',
+        admin: 'nexmoe'
+    })
+    gitalk.render('gitalk')
+</script>
+</section>
+      </div>
+  
+</div>
+            <div class="nexmoe-post-right">
+              <div class="nexmoe-fixed">
+                  <div class="nexmoe-tool"> 
+                    
+                      
+                    
+                      <a href="#nexmoe-content" class="toc-link" aria-label="回到顶部" title="top"><button class="mdui-fab mdui-ripple"><i class="nexmoefont icon-caret-top"></i></button></a>
+                  </div>
+              </div>
+            </div>
+        </div>
+    </div>
+     
+    <div id="nexmoe-search-space">
+        <div class="search-container">
+            <div class="search-header">
+                <div class="search-input-container">
+                    <input class="search-input" type="text" placeholder="搜索" oninput="sinput();">
+                </div>
+                <a class="search-close" onclick="sclose();">×</a>
+            </div>
+            <div class="search-body"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/combine/npm/lazysizes@5.1.0/lazysizes.min.js,npm/mdui@0.4.3/dist/js/mdui.min.js?v=1"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+
+ 
+
+<script async src="/js/app.js?v=1710644333075"></script>
+
+
+	<script async src="/js/search.js?v=1710644333075"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js"></script>
+<script>
+	$(".justified-gallery").justifiedGallery({
+		rowHeight: 160,
+		margins: 10,
+	});
+</script>
+
+
+    
+
+
+
+
+
+</body>
+
+</html>
