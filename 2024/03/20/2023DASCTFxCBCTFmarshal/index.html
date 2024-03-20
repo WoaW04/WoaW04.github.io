@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+
+<head>
+    
+    <title>2023DASCTFxCBCTFmarshal - The Blog of WoaW04</title>
+    <meta charset="UTF-8">
+    <meta name="keywords" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+    
+    
+
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <meta name="description" content="0x00 分析marshal库：https:&#x2F;&#x2F;docs.python.org&#x2F;zh-cn&#x2F;3&#x2F;library&#x2F;marshal.html  marshal模块包含一此能以二进制格式来读写 Python 值的函数。marshal 模块主要是为了支持读写 .pyc 文件形式“伪编译”代码的 Python 模块。不是所有 Python 对象类型都受支持；一般来说，此模块只能写入和读取不依赖于特定 Pyt">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2023DASCTFxCBCTFmarshal">
+<meta property="og:url" content="http://example.com/2024/03/20/2023DASCTFxCBCTFmarshal/index.html">
+<meta property="og:site_name" content="The Blog of WoaW04">
+<meta property="og:description" content="0x00 分析marshal库：https:&#x2F;&#x2F;docs.python.org&#x2F;zh-cn&#x2F;3&#x2F;library&#x2F;marshal.html  marshal模块包含一此能以二进制格式来读写 Python 值的函数。marshal 模块主要是为了支持读写 .pyc 文件形式“伪编译”代码的 Python 模块。不是所有 Python 对象类型都受支持；一般来说，此模块只能写入和读取不依赖于特定 Pyt">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403201106759.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403201127544.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403201150025.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403201241212.png">
+<meta property="article:published_time" content="2024-03-20T02:38:36.000Z">
+<meta property="article:modified_time" content="2024-03-20T04:56:35.500Z">
+<meta property="article:author" content="WoaW04">
+<meta property="article:tag" content="RE">
+<meta property="article:tag" content="2023DASCTFxBCCTF">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403201106759.png">
+    <link rel="stylesheet" href="/lib/jquery.fancybox.min.css?v=1710910616694">
+    
+    <link rel="stylesheet" href="/lib/mdui_043tiny/css/mdui.css?v=1710910616694">
+    <link rel="stylesheet" href="/lib/iconfont/iconfont.css?v=1710910616694">
+    <link rel="stylesheet" href="/css/style.css?v=1710910616694">
+    
+        <link rel="stylesheet" href="/css/dark.css?v=1710910616694">
+     
+    
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="mdui-drawer-body-left">
+    
+    <div id="nexmoe-background">
+        <div class="nexmoe-bg" style="background-image: url(https://cdn.jsdelivr.net/gh/WoaW04/Picture/image95796589_p0.jpg)"></div>
+        <div class="mdui-appbar mdui-shadow-0">
+            <div class="mdui-toolbar">
+                <a mdui-drawer="{target: '#drawer', swipe: true}" title="menu" class="mdui-btn mdui-btn-icon mdui-ripple"><i class="mdui-icon nexmoefont icon-menu"></i></a>
+                <div class="mdui-toolbar-spacer"></div>
+                <!--<a href="javascript:;" class="mdui-btn mdui-btn-icon"><i class="mdui-icon material-icons">search</i></a>-->
+                <a href="/" title="WoaW04" class="mdui-btn mdui-btn-icon"><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image04CTF.png" alt="WoaW04"></a>
+            </div>
+        </div>
+    </div>
+    <div id="nexmoe-header">
+        <div class="nexmoe-drawer mdui-drawer" id="drawer">
+    <div class="nexmoe-avatar mdui-ripple">
+        <a href="/" title="WoaW04">
+            <img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image04CTF.png" alt="WoaW04" alt="WoaW04">
+        </a>
+    </div>
+    <div class="nexmoe-count">
+        <div><span>文章</span>22</div>
+        <div><span>标签</span>10</div>
+        <div><span>分类</span>0</div>
+    </div>
+    <div class="nexmoe-list mdui-list" mdui-collapse="{accordion: true}">
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/" title="回到首页">
+            <i class="mdui-list-item-icon nexmoefont icon-home"></i>
+            <div class="mdui-list-item-content">
+                回到首页
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/about.html" title="关于博客">
+            <i class="mdui-list-item-icon nexmoefont icon-info-circle"></i>
+            <div class="mdui-list-item-content">
+                关于博客
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/PY.html" title="我的朋友">
+            <i class="mdui-list-item-icon nexmoefont icon-unorderedlist"></i>
+            <div class="mdui-list-item-content">
+                我的朋友
+            </div>
+        </a>
+        
+    </div>
+    <aside id="nexmoe-sidebar">
+    
+    <div class="nexmoe-widget-wrap">
+    <div class="nexmoe-widget nexmoe-search">
+        
+            <form id="search_form">
+                <label><input class="st-default-search-input" id="search_value" name="q" type="search" placeholder="搜索" style="
+                    font-size: 15px !important;
+                    height: 56px !important;
+                    background-image: none;
+                "></label>
+            </form>
+         
+    </div>
+</div>
+    
+    <div class="nexmoe-widget-wrap">
+    <div class="nexmoe-widget nexmoe-social">
+        <a class="mdui-ripple" href="https://space.bilibili.com/3096846" target="_blank" mdui-tooltip="{content: '哔哩哔哩'}" style="color: rgb(231, 106, 141);background-color: rgba(231, 106, 141, .15);">
+            <i class="nexmoefont icon-bilibili"></i>
+        </a><a class="mdui-ripple" href="https://github.com/WoaW04" target="_blank" mdui-tooltip="{content: 'GitHub'}" style="color: rgb(255, 255, 255);background-color: rgba(255, 255, 255, .15);">
+            <i class="nexmoefont icon-github"></i>
+        </a>
+    </div>
+</div>
+    
+    
+
+    
+    
+  <div class="nexmoe-widget-wrap">
+    <div id="randomtagcloud" class="nexmoe-widget tagcloud nexmoe-rainbow">
+      <a href="/tags/2023DASCTFxBCCTF/" style="font-size: 12.5px;">2023DASCTFxBCCTF</a> <a href="/tags/2023DASCTF%E4%B8%83%E6%9C%88%E8%B5%9B/" style="font-size: 15px;">2023DASCTF七月赛</a> <a href="/tags/2023NepCTF/" style="font-size: 12.5px;">2023NepCTF</a> <a href="/tags/2023starCTF/" style="font-size: 15px;">2023starCTF</a> <a href="/tags/2023%E7%BE%8A%E5%9F%8E%E6%9D%AF/" style="font-size: 17.5px;">2023羊城杯</a> <a href="/tags/Learning/" style="font-size: 12.5px;">Learning</a> <a href="/tags/Misc/" style="font-size: 10px;">Misc</a> <a href="/tags/RE/" style="font-size: 20px;">RE</a> <a href="/tags/%E5%B7%85%E5%B3%B0%E6%9E%81%E5%AE%A22023/" style="font-size: 12.5px;">巅峰极客2023</a> <a href="/tags/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8/" style="font-size: 10px;">软件安全</a>
+    </div>
+    
+  </div>
+
+    
+</aside>
+    <div class="nexmoe-copyright">
+        &copy; 2024 WoaW04
+        Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+        & <a href="https://github.com/theme-nexmoe/hexo-theme-nexmoe" target="_blank">Nexmoe</a>
+        
+    </div>
+</div><!-- .nexmoe-drawer -->
+    </div>
+    <div id="nexmoe-content">
+        <div class="nexmoe-primary">
+            <div class="nexmoe-post">
+
+  <article>
+      
+          <div class="nexmoe-post-cover" style="padding-bottom: NaN%;"> 
+              <img data-src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403201039832.png" data-sizes="auto" alt="2023DASCTFxCBCTFmarshal" class="lazyload">
+              <h1>2023DASCTFxCBCTFmarshal</h1>
+          </div>
+      
+      
+      <div class="nexmoe-post-meta nexmoe-rainbow" style="margin:10px 0!important;">
+    <a><i class="nexmoefont icon-calendar-fill"></i>2024年03月20日</a>
+</div>
+
+      
+
+      <h2 id="0x00-分析"><a href="#0x00-分析" class="headerlink" title="0x00 分析"></a>0x00 分析</h2><p>marshal库：<a target="_blank" rel="noopener" href="https://docs.python.org/zh-cn/3/library/marshal.html">https://docs.python.org/zh-cn/3/library/marshal.html</a></p>
+<blockquote>
+<p>marshal模块包含一此能以二进制格式来读写 Python 值的函数。<br>marshal 模块主要是为了支持读写 .pyc 文件形式“伪编译”代码的 Python 模块。<br>不是所有 Python 对象类型都受支持；一般来说，此模块只能写入和读取不依赖于特定 Python 调用的对象。 </p>
+</blockquote>
+<p>使用dis.dis进行反汇编：<a target="_blank" rel="noopener" href="https://docs.python.org/zh-cn/3/library/dis.html">https://docs.python.org/zh-cn/3/library/dis.html</a></p>
+<blockquote>
+<p>dis模块通过反汇编支持CPython的bytecode分析。</p>
+</blockquote>
+<h2 id="0x01-解"><a href="#0x01-解" class="headerlink" title="0x01 解"></a>0x01 解</h2><p>只有一个.py文件，打开后是这样的</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403201106759.png"></p>
+<p>直接运行运行不起来</p>
+<p>事已至此先分析函数吧</p>
+<p>关于这个marshal.load(file)</p>
+<blockquote>
+<p>从打开的文件读取一个值并返回。 如果读不到有效的值（例如由于数据为不同 Python 版本的不兼容 marshal 格式），则会引发 EOFError, ValueError 或 TypeError。 文件必须为可读的 binary file。</p>
+<p>引发一个 审计事件 marshal.load，没有附带参数。</p>
+<p>备注 如果通过 dump() marshal 了一个包含不受支持类型的对象，load() 将为不可 marshal 的类型替换 None。</p>
+<p>在 3.10 版本发生变更: 使用此调用为每个代码对象引发一个 code.<strong>new</strong> 审计事件。 现在它会为整个载入操作引发单个 marshal.load 事件。</p>
+</blockquote>
+<p>实际作用是将二进制数据反序列化为python对象</p>
+<p>关于exec()</p>
+<blockquote>
+<p><code>exec()</code>函数是动态执行字符串类型的代码，基本的语法<code>exec(object[, globals[, locals]])</code> 其中global和local都是可选参数，表示全局和局部变量，如果没有就是当前作用域的命名空间。</p>
+</blockquote>
+<p>先用dis.dis查看下字节码</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403201127544.png"></p>
+<p>完整字节码如下</p>
+<pre><code class="bash">  4           0 LOAD_CONST               0 (12)
+              2 LOAD_CONST               1 (5)
+              4 LOAD_CONST               2 (6)
+              6 LOAD_CONST               3 (11)
+              8 LOAD_CONST               4 (9)
+             10 LOAD_CONST               5 (0)
+             12 LOAD_CONST               6 (10)
+             14 LOAD_CONST               7 (13)
+             16 LOAD_CONST               8 (3)
+             18 LOAD_CONST               9 (14)
+             20 LOAD_CONST              10 (15)
+             22 LOAD_CONST              11 (8)
+             24 LOAD_CONST              12 (4)
+             26 LOAD_CONST              13 (7)
+             28 LOAD_CONST              14 (1)
+             30 LOAD_CONST              15 (2)
+             32 BUILD_LIST              16
+             34 STORE_NAME               0 (Sbox)
+
+  5          36 LOAD_CONST              16 (&lt;code object &lt;listcomp&gt; at 0x000001B8EBB6A130, file &quot;&quot;, line 4&gt;)
+             38 LOAD_CONST              17 (&#39;&lt;listcomp&gt;&#39;)
+             40 MAKE_FUNCTION            0
+             42 LOAD_NAME                1 (range)
+             44 LOAD_CONST              18 (16)
+             46 CALL_FUNCTION            1
+             48 GET_ITER
+             50 CALL_FUNCTION            1
+             52 STORE_NAME               2 (Sbox_inv)
+
+  6          54 LOAD_CONST               5 (0)
+             56 LOAD_CONST              18 (16)
+             58 LOAD_CONST              19 (32)
+             60 LOAD_CONST              20 (48)
+             62 LOAD_CONST              14 (1)
+             64 LOAD_CONST              21 (17)
+             66 LOAD_CONST              22 (33)
+             68 LOAD_CONST              23 (49)
+             70 LOAD_CONST              15 (2)
+             72 LOAD_CONST              24 (18)
+             74 LOAD_CONST              25 (34)
+             76 LOAD_CONST              26 (50)
+             78 LOAD_CONST               8 (3)
+             80 LOAD_CONST              27 (19)
+             82 LOAD_CONST              28 (35)
+             84 LOAD_CONST              29 (51)
+             86 LOAD_CONST              12 (4)
+             88 LOAD_CONST              30 (20)
+             90 LOAD_CONST              31 (36)
+             92 LOAD_CONST              32 (52)
+             94 LOAD_CONST               1 (5)
+             96 LOAD_CONST              33 (21)
+             98 LOAD_CONST              34 (37)
+            100 LOAD_CONST              35 (53)
+            102 LOAD_CONST               2 (6)
+            104 LOAD_CONST              36 (22)
+            106 LOAD_CONST              37 (38)
+            108 LOAD_CONST              38 (54)
+            110 LOAD_CONST              13 (7)
+            112 LOAD_CONST              39 (23)
+            114 LOAD_CONST              40 (39)
+
+  7         116 LOAD_CONST              41 (55)
+            118 LOAD_CONST              11 (8)
+            120 LOAD_CONST              42 (24)
+            122 LOAD_CONST              43 (40)
+            124 LOAD_CONST              44 (56)
+            126 LOAD_CONST               4 (9)
+            128 LOAD_CONST              45 (25)
+            130 LOAD_CONST              46 (41)
+            132 LOAD_CONST              47 (57)
+            134 LOAD_CONST               6 (10)
+            136 LOAD_CONST              48 (26)
+            138 LOAD_CONST              49 (42)
+            140 LOAD_CONST              50 (58)
+            142 LOAD_CONST               3 (11)
+            144 LOAD_CONST              51 (27)
+            146 LOAD_CONST              52 (43)
+
+  8         148 LOAD_CONST              53 (59)
+            150 LOAD_CONST               0 (12)
+            152 LOAD_CONST              54 (28)
+            154 LOAD_CONST              55 (44)
+            156 LOAD_CONST              56 (60)
+            158 LOAD_CONST               7 (13)
+            160 LOAD_CONST              57 (29)
+            162 LOAD_CONST              58 (45)
+            164 LOAD_CONST              59 (61)
+            166 LOAD_CONST               9 (14)
+            168 LOAD_CONST              60 (30)
+            170 LOAD_CONST              61 (46)
+            172 LOAD_CONST              62 (62)
+            174 LOAD_CONST              10 (15)
+            176 LOAD_CONST              63 (31)
+            178 LOAD_CONST              64 (47)
+
+  5         180 LOAD_CONST              65 (63)
+
+  9         182 BUILD_LIST              64
+            184 STORE_NAME               3 (PBox)
+
+ 11         186 LOAD_CONST              66 (&lt;code object &lt;listcomp&gt; at 0x000001B8EBB69F20, file &quot;&quot;, line 9&gt;)
+            188 LOAD_CONST              17 (&#39;&lt;listcomp&gt;&#39;)
+            190 MAKE_FUNCTION            0
+            192 LOAD_NAME                1 (range)
+            194 LOAD_CONST              67 (64)
+            196 CALL_FUNCTION            1
+            198 GET_ITER
+            200 CALL_FUNCTION            1
+            202 STORE_NAME               4 (PBox_inv)
+
+ 12         204 LOAD_NAME                5 (marshal)
+            206 LOAD_METHOD              6 (loads)
+            208 LOAD_CONST              68 (b&#39;c\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x03\x00\x00\x00@\x00\x00\x00s\x1e\x00\x00\x00d\x00d\x01\x84\x00Z\x00e\x01\xa0\x02d\x02\xa1\x01Z\x03e\x04e\x03\x83\x01\x01\x00d\x03S\x00)\x04c\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x00\x00\x02\x00\x00\x00C\x00\x00\x00s\x08\x00\x00\x00|\x00|\x01A\x00S\x00)\x01N\xa9\x00)\x02\xda\x05stateZ\x08roundkeyr\x00\x00\x00\x00r\x00\x00\x00\x00\xda\x00\xda\x0baddRoundKey\x02\x00\x00\x00s\x02\x00\x00\x00\x00\x01r\x03\x00\x00\x00s,\t\x00\x00c\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x03\x00\x00\x00@\x00\x00\x00s\x1e\x00\x00\x00d\x00d\x01\x84\x00Z\x00e\x01\xa0\x02d\x02\xa1\x01Z\x03e\x04e\x03\x83\x01\x01\x00d\x03S\x00)\x04c\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x03\x00\x00\x00\x06\x00\x00\x00C\x00\x00\x00s6\x00\x00\x00d\x01&#125;\x01t\x00d\x02\x83\x01D\x00]$&#125;\x02|\x01t\x01|\x00|\x02d\x03\x14\x00?\x00d\x04@\x00\x19\x00|\x02d\x03\x14\x00&gt;\x007\x00&#125;\x01q\x0c|\x01S\x00)\x05N\xe9\x00\x00\x00\x00\xe9\x10\x00\x00\x00\xe9\x04\x00\x00\x00\xe9\x0f\x00\x00\x00)\x02\xda\x05rangeZ\x04Sbox)\x03\xda\x05state\xda\x06output\xda\x01i\xa9\x00r\x08\x00\x00\x00\xda\x00\xda\tsBoxLayer\x02\x00\x00\x00s\x08\x00\x00\x00\x00\x01\x04\x01\x0c\x01&quot;\x01r\n\x00\x00\x00s\xe4\x07\x00\x00c\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x03\x00\x00\x00@\x00\x00\x00s\x1e\x00\x00\x00d\x00d\x01\x84\x00Z\x00e\x01\xa0\x02d\x02\xa1\x01Z\x03e\x04e\x03\x83\x01\x01\x00d\x03S\x00)\x04c\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x03\x00\x00\x00\x05\x00\x00\x00C\x00\x00\x00s.\x00\x00\x00d\x01&#125;\x01t\x00d\x02\x83\x01D\x00]\x1c&#125;\x02|\x01|\x00|\x02?\x00d\x03@\x00t\x01|\x02\x19\x00&gt;\x007\x00&#125;\x01q\x0c|\x01S\x00)\x04N\xe9\x00\x00\x00\x00\xe9@\x00\x00\x00\xe9\x01\x00\x00\x00)\x02\xda\x05rangeZ\x04PBox)\x03\xda\x05state\xda\x06output\xda\x01i\xa9\x00r\x07\x00\x00\x00\xda\x00\xda\x06pLayer\x02\x00\x00\x00s\x08\x00\x00\x00\x00\x01\x04\x01\x0c\x01\x1a\x01r\t\x00\x00\x00s\xac\x06\x00\x00c\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x03\x00\x00\x00@\x00\x00\x00s\x1e\x00\x00\x00d\x00d\x01\x84\x00Z\x00e\x01\xa0\x02d\x02\xa1\x01Z\x03e\x04e\x03\x83\x01\x01\x00d\x03S\x00)\x04c\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00s\x1a\x00\x00\x00t\x00\x87\x00f\x01d\x01d\x02\x84\x08t\x01d\x03\x83\x01D\x00\x83\x01\x83\x01S\x00)\x04Nc\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x00\x00\x05\x00\x00\x00\x13\x00\x00\x00s \x00\x00\x00g\x00|\x00]\x18&#125;\x01t\x00\x88\x00|\x01\x19\x00\x83\x01d\x00|\x01\x14\x00&gt;\x00\x91\x02q\x04S\x00)\x01\xe9\x08\x00\x00\x00)\x01\xda\x03ord)\x02\xda\x02.0\xda\x01c\xa9\x01\xda\x01i\xa9\x00\xda\x00\xda\n&lt;listcomp&gt;\x03\x00\x00\x00s\x04\x00\x00\x00\x06\x00\x02\x00z!string2number.&lt;locals&gt;.&lt;listcomp&gt;r\x00\x00\x00\x00)\x02\xda\x03sum\xda\x05ranger\x04\x00\x00\x00r\x06\x00\x00\x00r\x04\x00\x00\x00r\x07\x00\x00\x00\xda\rstring2number\x02\x00\x00\x00s\x02\x00\x00\x00\x00\x01r\x0b\x00\x00\x00s\x01\x05\x00\x00c\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x03\x00\x00\x00@\x00\x00\x00s\x1e\x00\x00\x00d\x00d\x01\x84\x00Z\x00e\x01\xa0\x02d\x02\xa1\x01Z\x03e\x04e\x03\x83\x01\x01\x00d\x03S\x00)\x04c\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00C\x00\x00\x00st\x00\x00\x00g\x00&#125;\x02t\x00d\x01|\x01d\x01\x17\x00d\x01\x83\x03D\x00]Z&#125;\x03|\x02\xa0\x01|\x00d\x02?\x00\xa1\x01\x01\x00|\x00d\x03@\x00d\x04&gt;\x00|\x00d\x05?\x00\x17\x00&#125;\x00t\x02|\x00d\x06?\x00\x19\x00d\x06&gt;\x00|\x00d\x07d\x06\x13\x00d\x01\x18\x00@\x00\x17\x00&#125;\x00|\x00|\x03d\x08&gt;\x00|\x00d\x05?\x00A\x00N\x00&#125;\x00q\x14|\x02S\x00)\tN\xe9\x01\x00\x00\x00\xe9\x10\x00\x00\x00i\xff\xff\x07\x00\xe9=\x00\x00\x00\xe9\x13\x00\x00\x00\xe9L\x00\x00\x00\xe9\x02\x00\x00\x00\xe9\x0f\x00\x00\x00)\x03\xda\x05range\xda\x06appendZ\x04Sbox)\x04\xda\x03key\xda\x06roundsZ\troundkeys\xda\x01i\xa9\x00r\x0c\x00\x00\x00\xda\x00\xda\x13generateRoundkeys80\x02\x00\x00\x00s\x0e\x00\x00\x00\x00\x01\x04\x01\x14\x01\x0e\x01\x14\x01 \x01\x16\x01r\x0e\x00\x00\x00sF\x03\x00\x00c\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x06\x00\x00\x00@\x00\x00\x00s\xa6\x00\x00\x00d\x00d\x01\x84\x00Z\x00e\x01d\x02\x83\x01Z\x02e\x03e\x02\x83\x01d\x03k\x03r,e\x04d\x04\x83\x01\x01\x00e\x05d\x05\x83\x01\x01\x00e\x02d\x06d\x07\x85\x02\x19\x00e\x02d\x07d\x08\x85\x02\x19\x00e\x02d\x08d\t\x85\x02\x19\x00e\x02d\td\x03\x85\x02\x19\x00g\x04Z\x06d\nd\x0bd\x0cd\rg\x04Z\x07e\x00e\x06\x83\x01Z\x08e\td\x0e\x83\x01D\x00]$Z\ne\x07e\n\x19\x00e\x08e\n\x19\x00k\x03rte\x04d\x04\x83\x01\x01\x00e\x05d\x05\x83\x01\x01\x00qte\x04d\x0f\x83\x01\x01\x00d\x06S\x00)\x10c\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x08\x00\x00\x00\x06\x00\x00\x00C\x00\x00\x00sp\x00\x00\x00d\x01&#125;\x01t\x00d\x02|\x01\x83\x02&#125;\x02g\x00&#125;\x03|\x00D\x00]T&#125;\x04t\x01|\x04\x83\x01&#125;\x05t\x02|\x01d\x03\x18\x00\x83\x01D\x00]&quot;&#125;\x06t\x03|\x05|\x02|\x06\x19\x00\x83\x02&#125;\x05t\x04|\x05\x83\x01&#125;\x05t\x05|\x05\x83\x01&#125;\x05q.t\x03|\x05|\x02d\x04\x19\x00\x83\x02&#125;\x07|\x03\xa0\x06|\x07\xa1\x01\x01\x00q\x16|\x03S\x00)\x05N\xe9 \x00\x00\x00l\x06\x00\x00\x00! 20\\X\xa8 1!\x02\x00\xe9\x01\x00\x00\x00\xe9\xff\xff\xff\xff)\x07Z\x13generateRoundkeys80Z\rstring2number\xda\x05rangeZ\x0baddRoundKeyZ\tsBoxLayerZ\x06pLayer\xda\x06append)\x08\xda\x06blocks\xda\x06roundsZ\troundkeysZ\x03outZ\x05block\xda\x05state\xda\x01iZ\x06cipher\xa9\x00r\t\x00\x00\x00\xda\x00\xda\x07encrypt\x02\x00\x00\x00s\x18\x00\x00\x00\x00\x01\x04\x01\n\x01\x04\x01\x08\x01\x08\x01\x10\x01\x0e\x01\x08\x01\n\x01\x0e\x01\x0c\x01r\x0b\x00\x00\x00z\x12pls input ur flag:r\x00\x00\x00\x00z\x0bwrong flag!\xe9\x00\x00\x00\x00N\xe9\x08\x00\x00\x00\xe9\x10\x00\x00\x00\xe9\x18\x00\x00\x00l\x04\x00\x00\x00\x9e\x1faH\xc4\x13d\rl\x05\x00\x00\x00b]t:\x94Z\x15\x18\x0e\x00l\x04\x00\x00\x000ek95\x04\xb2&quot;l\x05\x00\x00\x00\x88o\xeddY\x13\xb1L\x01\x00\xe9\x04\x00\x00\x00z\x08Correct!)\x0br\x0b\x00\x00\x00\xda\x05inputZ\x03inp\xda\x03len\xda\x05print\xda\x04exitr\x05\x00\x00\x00Z\x04cmpsZ\nout_blocksr\x03\x00\x00\x00r\x08\x00\x00\x00r\t\x00\x00\x00r\t\x00\x00\x00r\t\x00\x00\x00r\n\x00\x00\x00\xda\x08&lt;module&gt;\x02\x00\x00\x00s\x18\x00\x00\x00\x08\x0e\x08\x01\x0c\x01\x08\x01\x08\x01,\x01\x0c\x01\x08\x01\x0c\x01\x10\x01\x08\x01\n\x01N)\x05r\x0e\x00\x00\x00\xda\x07marshal\xda\x05loads\xda\x02co\xda\x04execr\x0c\x00\x00\x00r\x0c\x00\x00\x00r\x0c\x00\x00\x00r\r\x00\x00\x00\xda\x08&lt;module&gt;\x02\x00\x00\x00s\x04\x00\x00\x00\x08\t\n\x01N)\x05r\x0b\x00\x00\x00\xda\x07marshal\xda\x05loads\xda\x02co\xda\x04execr\x06\x00\x00\x00r\x06\x00\x00\x00r\x06\x00\x00\x00r\x07\x00\x00\x00\xda\x08&lt;module&gt;\x02\x00\x00\x00s\x04\x00\x00\x00\x08\x03\n\x01N)\x05r\t\x00\x00\x00\xda\x07marshal\xda\x05loads\xda\x02co\xda\x04execr\x07\x00\x00\x00r\x07\x00\x00\x00r\x07\x00\x00\x00r\x08\x00\x00\x00\xda\x08&lt;module&gt;\x02\x00\x00\x00s\x04\x00\x00\x00\x08\x06\n\x01N)\x05r\n\x00\x00\x00\xda\x07marshal\xda\x05loads\xda\x02co\xda\x04execr\x08\x00\x00\x00r\x08\x00\x00\x00r\x08\x00\x00\x00r\t\x00\x00\x00\xda\x08&lt;module&gt;\x02\x00\x00\x00s\x04\x00\x00\x00\x08\x06\n\x01N)\x05r\x03\x00\x00\x00\xda\x07marshal\xda\x05loads\xda\x02co\xda\x04execr\x00\x00\x00\x00r\x00\x00\x00\x00r\x00\x00\x00\x00r\x02\x00\x00\x00\xda\x08&lt;module&gt;\x02\x00\x00\x00s\x04\x00\x00\x00\x08\x03\n\x01&#39;)
+            210 CALL_METHOD              1
+            212 STORE_NAME               7 (co)
+            214 LOAD_NAME                8 (exec)
+            216 LOAD_NAME                7 (co)
+            218 CALL_FUNCTION            1
+            220 POP_TOP
+            222 LOAD_CONST              69 (None)
+            224 RETURN_VALUE
+
+Disassembly of &lt;code object &lt;listcomp&gt; at 0x000001B8EBB6A130, file &quot;&quot;, line 4&gt;:
+  4           0 BUILD_LIST               0
+              2 LOAD_FAST                0 (.0)
+              4 FOR_ITER                14 (to 34)
+              6 STORE_FAST               1 (x)
+        &gt;&gt;    8 LOAD_GLOBAL              0 (Sbox)
+             10 LOAD_METHOD              1 (index)
+             12 LOAD_FAST                1 (x)
+             14 CALL_METHOD              1
+             16 LIST_APPEND              2
+             18 JUMP_ABSOLUTE            4 (to 8)
+             20 RETURN_VALUE
+
+Disassembly of &lt;code object &lt;listcomp&gt; at 0x000001B8EBB69F20, file &quot;&quot;, line 9&gt;:
+  9           0 BUILD_LIST               0
+              2 LOAD_FAST                0 (.0)
+              4 FOR_ITER                14 (to 34)
+              6 STORE_FAST               1 (x)
+        &gt;&gt;    8 LOAD_GLOBAL              0 (PBox)
+             10 LOAD_METHOD              1 (index)
+             12 LOAD_FAST                1 (x)
+             14 CALL_METHOD              1
+             16 LIST_APPEND              2
+             18 JUMP_ABSOLUTE            4 (to 8)
+             20 RETURN_VALUE
+</code></pre>
+<p>中间有一大段marshal，可以看出题目嵌套了多层，导致无法直接运行</p>
+<p>dump中间那段下来运行</p>
+<pre><code class="python">code2 = b&#39;c\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x03\x00\x00\x00@\x00\x00\x00s\x1e\x00\x00\x00d\x00d\x01\x84\x00Z\x00e\x01\xa0\x02d\x02\xa1\x01Z\x03e\x04e\x03\x83\x01\x01\x00d\x03S\x00)\x04c\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x00\x00\x02\x00\x00\x00C\x00\x00\x00s\x08\x00\x00\x00|\x00|\x01A\x00S\x00)\x01N\xa9\x00)\x02\xda\x05stateZ\x08roundkeyr\x00\x00\x00\x00r\x00\x00\x00\x00\xda\x00\xda\x0baddRoundKey\x02\x00\x00\x00s\x02\x00\x00\x00\x00\x01r\x03\x00\x00\x00s,\t\x00\x00c\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x03\x00\x00\x00@\x00\x00\x00s\x1e\x00\x00\x00d\x00d\x01\x84\x00Z\x00e\x01\xa0\x02d\x02\xa1\x01Z\x03e\x04e\x03\x83\x01\x01\x00d\x03S\x00)\x04c\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x03\x00\x00\x00\x06\x00\x00\x00C\x00\x00\x00s6\x00\x00\x00d\x01&#125;\x01t\x00d\x02\x83\x01D\x00]$&#125;\x02|\x01t\x01|\x00|\x02d\x03\x14\x00?\x00d\x04@\x00\x19\x00|\x02d\x03\x14\x00&gt;\x007\x00&#125;\x01q\x0c|\x01S\x00)\x05N\xe9\x00\x00\x00\x00\xe9\x10\x00\x00\x00\xe9\x04\x00\x00\x00\xe9\x0f\x00\x00\x00)\x02\xda\x05rangeZ\x04Sbox)\x03\xda\x05state\xda\x06output\xda\x01i\xa9\x00r\x08\x00\x00\x00\xda\x00\xda\tsBoxLayer\x02\x00\x00\x00s\x08\x00\x00\x00\x00\x01\x04\x01\x0c\x01&quot;\x01r\n\x00\x00\x00s\xe4\x07\x00\x00c\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x03\x00\x00\x00@\x00\x00\x00s\x1e\x00\x00\x00d\x00d\x01\x84\x00Z\x00e\x01\xa0\x02d\x02\xa1\x01Z\x03e\x04e\x03\x83\x01\x01\x00d\x03S\x00)\x04c\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x03\x00\x00\x00\x05\x00\x00\x00C\x00\x00\x00s.\x00\x00\x00d\x01&#125;\x01t\x00d\x02\x83\x01D\x00]\x1c&#125;\x02|\x01|\x00|\x02?\x00d\x03@\x00t\x01|\x02\x19\x00&gt;\x007\x00&#125;\x01q\x0c|\x01S\x00)\x04N\xe9\x00\x00\x00\x00\xe9@\x00\x00\x00\xe9\x01\x00\x00\x00)\x02\xda\x05rangeZ\x04PBox)\x03\xda\x05state\xda\x06output\xda\x01i\xa9\x00r\x07\x00\x00\x00\xda\x00\xda\x06pLayer\x02\x00\x00\x00s\x08\x00\x00\x00\x00\x01\x04\x01\x0c\x01\x1a\x01r\t\x00\x00\x00s\xac\x06\x00\x00c\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x03\x00\x00\x00@\x00\x00\x00s\x1e\x00\x00\x00d\x00d\x01\x84\x00Z\x00e\x01\xa0\x02d\x02\xa1\x01Z\x03e\x04e\x03\x83\x01\x01\x00d\x03S\x00)\x04c\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00s\x1a\x00\x00\x00t\x00\x87\x00f\x01d\x01d\x02\x84\x08t\x01d\x03\x83\x01D\x00\x83\x01\x83\x01S\x00)\x04Nc\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x00\x00\x05\x00\x00\x00\x13\x00\x00\x00s \x00\x00\x00g\x00|\x00]\x18&#125;\x01t\x00\x88\x00|\x01\x19\x00\x83\x01d\x00|\x01\x14\x00&gt;\x00\x91\x02q\x04S\x00)\x01\xe9\x08\x00\x00\x00)\x01\xda\x03ord)\x02\xda\x02.0\xda\x01c\xa9\x01\xda\x01i\xa9\x00\xda\x00\xda\n&lt;listcomp&gt;\x03\x00\x00\x00s\x04\x00\x00\x00\x06\x00\x02\x00z!string2number.&lt;locals&gt;.&lt;listcomp&gt;r\x00\x00\x00\x00)\x02\xda\x03sum\xda\x05ranger\x04\x00\x00\x00r\x06\x00\x00\x00r\x04\x00\x00\x00r\x07\x00\x00\x00\xda\rstring2number\x02\x00\x00\x00s\x02\x00\x00\x00\x00\x01r\x0b\x00\x00\x00s\x01\x05\x00\x00c\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x03\x00\x00\x00@\x00\x00\x00s\x1e\x00\x00\x00d\x00d\x01\x84\x00Z\x00e\x01\xa0\x02d\x02\xa1\x01Z\x03e\x04e\x03\x83\x01\x01\x00d\x03S\x00)\x04c\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00C\x00\x00\x00st\x00\x00\x00g\x00&#125;\x02t\x00d\x01|\x01d\x01\x17\x00d\x01\x83\x03D\x00]Z&#125;\x03|\x02\xa0\x01|\x00d\x02?\x00\xa1\x01\x01\x00|\x00d\x03@\x00d\x04&gt;\x00|\x00d\x05?\x00\x17\x00&#125;\x00t\x02|\x00d\x06?\x00\x19\x00d\x06&gt;\x00|\x00d\x07d\x06\x13\x00d\x01\x18\x00@\x00\x17\x00&#125;\x00|\x00|\x03d\x08&gt;\x00|\x00d\x05?\x00A\x00N\x00&#125;\x00q\x14|\x02S\x00)\tN\xe9\x01\x00\x00\x00\xe9\x10\x00\x00\x00i\xff\xff\x07\x00\xe9=\x00\x00\x00\xe9\x13\x00\x00\x00\xe9L\x00\x00\x00\xe9\x02\x00\x00\x00\xe9\x0f\x00\x00\x00)\x03\xda\x05range\xda\x06appendZ\x04Sbox)\x04\xda\x03key\xda\x06roundsZ\troundkeys\xda\x01i\xa9\x00r\x0c\x00\x00\x00\xda\x00\xda\x13generateRoundkeys80\x02\x00\x00\x00s\x0e\x00\x00\x00\x00\x01\x04\x01\x14\x01\x0e\x01\x14\x01 \x01\x16\x01r\x0e\x00\x00\x00sF\x03\x00\x00c\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x06\x00\x00\x00@\x00\x00\x00s\xa6\x00\x00\x00d\x00d\x01\x84\x00Z\x00e\x01d\x02\x83\x01Z\x02e\x03e\x02\x83\x01d\x03k\x03r,e\x04d\x04\x83\x01\x01\x00e\x05d\x05\x83\x01\x01\x00e\x02d\x06d\x07\x85\x02\x19\x00e\x02d\x07d\x08\x85\x02\x19\x00e\x02d\x08d\t\x85\x02\x19\x00e\x02d\td\x03\x85\x02\x19\x00g\x04Z\x06d\nd\x0bd\x0cd\rg\x04Z\x07e\x00e\x06\x83\x01Z\x08e\td\x0e\x83\x01D\x00]$Z\ne\x07e\n\x19\x00e\x08e\n\x19\x00k\x03rte\x04d\x04\x83\x01\x01\x00e\x05d\x05\x83\x01\x01\x00qte\x04d\x0f\x83\x01\x01\x00d\x06S\x00)\x10c\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x08\x00\x00\x00\x06\x00\x00\x00C\x00\x00\x00sp\x00\x00\x00d\x01&#125;\x01t\x00d\x02|\x01\x83\x02&#125;\x02g\x00&#125;\x03|\x00D\x00]T&#125;\x04t\x01|\x04\x83\x01&#125;\x05t\x02|\x01d\x03\x18\x00\x83\x01D\x00]&quot;&#125;\x06t\x03|\x05|\x02|\x06\x19\x00\x83\x02&#125;\x05t\x04|\x05\x83\x01&#125;\x05t\x05|\x05\x83\x01&#125;\x05q.t\x03|\x05|\x02d\x04\x19\x00\x83\x02&#125;\x07|\x03\xa0\x06|\x07\xa1\x01\x01\x00q\x16|\x03S\x00)\x05N\xe9 \x00\x00\x00l\x06\x00\x00\x00! 20\\X\xa8 1!\x02\x00\xe9\x01\x00\x00\x00\xe9\xff\xff\xff\xff)\x07Z\x13generateRoundkeys80Z\rstring2number\xda\x05rangeZ\x0baddRoundKeyZ\tsBoxLayerZ\x06pLayer\xda\x06append)\x08\xda\x06blocks\xda\x06roundsZ\troundkeysZ\x03outZ\x05block\xda\x05state\xda\x01iZ\x06cipher\xa9\x00r\t\x00\x00\x00\xda\x00\xda\x07encrypt\x02\x00\x00\x00s\x18\x00\x00\x00\x00\x01\x04\x01\n\x01\x04\x01\x08\x01\x08\x01\x10\x01\x0e\x01\x08\x01\n\x01\x0e\x01\x0c\x01r\x0b\x00\x00\x00z\x12pls input ur flag:r\x00\x00\x00\x00z\x0bwrong flag!\xe9\x00\x00\x00\x00N\xe9\x08\x00\x00\x00\xe9\x10\x00\x00\x00\xe9\x18\x00\x00\x00l\x04\x00\x00\x00\x9e\x1faH\xc4\x13d\rl\x05\x00\x00\x00b]t:\x94Z\x15\x18\x0e\x00l\x04\x00\x00\x000ek95\x04\xb2&quot;l\x05\x00\x00\x00\x88o\xeddY\x13\xb1L\x01\x00\xe9\x04\x00\x00\x00z\x08Correct!)\x0br\x0b\x00\x00\x00\xda\x05inputZ\x03inp\xda\x03len\xda\x05print\xda\x04exitr\x05\x00\x00\x00Z\x04cmpsZ\nout_blocksr\x03\x00\x00\x00r\x08\x00\x00\x00r\t\x00\x00\x00r\t\x00\x00\x00r\t\x00\x00\x00r\n\x00\x00\x00\xda\x08&lt;module&gt;\x02\x00\x00\x00s\x18\x00\x00\x00\x08\x0e\x08\x01\x0c\x01\x08\x01\x08\x01,\x01\x0c\x01\x08\x01\x0c\x01\x10\x01\x08\x01\n\x01N)\x05r\x0e\x00\x00\x00\xda\x07marshal\xda\x05loads\xda\x02co\xda\x04execr\x0c\x00\x00\x00r\x0c\x00\x00\x00r\x0c\x00\x00\x00r\r\x00\x00\x00\xda\x08&lt;module&gt;\x02\x00\x00\x00s\x04\x00\x00\x00\x08\t\n\x01N)\x05r\x0b\x00\x00\x00\xda\x07marshal\xda\x05loads\xda\x02co\xda\x04execr\x06\x00\x00\x00r\x06\x00\x00\x00r\x06\x00\x00\x00r\x07\x00\x00\x00\xda\x08&lt;module&gt;\x02\x00\x00\x00s\x04\x00\x00\x00\x08\x03\n\x01N)\x05r\t\x00\x00\x00\xda\x07marshal\xda\x05loads\xda\x02co\xda\x04execr\x07\x00\x00\x00r\x07\x00\x00\x00r\x07\x00\x00\x00r\x08\x00\x00\x00\xda\x08&lt;module&gt;\x02\x00\x00\x00s\x04\x00\x00\x00\x08\x06\n\x01N)\x05r\n\x00\x00\x00\xda\x07marshal\xda\x05loads\xda\x02co\xda\x04execr\x08\x00\x00\x00r\x08\x00\x00\x00r\x08\x00\x00\x00r\t\x00\x00\x00\xda\x08&lt;module&gt;\x02\x00\x00\x00s\x04\x00\x00\x00\x08\x06\n\x01N)\x05r\x03\x00\x00\x00\xda\x07marshal\xda\x05loads\xda\x02co\xda\x04execr\x00\x00\x00\x00r\x00\x00\x00\x00r\x00\x00\x00\x00r\x02\x00\x00\x00\xda\x08&lt;module&gt;\x02\x00\x00\x00s\x04\x00\x00\x00\x08\x03\n\x01&#39;
+</code></pre>
+<p>由于exec会在当前frame中执行，故执行的全局变量也会留下，可使用globals()查看（全局hook的思想）</p>
+<p>由于程序输入错误会退出，可在exec前定义一个exit函数，并使用try执行exec防止退出</p>
+<pre><code class="python">l = marshal.loads(code2)
+def exit(c):
+    pass
+try:
+    exec(l)
+except:
+    pass
+print(globals())
+</code></pre>
+<blockquote>
+<p><strong>globals()</strong> 函数会以字典类型返回当前位置的全部全局变量。</p>
+</blockquote>
+<p>执行后的结果如下：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403201150025.png"></p>
+<p>可见有几个特征</p>
+<blockquote>
+<p>Sbox</p>
+<p>PBox</p>
+<p>generateRoundkeys80</p>
+</blockquote>
+<p>查一下可以得到是一个叫做present的算法：<a target="_blank" rel="noopener" href="https://blog.csdn.net/ftx456789/article/details/113613764">https://blog.csdn.net/ftx456789/article/details/113613764</a></p>
+<p>其中涉及到密钥按位运算：<a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/ask/sof/107960326">https://cloud.tencent.com/developer/ask/sof/107960326</a></p>
+<p>（甚至是找到了原函数）</p>
+<pre><code class="python">def generateRoundkeys80(key, rounds):
+    &quot;&quot;&quot;Generate the roundkeys for a 80-bit key
+    Input:
+            key:    the key as a 80-bit integer
+            rounds: the number of rounds as an integer
+    Output: list of 64-bit roundkeys as integers&quot;&quot;&quot;
+    roundkeys = []
+    for i in xrange(1, rounds + 1):  # (K1 ... K32)
+        # rawkey: used in comments to show what happens at bitlevel
+        # rawKey[0:64]
+        roundkeys.append(key &gt;&gt; 16)
+        # 1. Shift
+        # rawKey[19:len(rawKey)]+rawKey[0:19]
+        key = ((key &amp; (2 ** 19 - 1)) &lt;&lt; 61) + (key &gt;&gt; 19)
+        # 2. SBox
+        # rawKey[76:80] = S(rawKey[76:80])
+        key = (Sbox[key &gt;&gt; 76] &lt;&lt; 76) + (key &amp; (2 ** 76 - 1))
+        #3. Salt
+        #rawKey[15:20] ^ i
+        key ^= i &lt;&lt; 15
+    return roundkeys
+</code></pre>
+<p>从其他信息中可以看出cmps为密文数组，blocks为输入数组</p>
+<p>由于输出的全局变量中没有key，所以key应该是局部变量，此处输出一下这个变量</p>
+<p>输出方法：hook函数generateRoundkeys80，使其直接输出参数</p>
+<pre><code class="python">generateRoundkeys80 = lambda x1,x2: print(x1,x2)
+</code></pre>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403201241212.png"></p>
+<p>可以得到</p>
+<pre><code class="python">key = 85354531916197809168417
+</code></pre>
+<p>但是直接用这个key进行解密结果不对，应该是对算法进行了修改</p>
+<p>那就只能看看哪里进行了修改了，按照上面的步骤一步步脱marshal<del>（脱了5层，第六层才搞到）</del></p>
+<pre><code class="assembly">Disassembly of &lt;code object generateRoundkeys80 at 0x000001817F39A130, file &quot;&quot;, line 2&gt;:
+  4           0 BUILD_LIST               0
+              2 STORE_FAST               2 (roundkeys)
+
+  5           4 LOAD_GLOBAL              0 (range)
+              6 LOAD_CONST               1 (1)
+              8 LOAD_FAST                1 (rounds)
+             10 LOAD_CONST               1 (1)
+             12 BINARY_ADD
+             14 LOAD_CONST               1 (1)
+             16 CALL_FUNCTION            3
+             18 GET_ITER
+             20 FOR_ITER                90 (to 202)
+             22 STORE_FAST               3 (i)
+
+  6          24 LOAD_FAST                2 (roundkeys)
+             26 LOAD_METHOD              1 (append)
+             28 LOAD_FAST                0 (key)
+             30 LOAD_CONST               2 (16)
+             32 BINARY_RSHIFT
+             34 CALL_METHOD              1
+             36 POP_TOP
+
+  7          38 LOAD_FAST                0 (key)
+        &gt;&gt;   40 LOAD_CONST               3 (524287)
+             42 BINARY_AND
+             44 LOAD_CONST               4 (61)
+             46 BINARY_LSHIFT
+             48 LOAD_FAST                0 (key)
+             50 LOAD_CONST               5 (19)
+             52 BINARY_RSHIFT
+             54 BINARY_ADD
+             56 STORE_FAST               0 (key)
+
+  8          58 LOAD_GLOBAL              2 (Sbox)
+             60 LOAD_FAST                0 (key)
+             62 LOAD_CONST               6 (76)
+             64 BINARY_RSHIFT
+             66 BINARY_SUBSCR
+             68 LOAD_CONST               6 (76)
+             70 BINARY_LSHIFT
+             72 LOAD_FAST                0 (key)
+             74 LOAD_CONST               7 (2)
+             76 LOAD_CONST               6 (76)
+             78 BINARY_POWER
+             80 LOAD_CONST               1 (1)
+             82 BINARY_SUBTRACT
+             84 BINARY_AND
+             86 BINARY_ADD
+             88 STORE_FAST               0 (key)
+
+  9          90 LOAD_FAST                0 (key)
+             92 LOAD_FAST                3 (i)
+             94 LOAD_CONST               8 (15)
+             96 BINARY_LSHIFT
+             98 LOAD_FAST                0 (key)
+            100 LOAD_CONST               5 (19)
+            102 BINARY_RSHIFT
+            104 BINARY_XOR
+            106 INPLACE_XOR
+            108 STORE_FAST               0 (key)
+            110 JUMP_ABSOLUTE           20 (to 40)
+            112 LOAD_FAST                2 (roundkeys)
+            114 RETURN_VALUE
+</code></pre>
+<p>对比一下原函数，可以发现在最后一段（第9段）中的第100-104处比原算法多出了一个R_SHIFT</p>
+<p>即从<code>key ^= i &lt;&lt; 15</code>变为了<code>key ^= (i&lt;&lt;15) ^ (key &gt;&gt; 19)</code></p>
+<p>那么就改改原算法然后写脚本了</p>
+<pre><code class="python">def sBoxLayer_dec(state):
+    output = 0
+    for i in range(16):
+            output += Sbox_inv[( state &gt;&gt; (i*4)) &amp; 0xF] &lt;&lt; (i*4)
+    return output
+
+def pLayer_dec(state):
+    output = 0
+    for i in range(64):
+            output += ((state &gt;&gt; i) &amp; 0x01) &lt;&lt; PBox_inv[i]
+    return output
+
+def generateRoundkeys80(key,rounds):
+    roundkeys = []
+    for i in range(1,rounds+1,1): 
+            roundkeys.append(key &gt;&gt;16)
+            key = ((key &amp; (2**19-1)) &lt;&lt; 61) + (key &gt;&gt; 19)
+            key = (Sbox[key &gt;&gt; 76] &lt;&lt; 76)+(key &amp; (2**76-1))
+            key ^= (i &lt;&lt; 15)^(key &gt;&gt; 19)
+    return roundkeys
+
+def string2number(i):
+    return sum([ord(i[c])&lt;&lt;(8*c) for c in range(8)])
+
+#        0   1   2   3   4   5   6   7   8   9   a   b   c   d   e   f
+Sbox= [0xc,0x5,0x6,0xb,0x9,0x0,0xa,0xd,0x3,0xe,0xf,0x8,0x4,0x7,0x1,0x2]
+Sbox_inv = [Sbox.index(x) for x in range(16)]
+PBox = [0,16,32,48,1,17,33,49,2,18,34,50,3,19,35,51,
+        4,20,36,52,5,21,37,53,6,22,38,54,7,23,39,55,
+        8,24,40,56,9,25,41,57,10,26,42,58,11,27,43,59,
+        12,28,44,60,13,29,45,61,14,30,46,62,15,31,47,63]
+PBox_inv = [PBox.index(x) for x in range(64)]
+
+def addRoundKey(state,roundkey):
+    return state ^ roundkey
+
+def decrypt(blocks):
+    rounds = 32
+    roundkeys = generateRoundkeys80(85354531916197809168417, rounds)
+    flag = &#39;&#39;
+    for block in blocks:
+        state = block
+        for i in range(rounds-1):
+                state = addRoundKey(state, roundkeys[-i-1])
+                state = pLayer_dec(state)
+                state = sBoxLayer_dec(state)
+        decipher = addRoundKey(state, roundkeys[0])
+        flag += &#39;&#39;.join([chr(decipher&gt;&gt;(c*8) &amp; 0xff) for c in range(8)])
+    print(flag)
+cmps = [120617461261311902, 16357837616839286114, 312508749794633008, 1843701600916795272]
+decrypt(cmps)
+# 83ab766012aef9934c95ed93e9822a91
+</code></pre>
+
+  </article>
+
+  
+      
+    <div class="nexmoe-post-copyright">
+        <strong>本文作者：</strong>WoaW04<br>
+        <strong>本文链接：</strong><a href="http://example.com/2024/03/20/2023DASCTFxCBCTFmarshal/" title="http:&#x2F;&#x2F;example.com&#x2F;2024&#x2F;03&#x2F;20&#x2F;2023DASCTFxCBCTFmarshal&#x2F;" target="_blank" rel="noopener">http:&#x2F;&#x2F;example.com&#x2F;2024&#x2F;03&#x2F;20&#x2F;2023DASCTFxCBCTFmarshal&#x2F;</a><br>
+        
+            <strong>版权声明：</strong>本文采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/cn/deed.zh" target="_blank">CC BY-NC-SA 3.0 CN</a> 协议进行许可
+        
+    </div>
+
+
+  
+  
+  <div class="nexmoe-post-meta nexmoe-rainbow">
+    
+    
+        <a class="nexmoefont icon-tag-fill -none-link" href="/tags/2023DASCTFxBCCTF/" rel="tag">2023DASCTFxBCCTF</a> <a class="nexmoefont icon-tag-fill -none-link" href="/tags/RE/" rel="tag">RE</a>
+    
+</div>
+
+  
+      <div class="nexmoe-post-footer">
+          <section class="nexmoe-comment">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.css">
+<div id="gitalk"></div>
+<script src="https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: '80b2453b6d5f37ad6225',
+        clientSecret: '43e99fa852795c9a7b3eb924b2558c64b84bbdeb',
+        id: window.location.pathname,
+        repo: 'nexmoe.github.io',
+        owner: 'nexmoe',
+        admin: 'nexmoe'
+    })
+    gitalk.render('gitalk')
+</script>
+</section>
+      </div>
+  
+</div>
+            <div class="nexmoe-post-right">
+              <div class="nexmoe-fixed">
+                  <div class="nexmoe-tool"> 
+                    
+                      
+                    
+                      <a href="#nexmoe-content" class="toc-link" aria-label="回到顶部" title="top"><button class="mdui-fab mdui-ripple"><i class="nexmoefont icon-caret-top"></i></button></a>
+                  </div>
+              </div>
+            </div>
+        </div>
+    </div>
+     
+    <div id="nexmoe-search-space">
+        <div class="search-container">
+            <div class="search-header">
+                <div class="search-input-container">
+                    <input class="search-input" type="text" placeholder="搜索" oninput="sinput();">
+                </div>
+                <a class="search-close" onclick="sclose();">×</a>
+            </div>
+            <div class="search-body"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/combine/npm/lazysizes@5.1.0/lazysizes.min.js,npm/mdui@0.4.3/dist/js/mdui.min.js?v=1"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+
+ 
+
+<script async src="/js/app.js?v=1710910616696"></script>
+
+
+	<script async src="/js/search.js?v=1710910616696"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js"></script>
+<script>
+	$(".justified-gallery").justifiedGallery({
+		rowHeight: 160,
+		margins: 10,
+	});
+</script>
+
+
+    
+
+
+
+
+
+</body>
+
+</html>
