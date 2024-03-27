@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+
+<head>
+    
+    <title>2024NKCTFlogin_system - The Blog of WoaW04</title>
+    <meta charset="UTF-8">
+    <meta name="keywords" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+    
+    
+
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <meta name="description" content="0x00 题目分析比较简单的一题，主要是Z3的使用方法和换表AES 关于Z3：https:&#x2F;&#x2F;github.com&#x2F;Z3Prover&#x2F;z3 AES不必多说（ 0x01 解ELF，无壳 直接上IDA  由login Success的提示可以看到不仅要password，还要username 那么就一个个来看吧 首先是user name 在strlen后有一个if包含一个函数，这个函数应该就是对user">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2024NKCTFlogin_system">
+<meta property="og:url" content="http://example.com/2024/03/27/2024NKCTFlogin-system/index.html">
+<meta property="og:site_name" content="The Blog of WoaW04">
+<meta property="og:description" content="0x00 题目分析比较简单的一题，主要是Z3的使用方法和换表AES 关于Z3：https:&#x2F;&#x2F;github.com&#x2F;Z3Prover&#x2F;z3 AES不必多说（ 0x01 解ELF，无壳 直接上IDA  由login Success的提示可以看到不仅要password，还要username 那么就一个个来看吧 首先是user name 在strlen后有一个if包含一个函数，这个函数应该就是对user">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403272128037.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403272134877.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403272128037.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403272152416.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403272155882.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403272128037.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403272156597.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403272157516.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403272204371.png">
+<meta property="article:published_time" content="2024-03-27T13:24:52.000Z">
+<meta property="article:modified_time" content="2024-03-27T14:12:03.910Z">
+<meta property="article:author" content="WoaW04">
+<meta property="article:tag" content="RE">
+<meta property="article:tag" content="2024NKCTF">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403272128037.png">
+    <link rel="stylesheet" href="/lib/jquery.fancybox.min.css?v=1711548783460">
+    
+    <link rel="stylesheet" href="/lib/mdui_043tiny/css/mdui.css?v=1711548783460">
+    <link rel="stylesheet" href="/lib/iconfont/iconfont.css?v=1711548783460">
+    <link rel="stylesheet" href="/css/style.css?v=1711548783460">
+    
+        <link rel="stylesheet" href="/css/dark.css?v=1711548783460">
+     
+    
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="mdui-drawer-body-left">
+    
+    <div id="nexmoe-background">
+        <div class="nexmoe-bg" style="background-image: url(https://cdn.jsdelivr.net/gh/WoaW04/Picture/image95796589_p0.jpg)"></div>
+        <div class="mdui-appbar mdui-shadow-0">
+            <div class="mdui-toolbar">
+                <a mdui-drawer="{target: '#drawer', swipe: true}" title="menu" class="mdui-btn mdui-btn-icon mdui-ripple"><i class="mdui-icon nexmoefont icon-menu"></i></a>
+                <div class="mdui-toolbar-spacer"></div>
+                <!--<a href="javascript:;" class="mdui-btn mdui-btn-icon"><i class="mdui-icon material-icons">search</i></a>-->
+                <a href="/" title="WoaW04" class="mdui-btn mdui-btn-icon"><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image04CTF.png" alt="WoaW04"></a>
+            </div>
+        </div>
+    </div>
+    <div id="nexmoe-header">
+        <div class="nexmoe-drawer mdui-drawer" id="drawer">
+    <div class="nexmoe-avatar mdui-ripple">
+        <a href="/" title="WoaW04">
+            <img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image04CTF.png" alt="WoaW04" alt="WoaW04">
+        </a>
+    </div>
+    <div class="nexmoe-count">
+        <div><span>文章</span>23</div>
+        <div><span>标签</span>11</div>
+        <div><span>分类</span>0</div>
+    </div>
+    <div class="nexmoe-list mdui-list" mdui-collapse="{accordion: true}">
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/" title="回到首页">
+            <i class="mdui-list-item-icon nexmoefont icon-home"></i>
+            <div class="mdui-list-item-content">
+                回到首页
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/about.html" title="关于博客">
+            <i class="mdui-list-item-icon nexmoefont icon-info-circle"></i>
+            <div class="mdui-list-item-content">
+                关于博客
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/PY.html" title="我的朋友">
+            <i class="mdui-list-item-icon nexmoefont icon-unorderedlist"></i>
+            <div class="mdui-list-item-content">
+                我的朋友
+            </div>
+        </a>
+        
+    </div>
+    <aside id="nexmoe-sidebar">
+    
+    <div class="nexmoe-widget-wrap">
+    <div class="nexmoe-widget nexmoe-search">
+        
+            <form id="search_form">
+                <label><input class="st-default-search-input" id="search_value" name="q" type="search" placeholder="搜索" style="
+                    font-size: 15px !important;
+                    height: 56px !important;
+                    background-image: none;
+                "></label>
+            </form>
+         
+    </div>
+</div>
+    
+    <div class="nexmoe-widget-wrap">
+    <div class="nexmoe-widget nexmoe-social">
+        <a class="mdui-ripple" href="https://space.bilibili.com/3096846" target="_blank" mdui-tooltip="{content: '哔哩哔哩'}" style="color: rgb(231, 106, 141);background-color: rgba(231, 106, 141, .15);">
+            <i class="nexmoefont icon-bilibili"></i>
+        </a><a class="mdui-ripple" href="https://github.com/WoaW04" target="_blank" mdui-tooltip="{content: 'GitHub'}" style="color: rgb(255, 255, 255);background-color: rgba(255, 255, 255, .15);">
+            <i class="nexmoefont icon-github"></i>
+        </a>
+    </div>
+</div>
+    
+    
+
+    
+    
+  <div class="nexmoe-widget-wrap">
+    <div id="randomtagcloud" class="nexmoe-widget tagcloud nexmoe-rainbow">
+      <a href="/tags/2023DASCTFxBCCTF/" style="font-size: 12.5px;">2023DASCTFxBCCTF</a> <a href="/tags/2023DASCTF%E4%B8%83%E6%9C%88%E8%B5%9B/" style="font-size: 15px;">2023DASCTF七月赛</a> <a href="/tags/2023NepCTF/" style="font-size: 12.5px;">2023NepCTF</a> <a href="/tags/2023starCTF/" style="font-size: 15px;">2023starCTF</a> <a href="/tags/2023%E7%BE%8A%E5%9F%8E%E6%9D%AF/" style="font-size: 17.5px;">2023羊城杯</a> <a href="/tags/2024NKCTF/" style="font-size: 10px;">2024NKCTF</a> <a href="/tags/Learning/" style="font-size: 12.5px;">Learning</a> <a href="/tags/Misc/" style="font-size: 10px;">Misc</a> <a href="/tags/RE/" style="font-size: 20px;">RE</a> <a href="/tags/%E5%B7%85%E5%B3%B0%E6%9E%81%E5%AE%A22023/" style="font-size: 12.5px;">巅峰极客2023</a> <a href="/tags/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8/" style="font-size: 10px;">软件安全</a>
+    </div>
+    
+  </div>
+
+    
+</aside>
+    <div class="nexmoe-copyright">
+        &copy; 2024 WoaW04
+        Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+        & <a href="https://github.com/theme-nexmoe/hexo-theme-nexmoe" target="_blank">Nexmoe</a>
+        
+    </div>
+</div><!-- .nexmoe-drawer -->
+    </div>
+    <div id="nexmoe-content">
+        <div class="nexmoe-primary">
+            <div class="nexmoe-post">
+
+  <article>
+      
+          <div class="nexmoe-post-cover" style="padding-bottom: NaN%;"> 
+              <img data-src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403272128037.png" data-sizes="auto" alt="2024NKCTFlogin_system" class="lazyload">
+              <h1>2024NKCTFlogin_system</h1>
+          </div>
+      
+      
+      <div class="nexmoe-post-meta nexmoe-rainbow" style="margin:10px 0!important;">
+    <a><i class="nexmoefont icon-calendar-fill"></i>2024年03月27日</a>
+</div>
+
+      
+
+      <h2 id="0x00-题目分析"><a href="#0x00-题目分析" class="headerlink" title="0x00 题目分析"></a>0x00 题目分析</h2><p>比较简单的一题，主要是Z3的使用方法和换表AES</p>
+<p>关于Z3：<a target="_blank" rel="noopener" href="https://github.com/Z3Prover/z3">https://github.com/Z3Prover/z3</a></p>
+<p>AES不必多说（</p>
+<h2 id="0x01-解"><a href="#0x01-解" class="headerlink" title="0x01 解"></a>0x01 解</h2><p>ELF，无壳</p>
+<p>直接上IDA</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403272128037.png"></p>
+<p>由login Success的提示可以看到不仅要password，还要username</p>
+<p>那么就一个个来看吧</p>
+<p>首先是user name</p>
+<p>在strlen后有一个if包含一个函数，这个函数应该就是对user name的判断了</p>
+<p>根据strlen可知这个name的长度应该为16B</p>
+<p>进去这个对user name内容的判断</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403272134877.png"></p>
+<p>这么多等式，首先想到用Z3解，再仔细看看，可以发现这些等式每四个为一组，所以就可以写脚本先把name搞出来</p>
+<pre><code class="python">from z3 import *
+a1 = [BitVec((&#39;x%s&#39; % i), 8) for i in range(16)]
+out = []
+s = Solver()
+s.add(a1[2] + a1[1] + a1[0] + a1[3] == 447)
+s.add(101 * a1[2] + a1[0] + 9 * a1[1] + 8 * a1[3] == 12265)
+s.add(5 * a1[2] + 3 * a1[0] + 4 * a1[1] + 6 * a1[3] == 2000)
+s.add(88 * a1[2] + 12 * a1[0] + 11 * a1[1] + 87 * a1[3] == 21475)
+s.add(a1[6] + 59 * a1[5] + 100 * a1[4] + a1[7] == 7896)
+s.add(443 * a1[4] + 200 * a1[5] + 10 * a1[6] + 16 * a1[7] == 33774)
+s.add(556 * a1[5] + 333 * a1[4] + 8 * a1[6] + 7 * a1[7] == 44758)
+s.add(a1[6] + a1[5] + 202 * a1[4] + a1[7] == 9950)
+s.add(78 * a1[10] + 35 * a1[9] + 23 * a1[8] + 89 * a1[11] == 24052)
+s.add(78 * a1[8] + 59 * a1[9] + 15 * a1[10] + 91 * a1[11] == 25209)
+s.add(111 * a1[10] + 654 * a1[9] + 123 * a1[8] + 222 * a1[11] == 113427)
+s.add(6 * a1[9] + 72 * a1[8] + 5 * a1[10] + 444 * a1[11] == 54166)
+s.add(56 * a1[14] + 35 * a1[12] + 6 * a1[13] + 121 * a1[15] == 11130)
+s.add(169 * a1[14] + 158 * a1[13] + 98 * a1[12] + 124 * a1[15] == 27382)
+s.add(147 * a1[13] + 65 * a1[12] + 131 * a1[14] + 129 * a1[15] == 23564)
+s.add(137 * a1[14] + 132 * a1[13] + 620 * a1[12] + 135 * a1[15] == 51206)
+if s.check() == sat:
+    result = s.model()
+    print(result)
+    for i in range(16):
+        out.append(result[a1[i]].as_long())
+        print(chr(out[i]), end=&#39;&#39;)
+# user01_nkctf2024
+</code></pre>
+<p>接下来进入pass的判断，根据strlen可知password的长度为26B</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403272128037.png"></p>
+<p>然后有一个BYTE1的判断，95为下划线（_），因此合理怀疑这是一个分隔，password由两个部分组成</p>
+<p>之后是将输入放入了dest，不过只放了9位</p>
+<p>v17的数据放进了v13</p>
+<p>接下来的一个for循环，将dest做了一些运算之后放入了s2中，之后s2拿去memcmp了</p>
+<p>对比对象是这玩意</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403272152416.png"></p>
+<p>那么就可以reverse一下拿到一个9B的东西了</p>
+<pre><code class="python">key = [0x7e, 0x5a, 0x6e, 0x77, 0x3a, 0x79, 0x35, 0x76, 0x7c]
+
+for i in range(9):
+    key[i] = (key[i] - 9 + i) ^ i
+for i in key:
+    print(chr(i), end=&#39;&#39;)
+print()
+# uSer1p4ss
+</code></pre>
+<p>再之后就是一个函数再接一个memcmp</p>
+<p>先看看memcmp的对比对象（这是后面复现截的图，变量名不一样，内容不变）</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403272155882.png"></p>
+<p>看不出什么加密</p>
+<p>再分析一下，首先可以确定的就是对9B判断之后的这个函数就是一个加密函数，而这个函数把变量s也就是name丢进去进行了运算，因此可以判断name是一个key</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403272128037.png"></p>
+<p>然后进这个函数看看</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403272156597.png"></p>
+<p>a1是密钥，a2是密钥长度，被放进了dest里面</p>
+<p>然后有很多函数，先看第一个放密钥进去的</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403272157516.png"></p>
+<p>这个byte_5040是这样的</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403272204371.png"></p>
+<p>大小是16x16</p>
+<p>再结合第一个函数内的10</p>
+<p>应该是个AES</p>
+<p>关于AES：<a target="_blank" rel="noopener" href="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403272204371.png">https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403272204371.png</a></p>
+<p>不过这个表和标准的AES表不一样</p>
+<p>应该是换表AES</p>
+<p>那么就搞一下inv_sbox然后去解</p>
+<pre><code class="python"># get inv_sbox
+s_box = [
+    0x31, 0x52, 0x5a, 0xc8, 0x0b, 0xac, 0xf3, 0x3a, 0x8b, 0x54, 0x27, 0x9b, 0xab, 0x95, 0xde, 0x83,
+    0x60, 0xcb, 0x53, 0x7f, 0xc4, 0xe3, 0x0a, 0x97, 0xe0, 0x29, 0xd5, 0x68, 0xc5, 0xdf, 0xf4, 0x7b,
+    0xaa, 0xd6, 0x42, 0x78, 0x6c, 0xe9, 0x70, 0x17, 0xd7, 0x37, 0x24, 0x49, 0x75, 0xa9, 0x89, 0x67,
+    0x03, 0xfa, 0xd9, 0x91, 0xb4, 0x5b, 0xc2, 0x4e, 0x92, 0xfc, 0x46, 0xb1, 0x73, 0x08, 0xc7, 0x74,
+    0x09, 0xaf, 0xec, 0xf5, 0x4d, 0x2d, 0xea, 0xa5, 0xda, 0xef, 0xa6, 0x2b, 0x7e, 0x0c, 0x8f, 0xb0,
+    0x04, 0x06, 0x62, 0x84, 0x15, 0x8e, 0x12, 0x1d, 0x44, 0xc0, 0xe2, 0x38, 0xd4, 0x47, 0x28, 0x45,
+    0x6e, 0x9d, 0x63, 0xcf, 0xe6, 0x8c, 0x18, 0x82, 0x1b, 0x2c, 0xee, 0x87, 0x94, 0x10, 0xc1, 0x20,
+    0x07, 0x4a, 0xa4, 0xeb, 0x77, 0xbc, 0xd3, 0xe1, 0x66, 0x2a, 0x6b, 0xe7, 0x79, 0xcc, 0x86, 0x16,
+    0xd0, 0xd1, 0x19, 0x55, 0x3c, 0x9f, 0xfb, 0x30, 0x98, 0xbd, 0xb8, 0xf1, 0x9e, 0x61, 0xcd, 0x90,
+    0xce, 0x7c, 0x8d, 0x57, 0xae, 0x6a, 0xb3, 0x3d, 0x76, 0xa7, 0x71, 0x88, 0xa2, 0xba, 0x4f, 0x3e,
+    0x40, 0x64, 0x0f, 0x48, 0x21, 0x35, 0x36, 0x2f, 0xe8, 0x14, 0x5d, 0x51, 0xd8, 0xb5, 0xfe, 0xd2,
+    0x96, 0x93, 0xa1, 0xb6, 0x43, 0x0d, 0x4c, 0x80, 0xc9, 0xff, 0xa3, 0xdd, 0x72, 0x05, 0x59, 0xbf,
+    0x0e, 0x26, 0x34, 0x1f, 0x13, 0xe5, 0xdc, 0xf2, 0xc6, 0x50, 0x1e, 0xe4, 0x85, 0xb7, 0x39, 0x8a,
+    0xca, 0xed, 0x9c, 0xbb, 0x56, 0x23, 0x1a, 0xf0, 0x32, 0x58, 0xb2, 0x65, 0x33, 0x6f, 0x41, 0xbe,
+    0x3f, 0x6d, 0x11, 0x00, 0xad, 0x5f, 0xc3, 0x81, 0x25, 0xa8, 0xa0, 0x9a, 0xf6, 0xf7, 0x5e, 0x99,
+    0x22, 0x2e, 0x4b, 0xf9, 0x3b, 0x02, 0x7a, 0xb9, 0x5c, 0x69, 0xf8, 0x1c, 0xdb, 0x01, 0x7d, 0xfd
+]
+
+inv_s_box = []
+for i in range(256):
+    inv_s_box.append(s_box.index(i))
+for i in range(len(inv_s_box)):
+    if (i % 16 == 0 and i != 0):
+        print()
+    print(&#39;0x&#123;:02x&#125;&#39;.format(inv_s_box[i]), end=&#39;, &#39;)
+</code></pre>
+<pre><code class="python"># decrypt
+N_ROUNDS = 10
+
+key = b&#39;\x75\x73\x65\x72\x30\x31\x5f\x6e\x6b\x63\x74\x66\x32\x30\x32\x34&#39;
+ciphertext = b&#39;\xb0\xcc\x93\xea\xe9\x2f\xef\x56\x99\x39\x6e\x02\x3b\x4f\x9e\x42&#39;
+
+s_box = (
+    0x31, 0x52, 0x5a, 0xc8, 0x0b, 0xac, 0xf3, 0x3a, 0x8b, 0x54, 0x27, 0x9b, 0xab, 0x95, 0xde, 0x83,
+    0x60, 0xcb, 0x53, 0x7f, 0xc4, 0xe3, 0x0a, 0x97, 0xe0, 0x29, 0xd5, 0x68, 0xc5, 0xdf, 0xf4, 0x7b,
+    0xaa, 0xd6, 0x42, 0x78, 0x6c, 0xe9, 0x70, 0x17, 0xd7, 0x37, 0x24, 0x49, 0x75, 0xa9, 0x89, 0x67,
+    0x03, 0xfa, 0xd9, 0x91, 0xb4, 0x5b, 0xc2, 0x4e, 0x92, 0xfc, 0x46, 0xb1, 0x73, 0x08, 0xc7, 0x74,
+    0x09, 0xaf, 0xec, 0xf5, 0x4d, 0x2d, 0xea, 0xa5, 0xda, 0xef, 0xa6, 0x2b, 0x7e, 0x0c, 0x8f, 0xb0,
+    0x04, 0x06, 0x62, 0x84, 0x15, 0x8e, 0x12, 0x1d, 0x44, 0xc0, 0xe2, 0x38, 0xd4, 0x47, 0x28, 0x45,
+    0x6e, 0x9d, 0x63, 0xcf, 0xe6, 0x8c, 0x18, 0x82, 0x1b, 0x2c, 0xee, 0x87, 0x94, 0x10, 0xc1, 0x20,
+    0x07, 0x4a, 0xa4, 0xeb, 0x77, 0xbc, 0xd3, 0xe1, 0x66, 0x2a, 0x6b, 0xe7, 0x79, 0xcc, 0x86, 0x16,
+    0xd0, 0xd1, 0x19, 0x55, 0x3c, 0x9f, 0xfb, 0x30, 0x98, 0xbd, 0xb8, 0xf1, 0x9e, 0x61, 0xcd, 0x90,
+    0xce, 0x7c, 0x8d, 0x57, 0xae, 0x6a, 0xb3, 0x3d, 0x76, 0xa7, 0x71, 0x88, 0xa2, 0xba, 0x4f, 0x3e,
+    0x40, 0x64, 0x0f, 0x48, 0x21, 0x35, 0x36, 0x2f, 0xe8, 0x14, 0x5d, 0x51, 0xd8, 0xb5, 0xfe, 0xd2,
+    0x96, 0x93, 0xa1, 0xb6, 0x43, 0x0d, 0x4c, 0x80, 0xc9, 0xff, 0xa3, 0xdd, 0x72, 0x05, 0x59, 0xbf,
+    0x0e, 0x26, 0x34, 0x1f, 0x13, 0xe5, 0xdc, 0xf2, 0xc6, 0x50, 0x1e, 0xe4, 0x85, 0xb7, 0x39, 0x8a,
+    0xca, 0xed, 0x9c, 0xbb, 0x56, 0x23, 0x1a, 0xf0, 0x32, 0x58, 0xb2, 0x65, 0x33, 0x6f, 0x41, 0xbe,
+    0x3f, 0x6d, 0x11, 0x00, 0xad, 0x5f, 0xc3, 0x81, 0x25, 0xa8, 0xa0, 0x9a, 0xf6, 0xf7, 0x5e, 0x99,
+    0x22, 0x2e, 0x4b, 0xf9, 0x3b, 0x02, 0x7a, 0xb9, 0x5c, 0x69, 0xf8, 0x1c, 0xdb, 0x01, 0x7d, 0xfd
+)
+
+inv_s_box = (
+    0xe3, 0xfd, 0xf5, 0x30, 0x50, 0xbd, 0x51, 0x70, 0x3d, 0x40, 0x16, 0x04, 0x4d, 0xb5, 0xc0, 0xa2,
+    0x6d, 0xe2, 0x56, 0xc4, 0xa9, 0x54, 0x7f, 0x27, 0x66, 0x82, 0xd6, 0x68, 0xfb, 0x57, 0xca, 0xc3,
+    0x6f, 0xa4, 0xf0, 0xd5, 0x2a, 0xe8, 0xc1, 0x0a, 0x5e, 0x19, 0x79, 0x4b, 0x69, 0x45, 0xf1, 0xa7,
+    0x87, 0x00, 0xd8, 0xdc, 0xc2, 0xa5, 0xa6, 0x29, 0x5b, 0xce, 0x07, 0xf4, 0x84, 0x97, 0x9f, 0xe0,
+    0xa0, 0xde, 0x22, 0xb4, 0x58, 0x5f, 0x3a, 0x5d, 0xa3, 0x2b, 0x71, 0xf2, 0xb6, 0x44, 0x37, 0x9e,
+    0xc9, 0xab, 0x01, 0x12, 0x09, 0x83, 0xd4, 0x93, 0xd9, 0xbe, 0x02, 0x35, 0xf8, 0xaa, 0xee, 0xe5,
+    0x10, 0x8d, 0x52, 0x62, 0xa1, 0xdb, 0x78, 0x2f, 0x1b, 0xf9, 0x95, 0x7a, 0x24, 0xe1, 0x60, 0xdd,
+    0x26, 0x9a, 0xbc, 0x3c, 0x3f, 0x2c, 0x98, 0x74, 0x23, 0x7c, 0xf6, 0x1f, 0x91, 0xfe, 0x4c, 0x13,
+    0xb7, 0xe7, 0x67, 0x0f, 0x53, 0xcc, 0x7e, 0x6b, 0x9b, 0x2e, 0xcf, 0x08, 0x65, 0x92, 0x55, 0x4e,
+    0x8f, 0x33, 0x38, 0xb1, 0x6c, 0x0d, 0xb0, 0x17, 0x88, 0xef, 0xeb, 0x0b, 0xd2, 0x61, 0x8c, 0x85,
+    0xea, 0xb2, 0x9c, 0xba, 0x72, 0x47, 0x4a, 0x99, 0xe9, 0x2d, 0x20, 0x0c, 0x05, 0xe4, 0x94, 0x41,
+    0x4f, 0x3b, 0xda, 0x96, 0x34, 0xad, 0xb3, 0xcd, 0x8a, 0xf7, 0x9d, 0xd3, 0x75, 0x89, 0xdf, 0xbf,
+    0x59, 0x6e, 0x36, 0xe6, 0x14, 0x1c, 0xc8, 0x3e, 0x03, 0xb8, 0xd0, 0x11, 0x7d, 0x8e, 0x90, 0x63,
+    0x80, 0x81, 0xaf, 0x76, 0x5c, 0x1a, 0x21, 0x28, 0xac, 0x32, 0x48, 0xfc, 0xc6, 0xbb, 0x0e, 0x1d,
+    0x18, 0x77, 0x5a, 0x15, 0xcb, 0xc5, 0x64, 0x7b, 0xa8, 0x25, 0x46, 0x73, 0x42, 0xd1, 0x6a, 0x49,
+    0xd7, 0x8b, 0xc7, 0x06, 0x1e, 0x43, 0xec, 0xed, 0xfa, 0xf3, 0x31, 0x86, 0x39, 0xff, 0xae, 0xb9,
+)
+
+
+def shift_rows(s):
+    s[0][1], s[1][1], s[2][1], s[3][1] = s[1][1], s[2][1], s[3][1], s[0][1]
+    s[0][2], s[1][2], s[2][2], s[3][2] = s[2][2], s[3][2], s[0][2], s[1][2]
+    s[0][3], s[1][3], s[2][3], s[3][3] = s[3][3], s[0][3], s[1][3], s[2][3]
+
+
+def inv_shift_rows(s):
+    s[1][1], s[2][1], s[3][1], s[0][1] = s[0][1], s[1][1], s[2][1], s[3][1]
+    s[2][2], s[3][2], s[0][2], s[1][2] = s[0][2], s[1][2], s[2][2], s[3][2]
+    s[3][3], s[0][3], s[1][3], s[2][3] = s[0][3], s[1][3], s[2][3], s[3][3]
+
+
+def xtime(a): return (((a &lt;&lt; 1) ^ 0x1B) &amp; 0xFF) if (a &amp; 0x80) else (a &lt;&lt; 1)
+
+
+def mix_single_column(a):
+    # see Sec 4.1.2 in The Design of Rijndael
+    t = a[0] ^ a[1] ^ a[2] ^ a[3]
+    u = a[0]
+    a[0] ^= t ^ xtime(a[0] ^ a[1])
+    a[1] ^= t ^ xtime(a[1] ^ a[2])
+    a[2] ^= t ^ xtime(a[2] ^ a[3])
+    a[3] ^= t ^ xtime(a[3] ^ u)
+
+
+def mix_columns(s):
+    for i in range(4):
+        mix_single_column(s[i])
+
+
+def inv_mix_columns(s):
+    # see Sec 4.1.3 in The Design of Rijndael
+    for i in range(4):
+        u = xtime(xtime(s[i][0] ^ s[i][2]))
+        v = xtime(xtime(s[i][1] ^ s[i][3]))
+        s[i][0] ^= u
+        s[i][1] ^= v
+        s[i][2] ^= u
+        s[i][3] ^= v
+
+    mix_columns(s)
+
+
+def bytes2matrix(text):
+    &quot;&quot;&quot; Converts a 16-byte array into a 4x4 matrix.  &quot;&quot;&quot;
+    return [list(text[i:i+4]) for i in range(0, len(text), 4)]
+
+
+def matrix2bytes(m):
+    return bytes(sum(m, []))
+
+
+def add_round_key(s, k):
+    for i in range(4):
+        for j in range(4):
+            s[i][j] ^= k[i][j]
+
+
+def inv_sub(s):
+    for i in range(4):
+        for j in range(4):
+            s[i][j] = inv_s_box[s[i][j]]
+
+
+def expand_key(master_key):
+    &quot;&quot;&quot;
+    Expands and returns a list of key matrices for the given master_key.
+    &quot;&quot;&quot;
+    # Round constants https://en.wikipedia.org/wiki/AES_key_schedule#Round_constants
+    r_con = (
+        0x00, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40,
+        0x80, 0x1B, 0x36, 0x6C, 0xD8, 0xAB, 0x4D, 0x9A,
+        0x2F, 0x5E, 0xBC, 0x63, 0xC6, 0x97, 0x35, 0x6A,
+        0xD4, 0xB3, 0x7D, 0xFA, 0xEF, 0xC5, 0x91, 0x39,
+    )
+    # Initialize round keys with raw key material.
+    key_columns = bytes2matrix(master_key)
+    iteration_size = len(master_key) // 4
+    # Each iteration has exactly as many columns as the key material.
+    columns_per_iteration = len(key_columns)
+    i = 1
+    while len(key_columns) &lt; (N_ROUNDS + 1) * 4:
+        # Copy previous word.
+        word = list(key_columns[-1])
+
+        # Perform schedule_core once every &quot;row&quot;.
+        if len(key_columns) % iteration_size == 0:
+            # Circular shift.
+            word.append(word.pop(0))
+            # Map to S-BOX.
+            word = [s_box[b] for b in word]
+            # XOR with first byte of R-CON, since the others bytes of R-CON are 0.
+            word[0] ^= r_con[i]
+            i += 1
+        elif len(master_key) == 32 and len(key_columns) % iteration_size == 4:
+            # Run word through S-box in the fourth iteration when using a
+            # 256-bit key.
+            word = [s_box[b] for b in word]
+
+        # XOR with equivalent word from previous iteration.
+        word = bytes(i ^ j for i, j in zip(word, key_columns[-iteration_size]))
+        key_columns.append(word)
+
+    # Group key words in 4x4 byte matrices.
+    return [key_columns[4*i: 4*(i+1)] for i in range(len(key_columns) // 4)]
+
+
+def decrypt(key, ciphertext):
+    round_keys = expand_key(key)  # Remember to start from the last round key and work backwards through them when decrypting
+    # Convert ciphertext to state matrix
+    Cipher_matrix = bytes2matrix(ciphertext)
+    # Initial add round key step
+    add_round_key(Cipher_matrix, round_keys[-1])
+    for i in range(N_ROUNDS - 1, 0, -1):
+        inv_shift_rows(Cipher_matrix)
+        inv_sub(Cipher_matrix)
+        add_round_key(Cipher_matrix, round_keys[i])
+        inv_mix_columns(Cipher_matrix)
+    # Run final round (skips the InvMixColumns step)
+    inv_shift_rows(Cipher_matrix)
+    inv_sub(Cipher_matrix)
+    add_round_key(Cipher_matrix, round_keys[0])
+
+    # Convert state matrix to plaintext
+    plaintext = matrix2bytes(Cipher_matrix)
+    return plaintext
+
+
+print(key.hex(), ciphertext.hex())
+print(decrypt(key, ciphertext))
+# b&#39;9ee779cd2abcde48&#39;
+</code></pre>
+<p>最后将password拼接一下</p>
+<pre><code class="python"># uSer1p4ss_9ee779cd2abcde48
+</code></pre>
+<p>最后的flag就是</p>
+<pre><code class="python"># MD5(user01_nkctf2024uSer1p4ss_9ee779cd2abcde48)
+# NKCTF&#123;2961bba0add6265ba83bc6198e0ec758&#125;
+</code></pre>
+
+  </article>
+
+  
+      
+    <div class="nexmoe-post-copyright">
+        <strong>本文作者：</strong>WoaW04<br>
+        <strong>本文链接：</strong><a href="http://example.com/2024/03/27/2024NKCTFlogin-system/" title="http:&#x2F;&#x2F;example.com&#x2F;2024&#x2F;03&#x2F;27&#x2F;2024NKCTFlogin-system&#x2F;" target="_blank" rel="noopener">http:&#x2F;&#x2F;example.com&#x2F;2024&#x2F;03&#x2F;27&#x2F;2024NKCTFlogin-system&#x2F;</a><br>
+        
+            <strong>版权声明：</strong>本文采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/cn/deed.zh" target="_blank">CC BY-NC-SA 3.0 CN</a> 协议进行许可
+        
+    </div>
+
+
+  
+  
+  <div class="nexmoe-post-meta nexmoe-rainbow">
+    
+    
+        <a class="nexmoefont icon-tag-fill -none-link" href="/tags/2024NKCTF/" rel="tag">2024NKCTF</a> <a class="nexmoefont icon-tag-fill -none-link" href="/tags/RE/" rel="tag">RE</a>
+    
+</div>
+
+  
+      <div class="nexmoe-post-footer">
+          <section class="nexmoe-comment">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.css">
+<div id="gitalk"></div>
+<script src="https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: '80b2453b6d5f37ad6225',
+        clientSecret: '43e99fa852795c9a7b3eb924b2558c64b84bbdeb',
+        id: window.location.pathname,
+        repo: 'nexmoe.github.io',
+        owner: 'nexmoe',
+        admin: 'nexmoe'
+    })
+    gitalk.render('gitalk')
+</script>
+</section>
+      </div>
+  
+</div>
+            <div class="nexmoe-post-right">
+              <div class="nexmoe-fixed">
+                  <div class="nexmoe-tool"> 
+                    
+                      
+                    
+                      <a href="#nexmoe-content" class="toc-link" aria-label="回到顶部" title="top"><button class="mdui-fab mdui-ripple"><i class="nexmoefont icon-caret-top"></i></button></a>
+                  </div>
+              </div>
+            </div>
+        </div>
+    </div>
+     
+    <div id="nexmoe-search-space">
+        <div class="search-container">
+            <div class="search-header">
+                <div class="search-input-container">
+                    <input class="search-input" type="text" placeholder="搜索" oninput="sinput();">
+                </div>
+                <a class="search-close" onclick="sclose();">×</a>
+            </div>
+            <div class="search-body"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/combine/npm/lazysizes@5.1.0/lazysizes.min.js,npm/mdui@0.4.3/dist/js/mdui.min.js?v=1"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+
+ 
+
+<script async src="/js/app.js?v=1711548783461"></script>
+
+
+	<script async src="/js/search.js?v=1711548783461"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js"></script>
+<script>
+	$(".justified-gallery").justifiedGallery({
+		rowHeight: 160,
+		margins: 10,
+	});
+</script>
+
+
+    
+
+
+
+
+
+</body>
+
+</html>
