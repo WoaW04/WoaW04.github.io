@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+
+<head>
+    
+    <title>2024NKCTFREEZ - The Blog of WoaW04</title>
+    <meta charset="UTF-8">
+    <meta name="keywords" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+    
+    
+
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <meta name="description" content="0x00 分析题目和上一道题一样大部分还是用Z3 不过这道题会动态输出一个可执行文件，有点类似于SMC了 0x01 解ELF，无壳 直接上IDA  没有cmp，而这个byte_404070里面的内容很多  应该是类似于SMC那样会输出一个可执行文件，而这些应该就是操作码 试着运行一下  这时候会输出一个outputfile 直接拷走就行（ 来到outputfile的main里面，可以发现整个程序的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2024NKCTFREEZ">
+<meta property="og:url" content="http://example.com/2024/03/28/2024NKCTFREEZ/index.html">
+<meta property="og:site_name" content="The Blog of WoaW04">
+<meta property="og:description" content="0x00 分析题目和上一道题一样大部分还是用Z3 不过这道题会动态输出一个可执行文件，有点类似于SMC了 0x01 解ELF，无壳 直接上IDA  没有cmp，而这个byte_404070里面的内容很多  应该是类似于SMC那样会输出一个可执行文件，而这些应该就是操作码 试着运行一下  这时候会输出一个outputfile 直接拷走就行（ 来到outputfile的main里面，可以发现整个程序的">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403281238937.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403281239796.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403281248777.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403281251231.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403281252092.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403281253454.png">
+<meta property="article:published_time" content="2024-03-28T04:35:45.000Z">
+<meta property="article:modified_time" content="2024-03-28T04:58:46.533Z">
+<meta property="article:author" content="WoaW04">
+<meta property="article:tag" content="RE">
+<meta property="article:tag" content="2024NKCTF">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403281238937.png">
+    <link rel="stylesheet" href="/lib/jquery.fancybox.min.css?v=1711601954987">
+    
+    <link rel="stylesheet" href="/lib/mdui_043tiny/css/mdui.css?v=1711601954988">
+    <link rel="stylesheet" href="/lib/iconfont/iconfont.css?v=1711601954988">
+    <link rel="stylesheet" href="/css/style.css?v=1711601954988">
+    
+        <link rel="stylesheet" href="/css/dark.css?v=1711601954988">
+     
+    
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="mdui-drawer-body-left">
+    
+    <div id="nexmoe-background">
+        <div class="nexmoe-bg" style="background-image: url(https://cdn.jsdelivr.net/gh/WoaW04/Picture/image95796589_p0.jpg)"></div>
+        <div class="mdui-appbar mdui-shadow-0">
+            <div class="mdui-toolbar">
+                <a mdui-drawer="{target: '#drawer', swipe: true}" title="menu" class="mdui-btn mdui-btn-icon mdui-ripple"><i class="mdui-icon nexmoefont icon-menu"></i></a>
+                <div class="mdui-toolbar-spacer"></div>
+                <!--<a href="javascript:;" class="mdui-btn mdui-btn-icon"><i class="mdui-icon material-icons">search</i></a>-->
+                <a href="/" title="WoaW04" class="mdui-btn mdui-btn-icon"><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image04CTF.png" alt="WoaW04"></a>
+            </div>
+        </div>
+    </div>
+    <div id="nexmoe-header">
+        <div class="nexmoe-drawer mdui-drawer" id="drawer">
+    <div class="nexmoe-avatar mdui-ripple">
+        <a href="/" title="WoaW04">
+            <img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image04CTF.png" alt="WoaW04" alt="WoaW04">
+        </a>
+    </div>
+    <div class="nexmoe-count">
+        <div><span>文章</span>24</div>
+        <div><span>标签</span>11</div>
+        <div><span>分类</span>0</div>
+    </div>
+    <div class="nexmoe-list mdui-list" mdui-collapse="{accordion: true}">
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/" title="回到首页">
+            <i class="mdui-list-item-icon nexmoefont icon-home"></i>
+            <div class="mdui-list-item-content">
+                回到首页
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/about.html" title="关于博客">
+            <i class="mdui-list-item-icon nexmoefont icon-info-circle"></i>
+            <div class="mdui-list-item-content">
+                关于博客
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/PY.html" title="我的朋友">
+            <i class="mdui-list-item-icon nexmoefont icon-unorderedlist"></i>
+            <div class="mdui-list-item-content">
+                我的朋友
+            </div>
+        </a>
+        
+    </div>
+    <aside id="nexmoe-sidebar">
+    
+    <div class="nexmoe-widget-wrap">
+    <div class="nexmoe-widget nexmoe-search">
+        
+            <form id="search_form">
+                <label><input class="st-default-search-input" id="search_value" name="q" type="search" placeholder="搜索" style="
+                    font-size: 15px !important;
+                    height: 56px !important;
+                    background-image: none;
+                "></label>
+            </form>
+         
+    </div>
+</div>
+    
+    <div class="nexmoe-widget-wrap">
+    <div class="nexmoe-widget nexmoe-social">
+        <a class="mdui-ripple" href="https://space.bilibili.com/3096846" target="_blank" mdui-tooltip="{content: '哔哩哔哩'}" style="color: rgb(231, 106, 141);background-color: rgba(231, 106, 141, .15);">
+            <i class="nexmoefont icon-bilibili"></i>
+        </a><a class="mdui-ripple" href="https://github.com/WoaW04" target="_blank" mdui-tooltip="{content: 'GitHub'}" style="color: rgb(255, 255, 255);background-color: rgba(255, 255, 255, .15);">
+            <i class="nexmoefont icon-github"></i>
+        </a>
+    </div>
+</div>
+    
+    
+
+    
+    
+  <div class="nexmoe-widget-wrap">
+    <div id="randomtagcloud" class="nexmoe-widget tagcloud nexmoe-rainbow">
+      <a href="/tags/2023DASCTFxBCCTF/" style="font-size: 12.5px;">2023DASCTFxBCCTF</a> <a href="/tags/2023DASCTF%E4%B8%83%E6%9C%88%E8%B5%9B/" style="font-size: 15px;">2023DASCTF七月赛</a> <a href="/tags/2023NepCTF/" style="font-size: 12.5px;">2023NepCTF</a> <a href="/tags/2023starCTF/" style="font-size: 15px;">2023starCTF</a> <a href="/tags/2023%E7%BE%8A%E5%9F%8E%E6%9D%AF/" style="font-size: 17.5px;">2023羊城杯</a> <a href="/tags/2024NKCTF/" style="font-size: 12.5px;">2024NKCTF</a> <a href="/tags/Learning/" style="font-size: 12.5px;">Learning</a> <a href="/tags/Misc/" style="font-size: 10px;">Misc</a> <a href="/tags/RE/" style="font-size: 20px;">RE</a> <a href="/tags/%E5%B7%85%E5%B3%B0%E6%9E%81%E5%AE%A22023/" style="font-size: 12.5px;">巅峰极客2023</a> <a href="/tags/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8/" style="font-size: 10px;">软件安全</a>
+    </div>
+    
+  </div>
+
+    
+</aside>
+    <div class="nexmoe-copyright">
+        &copy; 2024 WoaW04
+        Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+        & <a href="https://github.com/theme-nexmoe/hexo-theme-nexmoe" target="_blank">Nexmoe</a>
+        
+    </div>
+</div><!-- .nexmoe-drawer -->
+    </div>
+    <div id="nexmoe-content">
+        <div class="nexmoe-primary">
+            <div class="nexmoe-post">
+
+  <article>
+      
+          <div class="nexmoe-post-cover" style="padding-bottom: NaN%;"> 
+              <img data-src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403281237119.png" data-sizes="auto" alt="2024NKCTFREEZ" class="lazyload">
+              <h1>2024NKCTFREEZ</h1>
+          </div>
+      
+      
+      <div class="nexmoe-post-meta nexmoe-rainbow" style="margin:10px 0!important;">
+    <a><i class="nexmoefont icon-calendar-fill"></i>2024年03月28日</a>
+</div>
+
+      
+
+      <h2 id="0x00-分析题目"><a href="#0x00-分析题目" class="headerlink" title="0x00 分析题目"></a>0x00 分析题目</h2><p>和上一道题一样大部分还是用Z3</p>
+<p>不过这道题会动态输出一个可执行文件，有点类似于SMC了</p>
+<h2 id="0x01-解"><a href="#0x01-解" class="headerlink" title="0x01 解"></a>0x01 解</h2><p>ELF，无壳</p>
+<p>直接上IDA</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403281238937.png"></p>
+<p>没有cmp，而这个byte_404070里面的内容很多</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403281239796.png"></p>
+<p>应该是类似于SMC那样会输出一个可执行文件，而这些应该就是操作码</p>
+<p>试着运行一下</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403281248777.png"></p>
+<p>这时候会输出一个outputfile</p>
+<p>直接拷走就行（</p>
+<p>来到outputfile的main里面，可以发现整个程序的加密可以被分为三个操作</p>
+<p>第一部分是一大堆加减乘除和位运算</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403281251231.png"></p>
+<p>第二部分是和内存里的某个东西（dword_55FA1FBB2010）进行乘除以及位运算</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403281252092.png"></p>
+<p>第三部分就是一个简单的异或</p>
+<p>将byte_55FA1FBB2080与第二部分的结果异或然后与byte_55FA1FBB20A0进行比较</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403281253454.png"></p>
+<p>那么就该REVERSE了</p>
+<p>先从最后的开始，直接异或得出第二部分的结果</p>
+<pre><code class="python">key = [0x32, 0x44, 0xaa, 0x56, 0x63, 0x3d, 0x2b, 0x09, 0xcd, 0x34, 0x99, 0x3c,
+       0x56, 0xb8, 0x99, 0xde, 0x26, 0x1f, 0x7e, 0x0b, 0x42, 0xc2, 0x1b, 0xeb, 0xf5]
+enc = [0x44, 0x30, 0x5f, 0x79, 0x30, 0x75, 0x5f, 0x4c, 0x69, 0x6b, 0x65, 0x5f,
+       0x57, 0x68, 0x61, 0x74, 0x5f, 0x59, 0x6f, 0x75, 0x5f, 0x53, 0x65, 0x65, 0x3f]
+dec = []
+for i in range(len(enc)):
+    dec.append(key[i] ^ enc[i])
+    print(&#39;0x&#123;:02x&#125;&#39;.format(dec[i]), end=&#39;, &#39;)
+
+# dec = [0x76, 0x74, 0xf5, 0x2f, 0x53, 0x48, 0x74, 0x45, 0xa4, 0x5f, 0xfc, 0x63, 0x01, 0xd0, 0xf8, 0xaa, 0x79, 0x46, 0x11, 0x7e, 0x1d, 0x91, 0x7e, 0x8e, 0xca]
+</code></pre>
+<p>然后是第二部分，用Z3操作一下可以得出第一部分的结果</p>
+<pre><code class="python">from z3 import *
+enc1 = [0x76, 0x74, 0xf5, 0x2f, 0x53, 0x48, 0x74, 0x45, 0xa4, 0x5f, 0xfc, 0x63,
+        0x01, 0xd0, 0xf8, 0xaa, 0x79, 0x46, 0x11, 0x7e, 0x1d, 0x91, 0x7e, 0x8e, 0xca]
+
+key2 = [0x00, 0xfffffffe, 0xffffffff, 0x04, 0x01, 0xffffffff, 0x01, 0x00, 0x00, 0xffffffff, 0xfffffffd, 0xfffffffe,
+        0x00, 0xfffffff6, 0xffffffff, 0xffffffff, 0xfffffffe, 0x01, 0xfffffff3, 0xffffffff, 0xfffffffa, 0xffffffff,
+        0xfffffffe, 0x01, 0xfffffffe]
+
+
+s = Solver()
+dec = [BitVec((&#39;x%s&#39; % i), 8) for i in range(25)]
+enc2 = []
+out = []
+v15 = 0
+for i in range(5):
+    v17 = 0
+    for j in range(5):
+        v12 = 0
+        v13 = 0
+        for z in range(5):
+            v3 = dec[5 * v12 + v17] * key2[5 * v15 + v12]
+            v9 = -105 * (39 * (2 * (v13 &amp; v3) + (v13 ^ v3)) + 23) + 111
+            v12 += 1
+            v13 = v9
+        enc2.append(v9)
+        v17 += 1
+    v15 += 1
+for i in range(25):
+    s.add(enc2[i] == enc1[i])
+if s.check() == sat:
+    result = s.model()
+    print(result)
+    for i in range(25):
+        out.append(result[dec[i]].as_long())
+        print(&#39;0x&#123;:02x&#125;&#39;.format(out[i]), end=&#39;, &#39;)
+
+# out = [0xe1, 0x77, 0x15, 0x9c, 0x28, 0x8c, 0x11, 0x4e, 0x9c, 0x93, 0x31, 0xf0, 0x43, 0x45, 0x1f, 0x17, 0x98, 0xb8, 0x14, 0xa3, 0x63, 0x26, 0xf4, 0x5c, 0x0c]
+</code></pre>
+<p>最后对第一部分的结果进行Z3，可以得出flag</p>
+<pre><code class="python">from z3 import *
+s = Solver()
+
+input = [BitVec((&#39;x%s&#39; % i), 8) for i in range(25)]
+
+input[0] = -105 * (39 * (2 * (input[0] &amp; (-105 * (39 * (2 * (input[11] &amp; (-105 * (39 * (2 * (input[10] &amp; 3) + (input[10] ^ 3)) + 23) + 111)) + (input[11] ^ (-105 * (39 * (2 * (input[10] &amp; 3) + (input[10] ^ 3)) + 23) + 111))) + 23) + 111)) +
+                         (input[0] ^ (-105 * (39 * (2 * (input[11] &amp; (-105 * (39 * (2 * (input[10] &amp; 3) + (input[10] ^ 3)) + 23) + 111)) + (input[11] ^ (-105 * (39 * (2 * (input[10] &amp; 3) + (input[10] ^ 3)) + 23) + 111))) + 23) + 111))) + 23) + 111
+input[1] = -105 * (39 * (2 * ((input[13] ^ input[14]) &amp; input[1]) + (input[13] ^ input[14] ^ input[1])) + 23) + 111
+input[2] = -105 * (39 * (2 * (input[2] &amp; (-105 * (39 * (2 * (input[14] &amp; input[15]) + (input[14] ^ input[15])) + 23) + 111)) +
+                         (input[2] ^ (-105 * (39 * (2 * (input[14] &amp; input[15]) + (input[14] ^ input[15])) + 23) + 111))) + 23) + 111
+input[3] = -105 * (39 * (2 * ((input[17] ^ 0x17) &amp; input[3]) + (input[17] ^ 0x17 ^ input[3])) + 23) + 111
+input[4] = -105 * (39 * (2 * (input[4] &amp; (-105 * (39 * (2 * (input[20] &amp; (-105 * (39 * (2 * (input[9] &amp; 0xFB) + (input[9] ^ 0xFB)) + 23) + 111)) + (input[20] ^ (-105 * (39 * (2 * (input[9] &amp; 0xFB) + (input[9] ^ 0xFB)) + 23) + 111))) + 23) + 111)) +
+                         (input[4] ^ (-105 * (39 * (2 * (input[20] &amp; (-105 * (39 * (2 * (input[9] &amp; 0xFB) + (input[9] ^ 0xFB)) + 23) + 111)) + (input[20] ^ (-105 * (39 * (2 * (input[9] &amp; 0xFB) + (input[9] ^ 0xFB)) + 23) + 111))) + 23) + 111))) + 23) + 111
+input[5] = -105 * (39 * (2 * (input[5] &amp; (~input[23] + input[21] + 1)) + (input[5] ^ (~input[23] + input[21] + 1))) + 23) + 111
+input[6] = -105 * (39 * (2 * (input[6] &amp; (-105 * (39 * (2 * (input[8] &amp; input[7]) + (input[8] ^ input[7])) + 23) + 111)) +
+                         (input[6] ^ (-105 * (39 * (2 * (input[8] &amp; input[7]) + (input[8] ^ input[7])) + 23) + 111))) + 23) + 111
+input[7] = -105 * (39 * (2 * (input[7] &amp; (-105 * (39 * (2 * ((~input[20] + input[23] + 1) &amp; 0x11) + ((~input[20] + input[23] + 1) ^ 0x11)) + 23) + 111)) +
+                         (input[7] ^ (-105 * (39 * (2 * ((~input[20] + input[23] + 1) &amp; 0x11) + ((~input[20] + input[23] + 1) ^ 0x11)) + 23) + 111))) + 23) + 111
+input[8] = -105 * (39 * (2 * (input[8] &amp; (input[19] ^ (-105 * (39 * (2 * (input[18] &amp; 1) + (input[18] ^ 1)) + 23) + 111))) +
+                         (input[8] ^ input[19] ^ (-105 * (39 * (2 * (input[18] &amp; 1) + (input[18] ^ 1)) + 23) + 111))) + 23) + 111
+input[9] = ~input[16] + -105 * (39 * (2 * (input[17] &amp; input[9]) + (input[17] ^ input[9])) + 23) + 111 + 1
+input[10] = -105 * (39 * (2 * (input[10] &amp; (-105 * (39 * (2 * (input[14] &amp; input[15]) + (input[14] ^ input[15])) + 23) + 111)) +
+                          (input[10] ^ (-105 * (39 * (2 * (input[14] &amp; input[15]) + (input[14] ^ input[15])) + 23) + 111))) + 23) + 111
+input[11] = -105 * (39 * (2 * (input[12] &amp; (-105 * (39 * (2 * (input[13] &amp; (-105 * (39 * (2 * (input[11] &amp; 0xF9) + (input[11] ^ 0xF9)) + 23) + 111)) + (input[13] ^ (-105 * (39 * (2 * (input[11] &amp; 0xF9) + (input[11] ^ 0xF9)) + 23) + 111))) + 23) + 111)) +
+                          (input[12] ^ (-105 * (39 * (2 * (input[13] &amp; (-105 * (39 * (2 * (input[11] &amp; 0xF9) + (input[11] ^ 0xF9)) + 23) + 111)) + (input[13] ^ (-105 * (39 * (2 * (input[11] &amp; 0xF9) + (input[11] ^ 0xF9)) + 23) + 111))) + 23) + 111))) + 23) + 111
+input[12] = -105 * (39 * (2 * (input[12] &amp; input[11]) + (input[12] ^ input[11])) + 23) + 111
+input[13] = -105 * (39 * (2 * (input[13] &amp; (input[7] ^ input[8])) + (input[13] ^ input[7] ^ input[8])) + 23) + 111
+input[14] = -105 * (39 * (2 * (input[5] &amp; (-105 * (39 * (2 * (input[4] &amp; (-105 * (39 * (2 * (input[14] &amp; 0xC) + (input[14] ^ 0xC)) + 23) + 111)) + (input[4] ^ (-105 * (39 * (2 * (input[14] &amp; 0xC) + (input[14] ^ 0xC)) + 23) + 111))) + 23) + 111)) +
+                          (input[5] ^ (-105 * (39 * (2 * (input[4] &amp; (-105 * (39 * (2 * (input[14] &amp; 0xC) + (input[14] ^ 0xC)) + 23) + 111)) + (input[4] ^ (-105 * (39 * (2 * (input[14] &amp; 0xC) + (input[14] ^ 0xC)) + 23) + 111))) + 23) + 111))) + 23) + 111
+input[15] = -105 * (39 * (2 * (input[3] &amp; (-105 * (39 * (2 * (input[15] &amp; 8) + (input[15] ^ 8)) + 23) + 111)) +
+                          (input[3] ^ (-105 * (39 * (2 * (input[15] &amp; 8) + (input[15] ^ 8)) + 23) + 111))) + 23) + 111
+input[16] = -105 * (39 * (2 * ((input[2] ^ 0x4D) &amp; input[16]) + (input[2] ^ 0x4D ^ input[16])) + 23) + 111
+input[17] = -105 * (39 * (2 * (input[17] &amp; (-105 * (39 * (2 * ((input[1] ^ 0x17) &amp; 0xF9) + (input[1] ^ 0xEE)) + 23) + 111)) +
+                          (input[17] ^ (-105 * (39 * (2 * ((input[1] ^ 0x17) &amp; 0xF9) + (input[1] ^ 0xEE)) + 23) + 111))) + 23) + 111
+input[18] = -105 * (39 * (2 * ((input[17] ^ input[15]) &amp; input[18]) + (input[17] ^ input[15] ^ input[18])) + 23) + 111
+input[19] = -105 * (39 * (2 * (input[12] &amp; (-105 * (39 * (2 * (input[14] &amp; input[19]) + (input[14] ^ input[19])) + 23) + 111)) +
+                          (input[12] ^ (-105 * (39 * (2 * (input[14] &amp; input[19]) + (input[14] ^ input[19])) + 23) + 111))) + 23) + 111
+input[20] = -105 * (39 * (2 * (input[20] &amp; input[11]) + (input[20] ^ input[11])) + 23) + 111
+input[21] = -105 * (39 * (2 * (input[8] &amp; (-105 * (39 * (2 * (input[21] &amp; input[6]) + (input[21] ^ input[6])) + 23) + 111)) +
+                          (input[8] ^ (-105 * (39 * (2 * (input[21] &amp; input[6]) + (input[21] ^ input[6])) + 23) + 111))) + 23) + 111
+input[22] = -105 * (39 * (2 * (input[5] &amp; input[22]) + (input[5] ^ input[22])) + 23) + 111
+input[23] = -105 * (39 * (2 * ((input[0] ^ input[2]) &amp; input[23]) + (input[0] ^ input[2] ^ input[23])) + 23) + 111
+input[24] = -105 * (39 * (2 * (input[24] &amp; (-105 * (39 * (2 * (input[1] &amp; 0x18) + (input[1] ^ 0x18)) + 23) + 111)) +
+                          (input[24] ^ (-105 * (39 * (2 * (input[1] &amp; 0x18) + (input[1] ^ 0x18)) + 23) + 111))) + 23) + 111
+
+enc = [0xe1, 0x77, 0x15, 0x9c, 0x28, 0x8c, 0x11, 0x4e, 0x9c, 0x93, 0x31, 0xf0,
+       0x43, 0x45, 0x1f, 0x17, 0x98, 0xb8, 0x14, 0xa3, 0x63, 0x26, 0xf4, 0x5c, 0x0c]
+out = []
+for i in range(25):
+    s.add((input[i] &amp; 0xff) == enc[i])
+if s.check() == sat:
+    result = s.model()
+    print(result)
+
+out = [78, 75, 67, 84, 70, 123, 84, 72, 117, 116, 95, 49, 83, 115, 95, 115, 64, 95, 101, 65, 115, 121, 104, 104, 125]
+for i in out:
+    print(chr(i), end=&#39;&#39;)
+# NKCTF&#123;THut_1Ss_s@_eAsyhh&#125;
+</code></pre>
+<p>总的来说不难，基本都是Z3的使用，不过要注意输出的问题，在这个程序中，结果的输出要进行一个“&amp; 0xff”的操作（取低八位）</p>
+<p>可以参考这个：<a target="_blank" rel="noopener" href="https://blog.csdn.net/i6223671/article/details/88924481">https://blog.csdn.net/i6223671/article/details/88924481</a></p>
+<p>如果这点没有注意到的话会发现其他地方输出的结果与程序输出的不同（</p>
+
+  </article>
+
+  
+      
+    <div class="nexmoe-post-copyright">
+        <strong>本文作者：</strong>WoaW04<br>
+        <strong>本文链接：</strong><a href="http://example.com/2024/03/28/2024NKCTFREEZ/" title="http:&#x2F;&#x2F;example.com&#x2F;2024&#x2F;03&#x2F;28&#x2F;2024NKCTFREEZ&#x2F;" target="_blank" rel="noopener">http:&#x2F;&#x2F;example.com&#x2F;2024&#x2F;03&#x2F;28&#x2F;2024NKCTFREEZ&#x2F;</a><br>
+        
+            <strong>版权声明：</strong>本文采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/cn/deed.zh" target="_blank">CC BY-NC-SA 3.0 CN</a> 协议进行许可
+        
+    </div>
+
+
+  
+  
+  <div class="nexmoe-post-meta nexmoe-rainbow">
+    
+    
+        <a class="nexmoefont icon-tag-fill -none-link" href="/tags/2024NKCTF/" rel="tag">2024NKCTF</a> <a class="nexmoefont icon-tag-fill -none-link" href="/tags/RE/" rel="tag">RE</a>
+    
+</div>
+
+  
+      <div class="nexmoe-post-footer">
+          <section class="nexmoe-comment">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.css">
+<div id="gitalk"></div>
+<script src="https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: '80b2453b6d5f37ad6225',
+        clientSecret: '43e99fa852795c9a7b3eb924b2558c64b84bbdeb',
+        id: window.location.pathname,
+        repo: 'nexmoe.github.io',
+        owner: 'nexmoe',
+        admin: 'nexmoe'
+    })
+    gitalk.render('gitalk')
+</script>
+</section>
+      </div>
+  
+</div>
+            <div class="nexmoe-post-right">
+              <div class="nexmoe-fixed">
+                  <div class="nexmoe-tool"> 
+                    
+                      
+                    
+                      <a href="#nexmoe-content" class="toc-link" aria-label="回到顶部" title="top"><button class="mdui-fab mdui-ripple"><i class="nexmoefont icon-caret-top"></i></button></a>
+                  </div>
+              </div>
+            </div>
+        </div>
+    </div>
+     
+    <div id="nexmoe-search-space">
+        <div class="search-container">
+            <div class="search-header">
+                <div class="search-input-container">
+                    <input class="search-input" type="text" placeholder="搜索" oninput="sinput();">
+                </div>
+                <a class="search-close" onclick="sclose();">×</a>
+            </div>
+            <div class="search-body"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/combine/npm/lazysizes@5.1.0/lazysizes.min.js,npm/mdui@0.4.3/dist/js/mdui.min.js?v=1"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+
+ 
+
+<script async src="/js/app.js?v=1711601954988"></script>
+
+
+	<script async src="/js/search.js?v=1711601954988"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js"></script>
+<script>
+	$(".justified-gallery").justifiedGallery({
+		rowHeight: 160,
+		margins: 10,
+	});
+</script>
+
+
+    
+
+
+
+
+
+</body>
+
+</html>
