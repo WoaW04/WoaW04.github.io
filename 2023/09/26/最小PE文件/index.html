@@ -1,0 +1,312 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>最小PE文件的制作 | The Blog of WoaW04</title><meta name="author" content="WoaW04"><meta name="copyright" content="WoaW04"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="战前准备要制作最小PE文件，那么需要知道哪些字段可以删，哪些字段不能删，而哪些字段需要修改 首先，需要知道哪些字段可以删除&#x2F;修改，即对这个字段进行任何操作都不会影响程序的运行 下图将所有可删的字段全部改为了1，由于010editor的特性，这里将会显示为橙色  当然，要缩小PE文件绝不止是将这些橙色部分进行修改，下面的数据节、引入函数节等都需要修改  值得注意的是，由于修改PE文件会涉及">
+<meta property="og:type" content="article">
+<meta property="og:title" content="最小PE文件的制作">
+<meta property="og:url" content="http://example.com/2023/09/26/%E6%9C%80%E5%B0%8FPE%E6%96%87%E4%BB%B6/index.html">
+<meta property="og:site_name" content="The Blog of WoaW04">
+<meta property="og:description" content="战前准备要制作最小PE文件，那么需要知道哪些字段可以删，哪些字段不能删，而哪些字段需要修改 首先，需要知道哪些字段可以删除&#x2F;修改，即对这个字段进行任何操作都不会影响程序的运行 下图将所有可删的字段全部改为了1，由于010editor的特性，这里将会显示为橙色  当然，要缩小PE文件绝不止是将这些橙色部分进行修改，下面的数据节、引入函数节等都需要修改  值得注意的是，由于修改PE文件会涉及">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-25%20234811.png">
+<meta property="article:published_time" content="2023-09-26T02:00:00.000Z">
+<meta property="article:modified_time" content="2023-09-26T05:57:38.175Z">
+<meta property="article:author" content="WoaW04">
+<meta property="article:tag" content="软件安全">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-25%20234811.png"><link rel="shortcut icon" href="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image04CTF.png"><link rel="canonical" href="http://example.com/2023/09/26/%E6%9C%80%E5%B0%8FPE%E6%96%87%E4%BB%B6/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="stylesheet" href="/css/index.css?v=4.13.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.11.1/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: false,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '最小PE文件的制作',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-09-26 13:57:38'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 7.1.1"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image04CTF.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">25</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">11</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-25%20234811.png')"><nav id="nav"><span id="blog-info"><a href="/" title="The Blog of WoaW04"><img class="site-icon" src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image04CTF.png"/><span class="site-name">The Blog of WoaW04</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">最小PE文件的制作</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2023-09-26T02:00:00.000Z" title="发表于 2023-09-26 10:00:00">2023-09-26</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-09-26T05:57:38.175Z" title="更新于 2023-09-26 13:57:38">2023-09-26</time></span></div><div class="meta-secondline"></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="战前准备"><a href="#战前准备" class="headerlink" title="战前准备"></a>战前准备</h2><p>要制作最小PE文件，那么需要知道哪些字段可以删，哪些字段不能删，而哪些字段需要修改</p>
+<p>首先，需要知道哪些字段可以删除&#x2F;修改，即对这个字段进行任何操作都不会影响程序的运行</p>
+<p>下图将所有可删的字段全部改为了1，由于010editor的特性，这里将会显示为橙色</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-25%20235341.png"></p>
+<p>当然，要缩小PE文件绝不止是将这些橙色部分进行修改，下面的数据节、引入函数节等都需要修改</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-25%20235459.png"></p>
+<p>值得注意的是，由于修改PE文件会涉及RVA和FA的修改，如果每一步都进行这些修改，虽然会使得更改过程更加清晰，但是效率将会大大降低，所以作为马后炮，我在这里先将RVA和FA的修改按下不表，将大致过程结束之后在进行RVA和FA的统一更改</p>
+<h2 id="第一步"><a href="#第一步" class="headerlink" title="第一步"></a>第一步</h2><p>删除DOS桩和MZ签名部分</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20000147.png"></p>
+<p>MZ签名最重要的就是前两个字节，其余都可以删除，但是需要注意的是，003CH处用于定位NT映像头开始的位置，当NT映像头的位置改变时，这个地方也需要做出变化</p>
+<p>如下图所示，是删掉上图所示一些部分的结果（注意观察左边的地址）</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20000516.png"></p>
+<p>为什么不删除MZ签名后的两个字节呢？这就需要注意观察刚才所说的003CH位置了，删去部分MZ文件头和DOS桩后，003CH的位置将会被NT映像头中的可选映像头中的SectionAlignment（节的对齐粒度）替代，而在给到的模板中，这个对齐粒度为4字节，而这个数转换为地址则为00000004H，恰好是删除操作之后的NT映像头的准确位置，因此，MZ签名后的两个字节并不删除，方便寻址与粒度的配合</p>
+<h2 id="第二步"><a href="#第二步" class="headerlink" title="第二步"></a>第二步</h2><p>删除可选映像头的Directory域部分（这里放没有删除DOS-MZ文件头+DOS桩的图以方便理解）</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20084721.png"></p>
+<p>这里分为两部分，一个是NumberOfRvaAndSizes，一个是Directory域</p>
+<p>蓝色部分的第一个四字节为NumberOfRvaAndSizes，指明了数据目录有多少个项，此处的值为00000010H，即16个项，由于Directory域中只有输入表是必须的，而输入表在数据目录的第二项（如图所示）</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20085226.png"></p>
+<p>因此只需要留下两项，即把NumberOfRvaAndSizes改为00000002H</p>
+<p>后面的更改便是把Directory域中的除了输出表和输入表的部分给删除就行了，由于一个项在域中占8个字节，因此在NumberOfRvaAndSizes后面的16个字节不删除，其余的都可以删</p>
+<p>这里放删除DOS-MZ文件头+DOS桩之后需要删的部分（蓝色部分）</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20085733.png"></p>
+<p>删除后</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20085830.png"></p>
+<p>记得改NumberOfRvaAndSizes</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20085943.png"></p>
+<h2 id="第三步"><a href="#第三步" class="headerlink" title="第三步"></a>第三步</h2><p>删除.rdata节在节表中的位置</p>
+<p>让我们从模板来看这个位置</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20090158.png"></p>
+<p>如图所示，这个地方就是节表，紧跟在Directory域后面，节表中的每一个项都占40字节，即28H</p>
+<p>节表最重要的是代码节，即.text节的部分，其余都可以进行删除</p>
+<p>此处，我们需要删除.rdata节的部分，即下图蓝色部分</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20090404.png"></p>
+<p>而在删除之后，需要更改NumberOfSections这一项为1</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20090610.png"></p>
+<p>（吐槽一下，就算不删.rdata部分，直接改这个为01程序也能继续运行）</p>
+<p>而除了.rdata项之外，.text项是否也有可以删除的地方呢</p>
+<p>答案是肯定的</p>
+<p>节表中的.text项后面的16个字节是可以被删除的</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20091028.png"></p>
+<p>这个可以被删除的部分为“本节属性”，可能被后面的东西取代了，但不造成影响</p>
+<p>于是，在上一步的结果后面，我们继续做减法</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20091316.png"></p>
+<p>这一段可以删除</p>
+<p>然后记得把NumberOfSections这一项改一改</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20091402.png"></p>
+<p>在这一步我们可以得到这个结果</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20093616.png"></p>
+<h2 id="第四步"><a href="#第四步" class="headerlink" title="第四步"></a>第四步</h2><p>由于要制造最小PE文件，所以后面汇编<del>有得你写的</del>需要重写，因此原先代码节的部分就可以删除了</p>
+<p>根据可选映像头中的AddressOfEntryPoint可以定位代码节的开始</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20091807.png"></p>
+<p>那怎么定位结束呢？</p>
+<p>这就需要知道IAT表的位置了，由于.text节和.rdata节紧密相连，而.rdata节中的第一个部分就是IAT，因此找到IAT的开始就找到了.text节的结束了</p>
+<p>那么如何找到IAT的位置呢？</p>
+<p>这就需要看我们的Directory域了（虽然上面删掉了，但是也可以看模板找字节进行搜寻对吧？），Directory域中有IAT这一项，这一项和其他项一样，有RVA和大小，有了RVA就可以定位了</p>
+<p>下图为模板中Directory域中IAT的RVA</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20092635.png"></p>
+<p>对应的位置</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20092733.png"></p>
+<p>根据OEP和IAT的RVA，我们就可以确定要删除的代码段了</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20092835.png"></p>
+<p>于是这一步我们可以得到这个结果</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20093710.png"></p>
+<h2 id="第五步"><a href="#第五步" class="headerlink" title="第五步"></a>第五步</h2><p>见缝插针</p>
+<p>在这一步，我们需要把.rdata中需要的函数名和dll文件的名字放在上面那些可以被更改但不会影响程序运行的地方</p>
+<p>首先明确，在模板给出的函数中，实际真的被用到的只有MessageBoxA函数和其对应的dll，即use32.dll</p>
+<p>因此我们需要把这两个放到适当的位置</p>
+<p>此处略过对比，直接上结果</p>
+<p>把user32放到这里</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20094434.png"></p>
+<p>把MessageBoxA放到这里</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20094531.png"></p>
+<p>这样下面那些名字就可以删掉了</p>
+<p>但是有个小问题，应该删到哪呢？</p>
+<p>这里我们需要知道.rdata节的最后一部分，即IMPORT Hints&#x2F;Names&amp;DLL Names的结构了，在一个部分里面，分为两个小部分，两个小部分通过一个字节的00隔开，部分与部分之间用两个字节00隔开</p>
+<p>下面简要说明这两个小部分：</p>
+<p>一个是IMAGE_IMPORT_BY_NAME，还有一个是DLL names字符串，第一个是一个结构由两项组成：Hint和Name，Hint占两个字节，Name为一个字符串</p>
+<p>通过这个，我们可以推断，如果要知道删到哪，那么需要知道整个部分的第一个函数，然后往前找两个字节就可以了</p>
+<p>于是我们可以知道要删的就是下图这个部分（以上一步的结果为例）</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20095347.png"></p>
+<p>那么我们就删除了后面的IMPORT Hints&#x2F;Names&amp;DLL部分了</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20095821.png"></p>
+<h2 id="第六步"><a href="#第六步" class="headerlink" title="第六步"></a>第六步</h2><p>这一步，我们需要重构原先的IAT和IDT</p>
+<p>可能有人会问，那INT（IMPORT Name Table）呢？</p>
+<p>这个可以直接删掉的，只要让IDT指向IAT或DLL文件名，IAT再指向函数名就好了，INT？真不熟！</p>
+<p>为此，我们先删除整个.rdata节，然后根据IAT和IDT的结构进行复原</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20100214.png"></p>
+<p>删去之后，我们需要明确，由于我们设置的粒度为4，所以最后的结果必须是4字节的整数倍，在这个地方，我们删除.rdata节的所有数据后，可以在文件末尾补两个字节的0，后面就不用再补了</p>
+<p><img src="C:\Users\WoaW04\AppData\Roaming\Typora\typora-user-images\image-20230926100423971.png" alt="image-20230926100423971"></p>
+<p>现在，让我们开始复原IAT和IDT吧</p>
+<p>首先我们先认识IAT的结构</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">IAT是一个指针数组</span><br><span class="line">数组内存储着函数名前两个字节的地址（即上文所述的Hint）</span><br><span class="line">一个元素四个字节</span><br><span class="line">相同DLL内的函数名地址相连</span><br><span class="line">如这里两个函数名地址</span><br><span class="line">F8 02 00 00 EC 02 00 00</span><br><span class="line">不同DLL中的函数用四字节0隔开</span><br><span class="line">D0 02 00 00 00 00 00 00 F8 02 00 00</span><br></pre></td></tr></table></figure>
+
+<p>然后再让我们看看IDT的结构</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">IDT由一系列的 IMAGE_IMPORT_DESCRIPTOR结构组成</span><br><span class="line">结构的数量取决于程序要使用的DLL文件的数量，每一个IMAGE_IMPORT_DESCRIPTOR 结构对应一个DLL文件</span><br><span class="line">在所有这些结构的最后，由一个内容全为0的 IMAGE_IMPORT_DESCRIPTOR 结构作为结束</span><br></pre></td></tr></table></figure>
+
+<p>下面重点介绍一下IMAGE_IMPORT_DESCRIPTOR 的数据结构</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">IMAGE_IMPORT_DESCRIPTOR</span> &#123;</span></span><br><span class="line">    <span class="class"><span class="keyword">union</span> &#123;</span></span><br><span class="line">        DWORD   Characteristics;      <span class="comment">//0 for terminating null import descriptor</span></span><br><span class="line">        DWORD   OriginalFirstThunk;   <span class="comment">//指向INT内的地址</span></span><br><span class="line">    &#125;;								  <span class="comment">//此处共占4字节</span></span><br><span class="line">    DWORD   TimeDateStamp;            <span class="comment">//当可执行文件不与被导入的DLL进行绑定时，此字段为0</span></span><br><span class="line">    DWORD   ForwarderChain;           <span class="comment">//第一个被转向的API索引</span></span><br><span class="line">    DWORD   Name;                     <span class="comment">//指向被导入的DLL名称</span></span><br><span class="line">    DWORD   FirstThunk;               <span class="comment">//指向IAT内的地址</span></span><br><span class="line">&#125; IMAGE_IMPORT_DESCRIPTOR;</span><br><span class="line"><span class="keyword">typedef</span> IMAGE_IMPORT_DESCRIPTOR UNALIGNED *PIMAGE_IMPORT_DESCRIPTOR;</span><br></pre></td></tr></table></figure>
+
+<p>由结构可知最重要的是OriginalFirstThunk、Name和FirstThunk这三个部分，由于我们已经删除了INT表，因此需要让OriginalFirstThunk和FirstThunk的值都指向IAT表</p>
+<p>对于IAT表，我们需要让它指向MessageBoxA这个函数，因此可以重构成这样</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1C 00 00 00 00 00 00 00</span><br></pre></td></tr></table></figure>
+
+<p>对于IDT表，我们可以重构成这样</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">E8 00 00 00</span><br><span class="line">00 00 00 00</span><br><span class="line">00 00 00 00</span><br><span class="line">0C 00 00 00</span><br><span class="line">E8 00 00 00</span><br><span class="line">00 00 00 00</span><br><span class="line">00 00 00 00</span><br></pre></td></tr></table></figure>
+
+<p>最后结果如下（注意IAT指向的地址和IDT指向的地址）</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20102422.png"></p>
+<h2 id="第七步"><a href="#第七步" class="headerlink" title="第七步"></a>第七步</h2><p>让我们最后整点汇编吧</p>
+<p>首先把能进行修改的字节标1（橙色）</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20132806.png"></p>
+<p>OD，启动！</p>
+<p>我们以模板的汇编代码为准进行修改</p>
+<p>由于上面已经分析过代码段的位置，这里不再赘述，在OD中直接找到这个位置</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20125604.png"></p>
+<p>先结合模板分析一下</p>
+<p>（模板中的代码段）</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20092835.png"></p>
+<p>（模板中的数据）</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20125844.png"></p>
+<p>这里需要一点汇编知识</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">push 0x1040</span><br><span class="line">// 68 40 10 00 00 压栈</span><br><span class="line"></span><br><span class="line">push 0x4001F8</span><br><span class="line">// 68 F8 01 40 00 标题</span><br><span class="line"></span><br><span class="line">push 0x40020C</span><br><span class="line">// 68 0C 02 40 00 文本框内容</span><br><span class="line"></span><br><span class="line">push 0x0</span><br><span class="line">// 6A 00 		  某个参数，不过这里没有</span><br><span class="line"></span><br><span class="line">call 00400264</span><br><span class="line">// E8 14 00 00 00 CALL进MessageBoxA中，这里的地址需要计算</span><br><span class="line"></span><br><span class="line">jmp dword ptr ds:[0x400274]</span><br><span class="line">// FF 25 74 02 40 00 400274H(little-endian)是IAT地址</span><br></pre></td></tr></table></figure>
+
+<p>由上文所述，如果需要程序正常运行，那么需要将数据段的数据准确压入栈中，为此我们需要在地址中下一点功夫</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20132806.png"></p>
+<p>根据数据段的位置，以及可以被修改的字节位置，我们可以写出以下汇编代码</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">push 0x1040</span><br><span class="line">// 68 40 10 00 00 压栈（与上面相同）</span><br><span class="line"></span><br><span class="line">jmp</span><br><span class="line">// EB 0D 间接跳转，后面会大量使用，用于在不连续内存块中保证运行完整</span><br><span class="line"></span><br><span class="line">push 0x4000A4</span><br><span class="line">// 68 A4 00 40 00 标题</span><br><span class="line"></span><br><span class="line">jmp</span><br><span class="line">// EB 1A 间接跳转</span><br><span class="line"></span><br><span class="line">push 0x4000B8</span><br><span class="line">// 68 B8 00 40 00 文本框内容</span><br><span class="line"></span><br><span class="line">push 0x0</span><br><span class="line">// 6A 00 某个参数，不过这里没有</span><br><span class="line"></span><br><span class="line">call 00400264</span><br><span class="line">// E8 0B 00 00 00 CALL进MessageBoxA中，这里的地址需要计算</span><br><span class="line"></span><br><span class="line">jmp</span><br><span class="line">// EB 09 间接跳转</span><br><span class="line"></span><br><span class="line">jmp dword ptr ds:[0x4000E8]</span><br><span class="line">// FF 25 E8 00 40 00 4000E8H(little-endian)是IAT地址</span><br></pre></td></tr></table></figure>
+
+<p>然后就可以插入了</p>
+<p>这里重点提一下中间的call后面地址的计算</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">X=真正要跳转的地址-（E8这条指令的地址+5）</span><br></pre></td></tr></table></figure>
+
+<p>根据在OD中对模板文件的查看，容易知道E8跳转的地址实际上就是汇编代码最后一段的地址（FF25），因此我们可以得出</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">X=00400070H-(00400060H+5H)=0BH</span><br></pre></td></tr></table></figure>
+
+<p>这样我们的汇编部分就结束了</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20133152.png"></p>
+<h2 id="第八步"><a href="#第八步" class="headerlink" title="第八步"></a>第八步</h2><p>最后做一点小修改</p>
+<p>首先是SizeOfOptionalHeader</p>
+<p>这个是整个可选映像头的大小，鉴于我们对可选映像头的修改只有删除Directory域，因此这里做个简单的加减法（E0-70&#x3D;70）就可以得出结果了</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20134132.png"></p>
+<p>然后是OEP</p>
+<p>鉴于我们把汇编代码乱放，因此我们需要找到第一条指令的执行位置并修改OEP</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20134255.png"></p>
+<p>接下来是SizeOfHeaders</p>
+<p>别看这有个Size，实际上指向的应该是第一个节开始的位置，这里放OEP就好</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20134712.png"></p>
+<p>之后是Directory域的修改</p>
+<p>即输入表的RVA和大小的修改，不多赘述</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20134923.png"></p>
+<p>最后是代码节的修改</p>
+<p>将地址改为数据的起点即可</p>
+<p>重点要更改的是节表的VirtualAddress和PointerToRawData这两项</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-26%20135227.png"></p>
+<p>当然，不能忘记改自己的名字和学号，这个就不放了（GBK编码）</p>
+<p>至此，所有工作已经结束，我们已经获得了一个Win11下可以正常运行的最小PE文件（以模板给的字符串是268B，如果删掉数据节一点东西的话应该能更小)</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="http://example.com">WoaW04</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="http://example.com/2023/09/26/%E6%9C%80%E5%B0%8FPE%E6%96%87%E4%BB%B6/">http://example.com/2023/09/26/%E6%9C%80%E5%B0%8FPE%E6%96%87%E4%BB%B6/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://example.com" target="_blank">The Blog of WoaW04</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8/">软件安全</a></div><div class="post_share"><div class="social-share" data-image="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-09-25%20234811.png" data-sites="wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2023/10/11/%E6%A0%A2%E9%B9%AD%E6%9D%AF2023RE/" title="栢鹭杯2023RE"><img class="cover" src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-10-11%20235442.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">栢鹭杯2023RE</div></div></a></div><div class="next-post pull-right"><a href="/2022/08/05/Wireshark%E5%8D%8F%E8%AE%AE%E5%88%86%E6%9E%90/" title="Wireshark协议分析"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Wireshark协议分析</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image04CTF.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">WoaW04</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">25</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">11</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/WoaW04"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%88%98%E5%89%8D%E5%87%86%E5%A4%87"><span class="toc-number">1.</span> <span class="toc-text">战前准备</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E6%AD%A5"><span class="toc-number">2.</span> <span class="toc-text">第一步</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E6%AD%A5"><span class="toc-number">3.</span> <span class="toc-text">第二步</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E6%AD%A5"><span class="toc-number">4.</span> <span class="toc-text">第三步</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E5%9B%9B%E6%AD%A5"><span class="toc-number">5.</span> <span class="toc-text">第四步</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%BA%94%E6%AD%A5"><span class="toc-number">6.</span> <span class="toc-text">第五步</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E5%85%AD%E6%AD%A5"><span class="toc-number">7.</span> <span class="toc-text">第六步</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%83%E6%AD%A5"><span class="toc-number">8.</span> <span class="toc-text">第七步</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E5%85%AB%E6%AD%A5"><span class="toc-number">9.</span> <span class="toc-text">第八步</span></a></li></ol></div></div></div></div></main><footer id="footer" style="background: #FFFFFF00"><div id="footer-wrap"><div class="copyright">&copy;2022 - 2024 By WoaW04</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div></div></body></html>

@@ -1,0 +1,281 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>2024NKCTFvm？vm！ | The Blog of WoaW04</title><meta name="author" content="WoaW04"><meta name="copyright" content="WoaW04"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="0x00 分析题目根据官方WP，这道题是有原题的 原题的WP在这：https:&#x2F;&#x2F;ctf.0xff.re&#x2F;2022&#x2F;dicectf_2022&#x2F;cable_management 本题的脚本有：https:&#x2F;&#x2F;ycznkvrmzo.feishu.cn&#x2F;docx&#x2F;E92JdQmGxoUwXexnQgpcRaIsn7g 此题据官方WP是  改编了逻辑状态，把整个部分切为两半，第一个部分在异或的基础上加入了">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2024NKCTFvm？vm！">
+<meta property="og:url" content="http://example.com/2024/03/29/2024NKCTFVM/index.html">
+<meta property="og:site_name" content="The Blog of WoaW04">
+<meta property="og:description" content="0x00 分析题目根据官方WP，这道题是有原题的 原题的WP在这：https:&#x2F;&#x2F;ctf.0xff.re&#x2F;2022&#x2F;dicectf_2022&#x2F;cable_management 本题的脚本有：https:&#x2F;&#x2F;ycznkvrmzo.feishu.cn&#x2F;docx&#x2F;E92JdQmGxoUwXexnQgpcRaIsn7g 此题据官方WP是  改编了逻辑状态，把整个部分切为两半，第一个部分在异或的基础上加入了">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403292220854.png">
+<meta property="article:published_time" content="2024-03-29T01:13:51.000Z">
+<meta property="article:modified_time" content="2024-03-29T17:15:45.413Z">
+<meta property="article:author" content="WoaW04">
+<meta property="article:tag" content="RE">
+<meta property="article:tag" content="2024NKCTF">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403292220854.png"><link rel="shortcut icon" href="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image04CTF.png"><link rel="canonical" href="http://example.com/2024/03/29/2024NKCTFVM/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="stylesheet" href="/css/index.css?v=4.13.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.11.1/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: false,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '2024NKCTFvm？vm！',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-03-30 01:15:45'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 7.1.1"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image04CTF.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">25</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">11</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403292220854.png')"><nav id="nav"><span id="blog-info"><a href="/" title="The Blog of WoaW04"><img class="site-icon" src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image04CTF.png"/><span class="site-name">The Blog of WoaW04</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">2024NKCTFvm？vm！</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-03-29T01:13:51.000Z" title="发表于 2024-03-29 09:13:51">2024-03-29</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-03-29T17:15:45.413Z" title="更新于 2024-03-30 01:15:45">2024-03-30</time></span></div><div class="meta-secondline"></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="0x00-分析题目"><a href="#0x00-分析题目" class="headerlink" title="0x00 分析题目"></a>0x00 分析题目</h2><p>根据官方WP，这道题是有原题的</p>
+<p>原题的WP在这：<a target="_blank" rel="noopener" href="https://ctf.0xff.re/2022/dicectf_2022/cable_management">https://ctf.0xff.re/2022/dicectf_2022/cable_management</a></p>
+<p>本题的脚本有：<a target="_blank" rel="noopener" href="https://ycznkvrmzo.feishu.cn/docx/E92JdQmGxoUwXexnQgpcRaIsn7g">https://ycznkvrmzo.feishu.cn/docx/E92JdQmGxoUwXexnQgpcRaIsn7g</a></p>
+<p>此题据官方WP是</p>
+<blockquote>
+<p>改编了逻辑状态，把整个部分切为两半，第一个部分在异或的基础上加入了一个与门</p>
+<p>在第二个部分加入了一个或门</p>
+</blockquote>
+<p><del>没看懂（</del></p>
+<p>由于这题相对比较抽象，所以会大量引用WP</p>
+<p>这题需要对wireworld有所了解（至少知道规则才能做）：</p>
+<blockquote>
+<p>Wireworld导线世界规则：</p>
+<p>1、空（黑色）：永远不变</p>
+<p>2、电子头（蓝色）：下一代变为电子尾</p>
+<p>3、电子尾（白色）：下一代变为导线</p>
+<p>4、导线（黄色）：一般不变，但当周围一圈有一个或两个电子头时变为电子头</p>
+</blockquote>
+<h2 id="0x01-解"><a href="#0x01-解" class="headerlink" title="0x01 解"></a>0x01 解</h2><p>ELF，无壳</p>
+<p>无从下手，只能先看看main函数</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403292017851.png"></p>
+<p>从下面开始看看函数</p>
+<p>printf的样子很奇怪，不过unk_2004和unk_2005倒是知道是什么</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403292019913.png"></p>
+<p>那么估计sub_1570就是一个判断函数了，</p>
+<p>根据WP，这个sub_1220是read_one_bit</p>
+<blockquote>
+<p><code>read_one_bit</code> is self-explanatory: it reads one bit of the user input. More precisely, it reads a byte from <code>stdin</code> with <code>getc</code> every 8 calls, stores its bits in <code>.data</code> variables. Therefore, each call, it returns a new bit from the user input.</p>
+</blockquote>
+<p>即将用户的输入（char，8bit）转换成bit，然后存储在.data变量中，因此每次调用此函数就会返回从用户输入中解析的一个bit</p>
+<p>接下来就抽象起来了，IDA拒绝识别sub_1570这个函数，究其原因，因为栈帧太大</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403292028431.png"></p>
+<p>那就看看汇编</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">.text:000000000000159C    lea     r14, map</span><br><span class="line">.text:00000000000015A3    mov     edx, offset unk_526990 ; n</span><br><span class="line">.text:00000000000015A8    mov     rsi, r14        ; src</span><br><span class="line">.text:00000000000015AB    mov     rax, fs:28h</span><br><span class="line">.text:00000000000015B4    mov     [rsp+19C8h+arg_524FC8], rax</span><br><span class="line">.text:00000000000015BC    xor     eax, eax</span><br><span class="line">.text:00000000000015BE    mov     r12, rsp</span><br><span class="line">.text:00000000000015C1    mov     r13, rdi</span><br><span class="line">.text:00000000000015C4    mov     rdi, r12        ; dest</span><br><span class="line">.text:00000000000015C7    call    _memcpy</span><br></pre></td></tr></table></figure>
+
+<p>此函数首先用memcpy将指定的内容（unk_4018，这里改名为map）从.data拷入栈帧中（就是这玩意巨大，共占了0x526990 &#x3D; 5400976 bytes）</p>
+<p>为什么要改名叫map呢？因为在sub_1570这个函数中一直有循环用到这块数据</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403292034731.png"></p>
+<p>高亮的cmp中可以发现这个巨大循环的判断条件是0x526990，即要循环5400976次，所以把这个变量命名为map就很合理了（原作者用的英文，所以这里的map应该有种”按图索骥“的那种”图“的意思）</p>
+<p>可以粗略去看看这个map变量，会发现里面主要由0x00和0xCD组成，为什么会这样呢？</p>
+<p>暂时按下不表，去看看别的函数</p>
+<p>在动调过程中可以发现有一个函数一直走不进去（毕竟循环太多了，一时半会肯定进不去）</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403292045833.png"></p>
+<p>断点所在的为函数，而一般走到高亮处就执行跳转了，进不去断点所在的函数</p>
+<p>那么就手动进去看看</p>
+<p>这里进去之后就是WP中的sub_1390了</p>
+<p>这里改一下变量名，让其与WP一样</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">bool</span> __fastcall <span class="title function_">sub_13B0</span><span class="params">(<span class="type">int</span> idx, __int64 <span class="built_in">map</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">unsigned</span> <span class="type">int</span> y; <span class="comment">// eax</span></span><br><span class="line">  <span class="type">unsigned</span> <span class="type">int</span> x; <span class="comment">// edx</span></span><br><span class="line">  <span class="type">unsigned</span> <span class="type">int</span> right_cell; <span class="comment">// ebx</span></span><br><span class="line">  <span class="type">int</span> sum; <span class="comment">// esi</span></span><br><span class="line">  <span class="type">unsigned</span> <span class="type">int</span> bottom_cell; <span class="comment">// edi</span></span><br><span class="line">  <span class="type">unsigned</span> <span class="type">int</span> left_cell; <span class="comment">// ebp</span></span><br><span class="line">  <span class="type">unsigned</span> <span class="type">int</span> top_cell; <span class="comment">// eax</span></span><br><span class="line"></span><br><span class="line">  y = idx / <span class="number">2324</span>;</span><br><span class="line">  x = idx % <span class="number">2324</span>;</span><br><span class="line">  right_cell = idx % <span class="number">2324</span> + <span class="number">1</span>;</span><br><span class="line">  sum = right_cell &lt;= <span class="number">2323</span> &amp;&amp; y &lt;= <span class="number">2323</span> &amp;&amp; *(_BYTE *)(<span class="built_in">map</span> + (<span class="type">int</span>)(right_cell + <span class="number">2324</span> * y)) == <span class="number">236</span>;</span><br><span class="line">  bottom_cell = y + <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">if</span> ( right_cell &lt;= <span class="number">2323</span> &amp;&amp; bottom_cell &lt;= <span class="number">2323</span> &amp;&amp; *(_BYTE *)(<span class="built_in">map</span> + (<span class="type">int</span>)(right_cell + <span class="number">2324</span> * bottom_cell)) == <span class="number">236</span> )</span><br><span class="line">    ++sum;</span><br><span class="line">  <span class="keyword">if</span> ( bottom_cell &lt;= <span class="number">2323</span> &amp;&amp; x &lt;= <span class="number">2323</span> &amp;&amp; *(_BYTE *)(<span class="built_in">map</span> + (<span class="type">int</span>)(x + <span class="number">2324</span> * bottom_cell)) == <span class="number">236</span> )</span><br><span class="line">    ++sum;</span><br><span class="line">  left_cell = x - <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">if</span> ( bottom_cell &lt;= <span class="number">2323</span> &amp;&amp; left_cell &lt;= <span class="number">2323</span> &amp;&amp; *(_BYTE *)(<span class="built_in">map</span> + (<span class="type">int</span>)(left_cell + <span class="number">2324</span> * bottom_cell)) == <span class="number">236</span> )</span><br><span class="line">    ++sum;</span><br><span class="line">  <span class="keyword">if</span> ( y &lt;= <span class="number">2323</span> &amp;&amp; left_cell &lt;= <span class="number">2323</span> &amp;&amp; *(_BYTE *)(<span class="built_in">map</span> + (<span class="type">int</span>)(left_cell + <span class="number">2324</span> * y)) == <span class="number">236</span> )</span><br><span class="line">    ++sum;</span><br><span class="line">  top_cell = y - <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">if</span> ( left_cell &lt;= <span class="number">2323</span> &amp;&amp; top_cell &lt;= <span class="number">2323</span> &amp;&amp; *(_BYTE *)(<span class="built_in">map</span> + (<span class="type">int</span>)(left_cell + <span class="number">2324</span> * top_cell)) == <span class="number">236</span> )</span><br><span class="line">    ++sum;</span><br><span class="line">  <span class="keyword">if</span> ( x &lt;= <span class="number">2323</span> &amp;&amp; top_cell &lt;= <span class="number">2323</span> &amp;&amp; *(_BYTE *)(<span class="built_in">map</span> + (<span class="type">int</span>)(<span class="number">2324</span> * top_cell + x)) == <span class="number">236</span> )</span><br><span class="line">    ++sum;</span><br><span class="line">  <span class="keyword">if</span> ( right_cell &lt;= <span class="number">2323</span> &amp;&amp; top_cell &lt;= <span class="number">2323</span> &amp;&amp; *(_BYTE *)(<span class="built_in">map</span> + (<span class="type">int</span>)(right_cell + <span class="number">2324</span> * top_cell)) == <span class="number">236</span> )</span><br><span class="line">    ++sum;</span><br><span class="line">  <span class="keyword">return</span> (<span class="type">unsigned</span> <span class="type">int</span>)(sum - <span class="number">1</span>) &lt;= <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可能看起来与WP不同，但是实际上逻辑与WP一致，相应的常数这里用的是十进制，对比WP也是一致的</p>
+<p>有<code>0x913 = 2323 </code>以及<code>0xEC = 236</code></p>
+<blockquote>
+<p>Since it performs integer division by 2324, it makes sense to view the variables I renamed <code>x</code> and <code>y</code> as coordinates. Furthermore, we can try dumping and visualizing the map as a 2324-bytes-wide image:</p>
+</blockquote>
+<p>由于这些数字都除以了2324，所以这里可以将变量以坐标形式命名为x，y，更进一步地，我们可以试着去将这个map给dump成一个2324bytes长的图片（将一个Byte视为一个像素，然后根据上面这个函数dump出来）</p>
+<p>那么这个dump怎么做呢？</p>
+<p>诶，让我们回到那个IDA都不想反编译的东西</p>
+<p>动调这个时候就派上了用场，让我们在调用上面那个看起来像是画图的函数的地方下个断点，会发现根本断不下来，为什么呢？因为这个地方缺了输入！</p>
+<p>让我们输入29bytes长的数据，然后回车，可以发现在这个地方断下来了！</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403292133613.png"></p>
+<p>接下来就可以跟着去看看发生了什么了</p>
+<p>由这个进去可以发现之后会循环经过很多个cmp</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">.text:00005644A46C75D8                 cmp     al, 11h</span><br><span class="line">.text:00005644A46C75DA                 jz      loc_5644A46C7690</span><br><span class="line">.text:00005644A46C75E0                 cmp     al, 80h ; &#x27;€&#x27;</span><br><span class="line">.text:00005644A46C75E2                 jnz     short loc_5644A46C7630</span><br><span class="line">.text:00005644A46C75E4                 mov     rsi, r12</span><br><span class="line">.text:00005644A46C75E7                 call    sub_5644A46C73B0 # start</span><br><span class="line">.text:00005644A46C75EC                 test    al, al</span><br><span class="line">.text:00005644A46C75EE                 jnz     loc_5644A46C76BF</span><br><span class="line">.text:00005644A46C75F4                 nop     dword ptr [rax+00h]</span><br><span class="line">.text:00005644A46C75F8</span><br><span class="line">.text:00005644A46C75F8 loc_5644A46C75F8:                       ; CODE XREF: sub_5644A46C7570+BA↓j</span><br><span class="line">.text:00005644A46C75F8                                         ; sub_5644A46C7570+CE↓j ...</span><br><span class="line">.text:00005644A46C75F8                 add     rbx, 1</span><br><span class="line">.text:00005644A46C75FC                 add     rbp, 1</span><br><span class="line">.text:00005644A46C7600                 cmp     rbx, 526990h</span><br><span class="line">.text:00005644A46C7607                 jz      loc_5644A46C76B1</span><br><span class="line">.text:00005644A46C760D</span><br><span class="line">.text:00005644A46C760D loc_5644A46C760D:                       ; CODE XREF: sub_5644A46C7570+61↑j</span><br><span class="line">.text:00005644A46C760D                 movzx   eax, byte ptr [r12+rbx]</span><br><span class="line">.text:00005644A46C7612                 mov     edi, ebx</span><br><span class="line">.text:00005644A46C7614                 cmp     al, 0CDh</span><br><span class="line">.text:00005644A46C7616                 jz      short loc_5644A46C7670</span><br><span class="line">.text:00005644A46C7618                 jbe     short loc_5644A46C75D8</span><br><span class="line">.text:00005644A46C761A                 cmp     al, 0EAh</span><br><span class="line">.text:00005644A46C761C                 jz      short loc_5644A46C7680</span><br><span class="line">.text:00005644A46C761E                 cmp     al, 0ECh</span><br><span class="line">.text:00005644A46C7620                 jnz     loc_5644A46C76A8</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">.text:00005644A46C7630                 cmp     al, 1</span><br><span class="line">.text:00005644A46C7632                 jnz     short loc_5644A46C76A8</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">.text:00005644A46C7670 loc_5644A46C7670:                       ; CODE XREF: sub_5644A46C7570+A6↑j</span><br><span class="line">.text:00005644A46C7670                 mov     rsi, r12</span><br><span class="line">.text:00005644A46C7673                 call    sub_5644A46C73B0</span><br><span class="line">.text:00005644A46C7678                 test    al, al</span><br><span class="line">.text:00005644A46C767A                 jnz     short loc_5644A46C769A</span><br><span class="line">.text:00005644A46C767C                 nop     dword ptr [rax+00h]</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">.text:00005644A46C76A8                 mov     byte ptr [rbp+0], 0</span><br><span class="line">.text:00005644A46C76AC                 jmp     loc_5644A46C75F8</span><br></pre></td></tr></table></figure>
+
+<p>这些cmp非常可疑，因为里面有很多0xCD，还记得刚刚提到的map变量里面有很多CD吗？可以合理怀疑一下这两个东西有关</p>
+<p>可以验证一下猜想，将map变量dump出来，然后搜索一下cmp的其他字符，比如01，11，80，EA，EC</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">data = <span class="built_in">list</span>(<span class="built_in">open</span>(<span class="string">&#x27;./re&#x27;</span>, <span class="string">&#x27;rb&#x27;</span>).read()[<span class="number">0x3018</span>: <span class="number">0x3018</span> + <span class="number">0x526990</span>])</span><br><span class="line"><span class="comment"># 01，11，80，EA，EC</span></span><br><span class="line"><span class="keyword">if</span> <span class="number">0x80</span> <span class="keyword">in</span> data:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;0x80&quot;</span>)</span><br><span class="line"><span class="keyword">if</span> <span class="number">0x01</span> <span class="keyword">in</span> data:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;0x01&quot;</span>)</span><br><span class="line"><span class="keyword">if</span> <span class="number">0x11</span> <span class="keyword">in</span> data:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;0x11&quot;</span>)</span><br><span class="line"><span class="keyword">if</span> <span class="number">0xEA</span> <span class="keyword">in</span> data:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;0xEA&quot;</span>)</span><br><span class="line"><span class="keyword">if</span> <span class="number">0xEC</span> <span class="keyword">in</span> data:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;0xEC&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>运行一下会发现除了EA都有</p>
+<p>所以想要输出图片可能就和这些字符有关系了</p>
+<p>再由sub_1390画图函数</p>
+<p>可以知道画图的取值不是简单的在数组中的12345，而是与2324有关</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">y = idx / <span class="number">2324</span>;</span><br><span class="line">x = idx % <span class="number">2324</span>;</span><br></pre></td></tr></table></figure>
+
+<p>所以我们可以写出这样的脚本</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line">data = <span class="built_in">list</span>(<span class="built_in">open</span>(<span class="string">&#x27;./re&#x27;</span>, <span class="string">&#x27;rb&#x27;</span>).read()[<span class="number">0x3018</span>: <span class="number">0x3018</span> + <span class="number">0x526990</span>])</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">show_state</span>(<span class="params">data, height, width</span>):</span><br><span class="line">    f = sys.stdout</span><br><span class="line">    <span class="keyword">for</span> y <span class="keyword">in</span> <span class="built_in">range</span>(height):</span><br><span class="line">        <span class="keyword">for</span> x <span class="keyword">in</span> <span class="built_in">range</span>(width):</span><br><span class="line">            c = data[width * y + x]</span><br><span class="line">            <span class="keyword">if</span> c == <span class="number">0x01</span>:</span><br><span class="line">                f.write(<span class="string">&#x27;@&#x27;</span>)</span><br><span class="line">            <span class="keyword">elif</span> c == <span class="number">0x80</span>:</span><br><span class="line">                f.write(<span class="string">&#x27;$&#x27;</span>)</span><br><span class="line">            <span class="keyword">elif</span> c == <span class="number">0x11</span>:</span><br><span class="line">                f.write(<span class="string">&#x27;?&#x27;</span>)</span><br><span class="line">            <span class="keyword">elif</span> c == <span class="number">0xec</span>:</span><br><span class="line">                f.write(<span class="string">&#x27;2&#x27;</span>)</span><br><span class="line">            <span class="keyword">elif</span> c == <span class="number">0xea</span>:</span><br><span class="line">                f.write(<span class="string">&#x27;1&#x27;</span>)</span><br><span class="line">            <span class="keyword">elif</span> c == <span class="number">0xcd</span>:</span><br><span class="line">                f.write(<span class="string">&#x27;0&#x27;</span>)</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                f.write(<span class="string">&#x27; &#x27;</span>)</span><br><span class="line">        f.write(<span class="string">&#x27;\n&#x27;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">_data = []</span><br><span class="line">width = <span class="number">122</span>  <span class="comment"># 可变，由于vscode的输出大小只有122个字符，所以我设置成这个</span></span><br><span class="line">height = <span class="number">55</span>  <span class="comment"># 50以后y轴就没有东西输出了</span></span><br><span class="line"><span class="keyword">for</span> y <span class="keyword">in</span> <span class="built_in">range</span>(height):</span><br><span class="line">    <span class="comment"># for x in range(width):</span></span><br><span class="line">    _data += data[y * <span class="number">2324</span>: y * <span class="number">2324</span> + width]</span><br><span class="line">show_state(_data, height, width)</span><br></pre></td></tr></table></figure>
+
+<p>结果如下：</p>
+<p>上半</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403292220474.png"></p>
+<p>下半</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403292220854.png"></p>
+<p>非常的抽象</p>
+<p>下半的研究价值比较大一点，所以单独截取下半部分进行分析，便于观看，我把他在wireworld中进行了实现</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403300014531.png"></p>
+<blockquote>
+<p>The map mostly consists of 232 of these patterns horizontally glued next to each other. Here is the same pattern in hexadecimal, where I removed null bytes for clarity.</p>
+</blockquote>
+<p>整个图最多包含232张这样的图案，然而在此题中，第四个和第五个图案有所改变（改编了逻辑状态）</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403300029114.png"></p>
+<p>由下半可知</p>
+<blockquote>
+<p>Some patterns have an 0xEC byte on the fifth line, some don’t and have a 0xCD instead. This may be important data in flag verification.</p>
+<p>All the patterns have an 0x11 byte at the top center.</p>
+</blockquote>
+<p>在一个周期中，图案的中部有些是0xEC（输出图中显示为2），有些则是0xCD（输出图中显示为0），这或许对解flag有效</p>
+<p>所有的图案都有0x11（输出图中显示为?）在顶上，然而这题被改过，所以可以看到有个部分的0x11后面凸起来了，同时在凸起来部分的下面可以看到有一段不自然的空白，可能这就是所说的“改编逻辑状态”了</p>
+<p>接下来回到我们的IDA都不想反编译的函数</p>
+<p>找到cmp 0x11的位置，看看这个0x11跳转到了哪里</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">.text:00005644A46C75D8                 cmp     al, 11h</span><br><span class="line">.text:00005644A46C75DA                 jz      loc_5644A46C7690</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">.text:00005644A46C7690 loc_5644A46C7690:                       ; CODE XREF: sub_5644A46C7570+6A↑j</span><br><span class="line">.text:00005644A46C7690                 xor     eax, eax</span><br><span class="line">.text:00005644A46C7692                 call    qword ptr [r13+0]</span><br><span class="line">.text:00005644A46C7696                 test    al, al</span><br><span class="line">.text:00005644A46C7698                 jz      short loc_5644A46C7680</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>It calls the function pointed by <code>r13</code>, which is the function pointer argument passed by main (<code>read_one_bit</code>). Therefore, for each of these patterns in the map, one bit of the user input is read. This confirms that the flag is indeed 232 &#x2F; 8 &#x3D; 29 bytes long.</p>
+</blockquote>
+<p>这段跳转调用了一个r13寄存器内存储的函数，这个函数就是main函数中的read_ont_bit函数。因此，对于图中的每一个图案，都在0x11所在位置读入了一个用户输入的字节中的一个bit，而232&#x2F;8&#x3D;29Bytes，这也就解释了为什么输入是29个字符</p>
+<p>由wireworld的规则，我们可以对输入的结果进行一个模拟，从而知道输入在图案中的运行过程，模拟的脚本如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line">data = <span class="built_in">list</span>(<span class="built_in">open</span>(<span class="string">&#x27;./re&#x27;</span>, <span class="string">&#x27;rb&#x27;</span>).read()[<span class="number">0x3018</span>: <span class="number">0x3018</span> + <span class="number">0x526990</span>])</span><br><span class="line">file = <span class="built_in">open</span>(<span class="string">&#x27;test.txt&#x27;</span>, <span class="string">&#x27;w&#x27;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">update</span>(<span class="params">data, height, width</span>):</span><br><span class="line">    _data = data[:]</span><br><span class="line">    <span class="keyword">for</span> y <span class="keyword">in</span> <span class="built_in">range</span>(height):</span><br><span class="line">        <span class="keyword">for</span> x <span class="keyword">in</span> <span class="built_in">range</span>(width):</span><br><span class="line">            c = data[width * y + x]</span><br><span class="line">            <span class="keyword">if</span> c == <span class="number">0xcd</span>:</span><br><span class="line">                <span class="keyword">if</span> check_pos(data, height, width, y, x):</span><br><span class="line">                    _data[y * width + x] = <span class="number">0xec</span></span><br><span class="line">            <span class="keyword">elif</span> c == <span class="number">0xea</span>:</span><br><span class="line">                _data[y * width + x] = <span class="number">0xcd</span></span><br><span class="line">            <span class="keyword">elif</span> c == <span class="number">0xec</span>:</span><br><span class="line">                _data[y * width + x] = <span class="number">0xea</span></span><br><span class="line">            <span class="keyword">elif</span> c == <span class="number">0x11</span>:</span><br><span class="line">                _data[y * width + x] = [<span class="number">0xcd</span>, <span class="number">0xec</span>][values.pop(<span class="number">0</span>)]</span><br><span class="line">            <span class="keyword">elif</span> c == <span class="number">0x01</span>:</span><br><span class="line">                <span class="keyword">pass</span></span><br><span class="line">            <span class="keyword">elif</span> c == <span class="number">0x80</span>:</span><br><span class="line">                <span class="keyword">assert</span> <span class="keyword">not</span> check_pos(data, height, width, y, x)</span><br><span class="line">    <span class="keyword">return</span> _data</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">check_pos</span>(<span class="params">data, height, width, y, x</span>):</span><br><span class="line">    count = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> _x <span class="keyword">in</span> <span class="built_in">range</span>(x - <span class="number">1</span>, x + <span class="number">2</span>):</span><br><span class="line">        <span class="keyword">for</span> _y <span class="keyword">in</span> <span class="built_in">range</span>(y - <span class="number">1</span>, y + <span class="number">2</span>):</span><br><span class="line">            <span class="keyword">if</span> _x &lt; <span class="number">0</span> <span class="keyword">or</span> _x &gt;= width <span class="keyword">or</span> _y &lt; <span class="number">0</span> <span class="keyword">or</span> _y &gt;= height <span class="keyword">or</span> (_x == x <span class="keyword">and</span> _y == y):</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line">            <span class="keyword">if</span> data[_y * width + _x] == <span class="number">0xec</span>:</span><br><span class="line">                count += <span class="number">1</span></span><br><span class="line">    <span class="keyword">return</span> count == <span class="number">1</span> <span class="keyword">or</span> count == <span class="number">2</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">show_state</span>(<span class="params">data, height, width</span>):</span><br><span class="line">    f = sys.stdout</span><br><span class="line">    <span class="keyword">for</span> y <span class="keyword">in</span> <span class="built_in">range</span>(height):</span><br><span class="line">        <span class="keyword">for</span> x <span class="keyword">in</span> <span class="built_in">range</span>(width):</span><br><span class="line">            c = data[width * y + x]</span><br><span class="line">            <span class="keyword">if</span> c == <span class="number">0x01</span>:</span><br><span class="line">                f.write(<span class="string">&#x27;@&#x27;</span>)</span><br><span class="line">            <span class="keyword">elif</span> c == <span class="number">0x80</span>:</span><br><span class="line">                f.write(<span class="string">&#x27;$&#x27;</span>)</span><br><span class="line">            <span class="keyword">elif</span> c == <span class="number">0x11</span>:</span><br><span class="line">                f.write(<span class="string">&#x27;?&#x27;</span>)</span><br><span class="line">            <span class="keyword">elif</span> c == <span class="number">0xec</span>:</span><br><span class="line">                f.write(<span class="string">&#x27;1&#x27;</span>)</span><br><span class="line">            <span class="keyword">elif</span> c == <span class="number">0xea</span>:</span><br><span class="line">                f.write(<span class="string">&#x27;2&#x27;</span>)</span><br><span class="line">            <span class="keyword">elif</span> c == <span class="number">0xcd</span>:</span><br><span class="line">                f.write(<span class="string">&#x27;3&#x27;</span>)</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                f.write(<span class="string">&#x27; &#x27;</span>)</span><br><span class="line">        f.write(<span class="string">&#x27;\n&#x27;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">_data = []</span><br><span class="line">width = <span class="number">66</span></span><br><span class="line"><span class="keyword">for</span> y <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">26</span>, <span class="number">50</span>):</span><br><span class="line">    _data += data[y * <span class="number">2324</span>: y * <span class="number">2324</span> + width]</span><br><span class="line"></span><br><span class="line">values = [<span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>] <span class="comment"># n的ascii码（由于flag的第一个字符是n，因此这个输入一定是对的）</span></span><br><span class="line"><span class="comment"># values = [1, 0, 0, 1, 0, 0, 0, 1] # n的ascii码的反码，结果一定是错误的</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> <span class="number">1</span>:</span><br><span class="line">    os.system(<span class="string">&#x27;cls&#x27;</span>)</span><br><span class="line">    show_state(_data, <span class="number">50</span> - <span class="number">26</span>, width)</span><br><span class="line">    <span class="built_in">input</span>()</span><br><span class="line">    _data = update(_data, <span class="number">50</span> - <span class="number">26</span>, width)</span><br></pre></td></tr></table></figure>
+
+<p>输入在这些图案中会进行扩散操作，通过这道题最终的目的是将不让电子头到达输出图中为$的位置</p>
+<p><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403292220854.png"></p>
+<p>对正确输入和错误输入进行模拟，可以知道本题的目的就是不让电子头到达$的位置</p>
+<p>所以就应该写脚本了（这个真不会，抄抄大哥的）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">data = <span class="built_in">list</span>(<span class="built_in">open</span>(<span class="string">&#x27;./re&#x27;</span>, <span class="string">&#x27;rb&#x27;</span>).read()[<span class="number">0x3018</span>: <span class="number">0x3018</span> + <span class="number">0x526990</span>])</span><br><span class="line"></span><br><span class="line">values = [<span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>]</span><br><span class="line">values.append(<span class="number">1</span>)</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">232</span> - <span class="number">5</span>):</span><br><span class="line">    <span class="keyword">assert</span> data[<span class="number">28</span> * <span class="number">2324</span> + <span class="number">63</span> + i * <span class="number">10</span>] == <span class="number">0x11</span></span><br><span class="line">    last_input1 = values[-<span class="number">1</span>]</span><br><span class="line">    <span class="keyword">assert</span> data[<span class="number">32</span> * <span class="number">2324</span> + <span class="number">63</span> + i * <span class="number">10</span> - <span class="number">10</span>] <span class="keyword">in</span> [<span class="number">0xec</span>, <span class="number">0xcd</span>]</span><br><span class="line">    last_input2 = <span class="built_in">int</span>(data[<span class="number">32</span> * <span class="number">2324</span> + <span class="number">63</span> + i * <span class="number">10</span> - <span class="number">10</span>] == <span class="number">0xec</span>)</span><br><span class="line">    <span class="keyword">assert</span> data[<span class="number">32</span> * <span class="number">2324</span> + <span class="number">63</span> + i * <span class="number">10</span> - <span class="number">10</span> + <span class="number">5</span>] <span class="keyword">in</span> [<span class="number">0x00</span>, <span class="number">0xcd</span>]</span><br><span class="line">    gate_type = data[<span class="number">32</span> * <span class="number">2324</span> + <span class="number">63</span> + i * <span class="number">10</span> - <span class="number">10</span> + <span class="number">5</span>] == <span class="number">0xcd</span></span><br><span class="line">    values.append(last_input1 ^ last_input2 ^ gate_type)</span><br><span class="line"></span><br><span class="line">values = <span class="string">&#x27;&#x27;</span>.join(<span class="built_in">str</span>(j) <span class="keyword">for</span> j <span class="keyword">in</span> values)</span><br><span class="line"><span class="built_in">print</span>(values)</span><br><span class="line"></span><br><span class="line">flag = []</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">0</span>, <span class="built_in">len</span>(values), <span class="number">8</span>):</span><br><span class="line">    flag.append(<span class="built_in">int</span>((values[i: i + <span class="number">8</span>]), <span class="number">2</span>))</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">bytes</span>(flag))</span><br><span class="line"><span class="built_in">input</span>()</span><br><span class="line"><span class="comment"># b&#x27;nkctf&#123;wiReWo-ld_1s_n0t_goOD!&#125;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>算VM吗？我不知道（</p>
+<p>不过原题WP提供了一种爆破的方法，据说要跑40min：</p>
+<blockquote>
+<p>After around 40 minutes, the flag is succesfully leaked! And we still have no clue what the challenge is about.</p>
+</blockquote>
+<p>而这题的官方WP写了这个：</p>
+<blockquote>
+<p>可以发现虽然不正确，但是还是有部分正确的，这是因为虽然加入了逻辑与门和逻辑或门造成<br>了多解的情况，但是因为本身只有 0 和 1 的异或状态，结果有机会是重合的，利用这点可以随<br>便修改一些 0 和 1，就可以得到其它部分的字符串。</p>
+</blockquote>
+<p>好吧，我选择相信大哥（</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="http://example.com">WoaW04</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="http://example.com/2024/03/29/2024NKCTFVM/">http://example.com/2024/03/29/2024NKCTFVM/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://example.com" target="_blank">The Blog of WoaW04</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/RE/">RE</a><a class="post-meta__tags" href="/tags/2024NKCTF/">2024NKCTF</a></div><div class="post_share"><div class="social-share" data-image="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403292220854.png" data-sites="wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2024/03/28/2024NKCTFREEZ/" title="2024NKCTFREEZ"><img class="cover" src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image202403281237119.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">2024NKCTFREEZ</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image04CTF.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">WoaW04</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">25</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">11</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/WoaW04"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#0x00-%E5%88%86%E6%9E%90%E9%A2%98%E7%9B%AE"><span class="toc-number">1.</span> <span class="toc-text">0x00 分析题目</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x01-%E8%A7%A3"><span class="toc-number">2.</span> <span class="toc-text">0x01 解</span></a></li></ol></div></div></div></div></main><footer id="footer" style="background: #FFFFFF00"><div id="footer-wrap"><div class="copyright">&copy;2022 - 2024 By WoaW04</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div></div></body></html>
