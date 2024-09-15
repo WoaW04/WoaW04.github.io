@@ -1,0 +1,203 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>2024羊城杯pic | The Blog of WoaW04</title><meta name="author" content="WoaW04"><meta name="copyright" content="WoaW04"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="0x00 前言go语言，最好上IDA8.3，没删的话可以恢复符号 0x01 解无壳，直接上IDA 一进来就看到isDebuggerPresent  直接改为jmp  对于golang来说，调试经常会飞出去，因此要多用F4（Run to cursor） 在接受输入的地方下个断点，运行发现这边检查了长度是否为5  重新调试，输入5字节后走到这，发现调用了一个NewCipher函数，在go里面就是获取了">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2024羊城杯pic">
+<meta property="og:url" content="http://example.com/2024/09/15/2024%E7%BE%8A%E5%9F%8E%E6%9D%AFpic/index.html">
+<meta property="og:site_name" content="The Blog of WoaW04">
+<meta property="og:description" content="0x00 前言go语言，最好上IDA8.3，没删的话可以恢复符号 0x01 解无壳，直接上IDA 一进来就看到isDebuggerPresent  直接改为jmp  对于golang来说，调试经常会飞出去，因此要多用F4（Run to cursor） 在接受输入的地方下个断点，运行发现这边检查了长度是否为5  重新调试，输入5字节后走到这，发现调用了一个NewCipher函数，在go里面就是获取了">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/WoaW04/Picture/main/202409151252971.png">
+<meta property="article:published_time" content="2024-09-15T04:51:07.000Z">
+<meta property="article:modified_time" content="2024-09-15T07:23:10.612Z">
+<meta property="article:author" content="WoaW04">
+<meta property="article:tag" content="RE">
+<meta property="article:tag" content="2024羊城杯">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/WoaW04/Picture/main/202409151252971.png"><link rel="shortcut icon" href="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image04CTF.png"><link rel="canonical" href="http://example.com/2024/09/15/2024%E7%BE%8A%E5%9F%8E%E6%9D%AFpic/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="stylesheet" href="/css/index.css?v=4.13.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.11.1/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: false,
+    rightside: false,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '2024羊城杯pic',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-09-15 15:23:10'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+          const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+          const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+          const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+          if (t === undefined) {
+            if (isLightMode) activateLightMode()
+            else if (isDarkMode) activateDarkMode()
+            else if (isNotSpecified || hasNoSupport) {
+              const now = new Date()
+              const hour = now.getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            window.matchMedia('(prefers-color-scheme: dark)').addListener(e => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else if (t === 'light') activateLightMode()
+          else activateDarkMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 7.1.1"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image04CTF.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">46</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">20</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://raw.githubusercontent.com/WoaW04/Picture/main/202409151252971.png')"><nav id="nav"><span id="blog-info"><a href="/" title="The Blog of WoaW04"><img class="site-icon" src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image04CTF.png"/><span class="site-name">The Blog of WoaW04</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">2024羊城杯pic</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-09-15T04:51:07.000Z" title="发表于 2024-09-15 12:51:07">2024-09-15</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-09-15T07:23:10.612Z" title="更新于 2024-09-15 15:23:10">2024-09-15</time></span></div><div class="meta-secondline"></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>go语言，最好上IDA8.3，没删的话可以恢复符号</p>
+<h2 id="0x01-解"><a href="#0x01-解" class="headerlink" title="0x01 解"></a>0x01 解</h2><p>无壳，直接上IDA</p>
+<p>一进来就看到<code>isDebuggerPresent</code></p>
+<p><img src="https://raw.githubusercontent.com/WoaW04/Picture/main/202409151259809.png"></p>
+<p>直接改为jmp</p>
+<p><img src="https://raw.githubusercontent.com/WoaW04/Picture/main/202409151305862.png"></p>
+<p>对于golang来说，调试经常会飞出去，因此要多用F4（Run to cursor）</p>
+<p>在接受输入的地方下个断点，运行发现这边检查了长度是否为5</p>
+<p><img src="https://raw.githubusercontent.com/WoaW04/Picture/main/202409151312627.png"></p>
+<p>重新调试，输入5字节后走到这，发现调用了一个NewCipher函数，在go里面就是获取了一个Cipher对象，之后又去读了flag.png</p>
+<p><img src="https://raw.githubusercontent.com/WoaW04/Picture/main/202409151331693.png"></p>
+<p>继续向下走，发现有个循环异或</p>
+<p><img src="https://raw.githubusercontent.com/WoaW04/Picture/main/202409151338279.png"></p>
+<p>将输入的第二位和png的内容进行逐字节异或</p>
+<p><img src="https://raw.githubusercontent.com/WoaW04/Picture/main/202409151340254.png"></p>
+<p>之后又是一个循环</p>
+<p><img src="https://raw.githubusercontent.com/WoaW04/Picture/main/202409151344256.png"></p>
+<p>一步步进行分析，发现是进行了如下操作</p>
+<p><img src="https://raw.githubusercontent.com/WoaW04/Picture/main/202409151401165.png"></p>
+<p>这实际上是魔改的RC4算法，最后多了个异或0x11，rdx的值随着密钥的改变而改变</p>
+<p>执行完这个循环可以发现写文件去了</p>
+<p><img src="https://raw.githubusercontent.com/WoaW04/Picture/main/202409151403265.png"></p>
+<p>输入要求一共五位，由于png头固定，因此直接爆就行</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> itertools</span><br><span class="line"><span class="keyword">import</span> string</span><br><span class="line"><span class="keyword">import</span> tqdm</span><br><span class="line">charset = string.digits + <span class="string">&quot;abcdefghijklmnopqrstuvwxyz&quot;</span></span><br><span class="line">enc = [<span class="number">0x85</span>, <span class="number">0x43</span>, <span class="number">0x72</span>, <span class="number">0x78</span>, <span class="number">0x26</span>, <span class="number">0xC0</span>, <span class="number">0x2E</span>, <span class="number">0x6E</span>] <span class="comment"># 加密png头</span></span><br><span class="line">plain = [<span class="number">0x89</span>, <span class="number">0x50</span>, <span class="number">0x4E</span>, <span class="number">0x47</span>, <span class="number">0x0D</span>, <span class="number">0x0A</span>, <span class="number">0x1A</span>, <span class="number">0x0A</span>] <span class="comment"># 原始png头</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">KSA</span>(<span class="params">key</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    Key-Scheduling Algorithm (KSA)</span></span><br><span class="line"><span class="string">    生成S盒</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">isinstance</span>(key, <span class="built_in">str</span>):</span><br><span class="line">        key = key.encode()</span><br><span class="line"></span><br><span class="line">    S = <span class="built_in">list</span>(<span class="built_in">range</span>(<span class="number">256</span>))</span><br><span class="line">    j = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">256</span>):</span><br><span class="line">        j = (j + S[i] + key[i % <span class="built_in">len</span>(key)]) % <span class="number">256</span></span><br><span class="line">        S[i], S[j] = S[j], S[i]</span><br><span class="line">    <span class="keyword">return</span> S</span><br><span class="line"> </span><br><span class="line"><span class="keyword">def</span> <span class="title function_">PRGA</span>(<span class="params">S</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    Pseudo-Random Generation Algorithm (PRGA)</span></span><br><span class="line"><span class="string">    生成密钥流</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    i, j = <span class="number">0</span>, <span class="number">0</span></span><br><span class="line">    <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">        i = (i + <span class="number">1</span>) % <span class="number">256</span></span><br><span class="line">        j = (j + S[i]) % <span class="number">256</span></span><br><span class="line">        S[i], S[j] = S[j], S[i]</span><br><span class="line">        K = S[(S[i] + S[j]) % <span class="number">256</span>]</span><br><span class="line">        <span class="keyword">yield</span> K</span><br><span class="line"> </span><br><span class="line"><span class="keyword">def</span> <span class="title function_">RC4</span>(<span class="params">key, text</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot; RC4 encryption/decryption &quot;&quot;&quot;</span></span><br><span class="line">    S = KSA(key)</span><br><span class="line">    keystream = PRGA(S)</span><br><span class="line">    res = []</span><br><span class="line">    <span class="keyword">for</span> char <span class="keyword">in</span> text:</span><br><span class="line">        res.append(char ^ <span class="built_in">next</span>(keystream) ^ <span class="number">0x11</span> ^ key[<span class="number">1</span>]) <span class="comment"># 这里加多一个异或0x11和异或key[1]</span></span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">bytes</span>(res)</span><br><span class="line"></span><br><span class="line">enc = <span class="built_in">bytes</span>(enc)</span><br><span class="line"><span class="keyword">for</span> key <span class="keyword">in</span> tqdm.tqdm(itertools.product(charset, repeat=<span class="number">5</span>)):</span><br><span class="line">    key = <span class="string">&#x27;&#x27;</span>.join(key).encode(<span class="string">&#x27;utf-8&#x27;</span>)</span><br><span class="line">    enc1 = RC4(key,plain)</span><br><span class="line">    <span class="keyword">if</span> enc1 == enc:</span><br><span class="line">        <span class="built_in">print</span>()</span><br><span class="line">        <span class="built_in">print</span>(key)</span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line"><span class="comment"># b&#x27;0173d&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>输进exe里面就能解密出png了</p>
+<p><img src="https://raw.githubusercontent.com/WoaW04/Picture/main/202409151523950.png"></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="http://example.com">WoaW04</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="http://example.com/2024/09/15/2024%E7%BE%8A%E5%9F%8E%E6%9D%AFpic/">http://example.com/2024/09/15/2024%E7%BE%8A%E5%9F%8E%E6%9D%AFpic/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://example.com" target="_blank">The Blog of WoaW04</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/RE/">RE</a><a class="post-meta__tags" href="/tags/2024%E7%BE%8A%E5%9F%8E%E6%9D%AF/">2024羊城杯</a></div><div class="post_share"><div class="social-share" data-image="https://raw.githubusercontent.com/WoaW04/Picture/main/202409151252971.png" data-sites="wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2024/09/14/2024%E7%BE%8A%E5%9F%8E%E6%9D%AFsedRust-happyVM/" title="2024羊城杯sedRust_happyVM"><img class="cover" src="https://raw.githubusercontent.com/WoaW04/Picture/main/202409141605487.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">2024羊城杯sedRust_happyVM</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image04CTF.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">WoaW04</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">46</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">20</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/WoaW04"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#0x00-%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">0x00 前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x01-%E8%A7%A3"><span class="toc-number">2.</span> <span class="toc-text">0x01 解</span></a></li></ol></div></div></div></div></main><footer id="footer" style="background: #FFFFFF00"><div id="footer-wrap"><div class="copyright">&copy;2022 - 2024 By WoaW04</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div></div></body></html>
