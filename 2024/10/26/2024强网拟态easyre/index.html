@@ -1,0 +1,248 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>2024强网拟态easyre | The Blog of WoaW04</title><meta name="author" content="WoaW04"><meta name="copyright" content="WoaW04"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="0x00 前言纯动调，这玩意IDA看不了一点 因为用了iTruth版本的x64dbg，整合了不少插件（好多不知道啥用的）所以 听说有反调试？无駄！ 0x01 解IDA看不了一点（好像是ollvm），上x64dbg一步步调 从输入下手，运行直到要求输入然后暂停，随便输点东西就会停下在syscall后面，回到用户空间后一步步ret回去，直到找到类似scanf参数的地方  之后一步步调，同时开启追踪记录">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2024强网拟态easyre">
+<meta property="og:url" content="http://example.com/2024/10/26/2024%E5%BC%BA%E7%BD%91%E6%8B%9F%E6%80%81easyre/index.html">
+<meta property="og:site_name" content="The Blog of WoaW04">
+<meta property="og:description" content="0x00 前言纯动调，这玩意IDA看不了一点 因为用了iTruth版本的x64dbg，整合了不少插件（好多不知道啥用的）所以 听说有反调试？无駄！ 0x01 解IDA看不了一点（好像是ollvm），上x64dbg一步步调 从输入下手，运行直到要求输入然后暂停，随便输点东西就会停下在syscall后面，回到用户空间后一步步ret回去，直到找到类似scanf参数的地方  之后一步步调，同时开启追踪记录">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/WoaW04/Picture/main/202410261308001.png">
+<meta property="article:published_time" content="2024-10-26T05:08:17.000Z">
+<meta property="article:modified_time" content="2024-10-26T15:20:07.228Z">
+<meta property="article:author" content="WoaW04">
+<meta property="article:tag" content="RE">
+<meta property="article:tag" content="2024强网拟态">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/WoaW04/Picture/main/202410261308001.png"><link rel="shortcut icon" href="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image04CTF.png"><link rel="canonical" href="http://example.com/2024/10/26/2024%E5%BC%BA%E7%BD%91%E6%8B%9F%E6%80%81easyre/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="stylesheet" href="/css/index.css?v=4.13.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.11.1/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: false,
+    rightside: false,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '2024强网拟态easyre',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-10-26 23:20:07'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+          const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+          const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+          const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+          if (t === undefined) {
+            if (isLightMode) activateLightMode()
+            else if (isDarkMode) activateDarkMode()
+            else if (isNotSpecified || hasNoSupport) {
+              const now = new Date()
+              const hour = now.getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            window.matchMedia('(prefers-color-scheme: dark)').addListener(e => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else if (t === 'light') activateLightMode()
+          else activateDarkMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 7.1.1"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image04CTF.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">57</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">22</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://raw.githubusercontent.com/WoaW04/Picture/main/202410261308001.png')"><nav id="nav"><span id="blog-info"><a href="/" title="The Blog of WoaW04"><img class="site-icon" src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image04CTF.png"/><span class="site-name">The Blog of WoaW04</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">2024强网拟态easyre</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-10-26T05:08:17.000Z" title="发表于 2024-10-26 13:08:17">2024-10-26</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-10-26T15:20:07.228Z" title="更新于 2024-10-26 23:20:07">2024-10-26</time></span></div><div class="meta-secondline"></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>纯动调，这玩意IDA看不了一点</p>
+<p>因为用了<a target="_blank" rel="noopener" href="https://www.52pojie.cn/thread-1180667-1-1.html">iTruth版本的x64dbg</a>，整合了不少插件（好多不知道啥用的）所以</p>
+<p>听说有反调试？无駄！</p>
+<h2 id="0x01-解"><a href="#0x01-解" class="headerlink" title="0x01 解"></a>0x01 解</h2><p>IDA看不了一点（好像是ollvm），上x64dbg一步步调</p>
+<p>从输入下手，运行直到要求输入然后暂停，随便输点东西就会停下在<code>syscall</code>后面，回到用户空间后一步步<code>ret</code>回去，直到找到类似<code>scanf</code>参数的地方</p>
+<p><img src="https://raw.githubusercontent.com/WoaW04/Picture/main/202410261719300.png"></p>
+<p>之后一步步调，同时开启追踪记录，字节为单位，重点查看访问多次的内容，注意因为有大量花指令的存在，所以一定要用步进而不是步过来调，要不然随便哪个带call的花就会退出</p>
+<p><img src="https://raw.githubusercontent.com/WoaW04/Picture/main/202410261758489.png"></p>
+<p>首先可以发现这里调用了输入的内容</p>
+<p><img src="https://raw.githubusercontent.com/WoaW04/Picture/main/202410261854228.png"></p>
+<p>之后进了一个函数（其他花指令的call都是很近的，但是这个call跳转地址很远）</p>
+<p><img src="https://raw.githubusercontent.com/WoaW04/Picture/main/202410261855805.png"></p>
+<p>根据返回的值可以知道这是获取输入长度的（可能是<code>strlen</code>？）</p>
+<p><img src="https://raw.githubusercontent.com/WoaW04/Picture/main/202410261856798.png"></p>
+<p>继续跟踪发现这里被调用了三次之多，下个断点重启程序看看</p>
+<p><img src="https://raw.githubusercontent.com/WoaW04/Picture/main/202410261801759.png"></p>
+<p>重新执行直到调用<code>strlen</code>，然后看看输入长度被存到了哪里</p>
+<p>发现存到了下面两个地址里面</p>
+<p><img src="https://raw.githubusercontent.com/WoaW04/Picture/main/202410261954767.png"></p>
+<p>下个两个硬断看看啥时候调用</p>
+<p>发现丢到<code>rdx</code>里面去了</p>
+<p><img src="https://raw.githubusercontent.com/WoaW04/Picture/main/202410261956413.png"></p>
+<p>跟下去，发现<code>rdx</code>被拿去作比较了</p>
+<p><img src="https://raw.githubusercontent.com/WoaW04/Picture/main/202410261957340.png"></p>
+<p>估计这就是flag的长度了，试试发现确实是</p>
+<p>然后应该可以推进了，找到存输入的位置（栈里面可以找到）下硬断，然后会断在这</p>
+<p><img src="https://raw.githubusercontent.com/WoaW04/Picture/main/202410262007138.png"></p>
+<p>往下走发现rdx的值先加了<code>0x2400D5A6</code>，然后加了<code>0x40</code>，最后又减去了<code>0x2400D5A6</code>，所以最后结果就是加了<code>0x40</code></p>
+<p><img src="https://raw.githubusercontent.com/WoaW04/Picture/main/202410262009303.png"></p>
+<p>然后存回了这个地方</p>
+<p><img src="https://raw.githubusercontent.com/WoaW04/Picture/main/202410262010595.png"></p>
+<p>之后继续走发现每个字节都做了这个加<code>0x40</code>的操作</p>
+<p>全部走完之后再给第一个下硬断，发现接下来的操作是</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">#读一字节给到edx</span><br><span class="line">mov r8d, edx         # 设传入为00	edx = 00, r8d = 00</span><br><span class="line">xor r8d, 0xFFFFFFFF	 # edx = FFFF FFFF, r8d = FFFF FFFF</span><br><span class="line">and edx, 0x16030876  # edx = 00, r8d = FFFF FFFF</span><br><span class="line">and r8d, 0xE9FCF789  # edx = 00, r8d = E9FC F789</span><br><span class="line">xor edx, 0xFFFFFFFF  # edx = FFFF FFFF, r8d = E9FC F789</span><br><span class="line">xor r8d, 0xFFFFFFFF  # edx = FFFF FFFF, r8d = 1603 0876</span><br><span class="line">and r8d, edx		# edx = FFFF FFFF, r8d = 1603 0876</span><br><span class="line">xor r8d, 0xFFFFFFFF  # edx = FFFF FFFF, r8d = E9FC F789</span><br><span class="line">mov edx, r8d		# edx = E9FC F789, r8d = E9FC F789</span><br><span class="line">xor edx, 0xFFFFFFFF  # edx = 1603 0876, r8d = E9FC F789</span><br><span class="line">and r8d, 0xF49D22FF  # edx = 1603 0876, r8d = E09C 2289</span><br><span class="line">and edx, 0xB62DD00   # edx = 0202 0800, r8d = E09C 2289</span><br><span class="line">xor r8d, 0xFFFFFFFF  # edx = 0202 0800, r8d = 1F63 DD76</span><br><span class="line">xor edx, 0xFFFFFFFF  # edx = FDFD F7FF, r8d = 1F63 DD76</span><br><span class="line">and edx, r8d		# edx = 1D61 D576, r8d = 1F63 DD76</span><br><span class="line">xor edx, 0xFFFFFFFF  # edx = E29E 2A89, r8d = 1F63 DD76</span><br><span class="line">mov r8d, edx		# edx = E29E 2A89, r8d = E29E 2A89</span><br><span class="line">xor r8d, 0xFFFFFFFF  # edx = E29E 2A89, r8d = 1D61 D576</span><br><span class="line">and r8d, 0xE29E2AF6  # edx = E29E 2A89, r8d = 76</span><br><span class="line">and edx, 0x1D61D509  # edx = 9, r8d = 76</span><br><span class="line">xor r8d, 0xFFFFFFFF  # edx = 9, r8d = FFFF FF89</span><br><span class="line">xor edx, 0xFFFFFFFF  # edx = FFFF FFF6, r8d = FFFF FF89</span><br><span class="line">and edx, r8d		# edx = FFFF FF80, r8d = FFFF FF89</span><br><span class="line">xor edx, 0xFFFFFFFF  # edx = 7F</span><br><span class="line">mov r8, 0xFFFF4AC263967EF6</span><br><span class="line">sub r10,r8</span><br><span class="line">#将edx最低位放回</span><br></pre></td></tr></table></figure>
+
+<p><del>好恐怖</del>，这么多的操作加起来只有一个<code>^0x7F</code></p>
+<p>之后故技重施，全部加密完之后再在第一个下硬断</p>
+<p>之后断在这</p>
+<p><img src="https://raw.githubusercontent.com/WoaW04/Picture/main/202410262236981.png"></p>
+<p>慢慢调，发现每次加密会先取8个字节存起来，之后才加密</p>
+<p>然后调到这会发现<code>rax</code>的值很是熟悉</p>
+<p><img src="https://raw.githubusercontent.com/WoaW04/Picture/main/202410262123670.png"></p>
+<p>看来是TEA相关算法，8字节一组来加密</p>
+<p>那么是那个TEA呢，继续调，特别注意调用内存地址的地方</p>
+<p>到这里</p>
+<p><img src="https://raw.githubusercontent.com/WoaW04/Picture/main/202410262145305.png"></p>
+<p><code>[rsp+0xC]</code>里面的内容就是<code>0x9E3779B9</code>而根据<code>shr r8d, 0xB</code>可以知道这里是右移了11位，而将加密中出现右移11位操作的是XTEA，所以可以知道这边的加密算法用的是XTEA</p>
+<p>继续调，可以发现<code>r8d</code>经过一系列运算之后拿去做<code>rax</code>的索引了，所以上图中赋值给<code>rax</code>的内容即上面的这个<code>[rsp+0x28]</code>存的就是密钥了</p>
+<p><img src="https://raw.githubusercontent.com/WoaW04/Picture/main/202410262155416.png"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 注意在内存窗口里面是little-endian</span><br><span class="line">0xEF6FD9DB, 0xD2C273D3, 0x6F97E412, 0x72BFD624</span><br></pre></td></tr></table></figure>
+
+<p>至于轮数，在这块内存地址周围找找应该是能找到的，或者在这可以找到，内存选中的为<code>index</code>，后面那个就是轮数，下面一点就可以看到密钥</p>
+<p><img src="https://raw.githubusercontent.com/WoaW04/Picture/main/202410262213790.png"></p>
+<p>至此基本都知道了</p>
+<p>提一下这块内存地址什么都有</p>
+<p><img src="https://raw.githubusercontent.com/WoaW04/Picture/main/202410262221908.png"></p>
+<p>标出来的是密钥，向上那个0x9DD3FFFDF0是key的索引，其左边0x7FF74C194CF8是原数据的索引，之后0x66是轮数，0x10是<code>index</code>，0x63F13C25是v0，0x7F0B9E5F是v1，0x81AF1549是sum，0x9E3779B9是delta</p>
+<p>XTEA相关内容出来之后就去找密文了，继续走，在取最后8Bytes的时候在第一个下硬件断点（要不然直接就退了）</p>
+<p>断在这</p>
+<p><img src="C:\Users\WoaW04\AppData\Roaming\Typora\typora-user-images\image-20241026225815741.png" alt="image-20241026225815741"></p>
+<p>之后一步步走，发现在这有个比较</p>
+<p><img src="https://raw.githubusercontent.com/WoaW04/Picture/main/202410262259497.png"></p>
+<p>反向跟一下可以找到r8d的来源在这</p>
+<p><img src="https://raw.githubusercontent.com/WoaW04/Picture/main/202410262301821.png"></p>
+<p>估计就是密文了，提取一下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0x9851E3A1, 0x49765686, 0x812B6B6F, 0X9612CECF, 0X3C3570A2, 0XF15C6231, 0XAA6B77FA, 0XBE056D9E, 0XF8A424E8, 0X0B3A23DB, 0X03CC2016, 0XA92BB5AD, 0X1D789F34, 0X9EF9B92E</span><br></pre></td></tr></table></figure>
+
+<p>后面就是写脚本解密了</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> struct</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">decrypt</span>(<span class="params">rounds, v, k</span>):</span><br><span class="line">    v0 = v[<span class="number">0</span>]</span><br><span class="line">    v1 = v[<span class="number">1</span>]</span><br><span class="line">    delta = <span class="number">0x9E3779B9</span></span><br><span class="line">    x = delta * rounds</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(rounds):</span><br><span class="line">        v1 -= (((v0 &lt;&lt; <span class="number">4</span>) ^ (v0 &gt;&gt; <span class="number">5</span>)) + v0) ^ (x + k[(x &gt;&gt; <span class="number">11</span>) &amp; <span class="number">3</span>])</span><br><span class="line">        v1 = v1 &amp; <span class="number">0xFFFFFFFF</span></span><br><span class="line">        x -= delta</span><br><span class="line">        x = x &amp; <span class="number">0xFFFFFFFF</span></span><br><span class="line">        v0 -= (((v1 &lt;&lt; <span class="number">4</span>) ^ (v1 &gt;&gt; <span class="number">5</span>)) + v1) ^ (x + k[x &amp; <span class="number">3</span>])</span><br><span class="line">        v0 = v0 &amp; <span class="number">0xFFFFFFFF</span></span><br><span class="line">    v[<span class="number">0</span>] = v0</span><br><span class="line">    v[<span class="number">1</span>] = v1</span><br><span class="line">    <span class="keyword">return</span> v</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    k = [<span class="number">0xEF6FD9DB</span>, <span class="number">0xD2C273D3</span>, <span class="number">0x6F97E412</span>, <span class="number">0x72BFD624</span>]</span><br><span class="line">    rounds = <span class="number">0x66</span></span><br><span class="line">    enctxt = [<span class="number">0x9851E3A1</span>, <span class="number">0x49765686</span>, <span class="number">0x812B6B6F</span>, <span class="number">0X9612CECF</span>, <span class="number">0X3C3570A2</span>, <span class="number">0XF15C6231</span>, <span class="number">0XAA6B77FA</span>, <span class="number">0XBE056D9E</span>, <span class="number">0XF8A424E8</span>, <span class="number">0X0B3A23DB</span>, <span class="number">0X03CC2016</span>, <span class="number">0XA92BB5AD</span>, <span class="number">0X1D789F34</span>, <span class="number">0X9EF9B92E</span>]</span><br><span class="line">    i = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">int</span>(<span class="built_in">len</span>(enctxt)/<span class="number">2</span>)):</span><br><span class="line">        tmp = [<span class="number">0</span>]*<span class="number">2</span></span><br><span class="line">        tmp[<span class="number">0</span>] = enctxt[i]</span><br><span class="line">        tmp[<span class="number">1</span>] = enctxt[i+<span class="number">1</span>]</span><br><span class="line">        tmp = decrypt(rounds, tmp, k)</span><br><span class="line">        enctxt[i] = tmp[<span class="number">0</span>]</span><br><span class="line">        enctxt[i+<span class="number">1</span>] = tmp[<span class="number">1</span>]</span><br><span class="line">        i += <span class="number">2</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(enctxt)):</span><br><span class="line">        enctxt[i]^=<span class="number">0x7F7F7F7F</span></span><br><span class="line">        enctxt[i]-=<span class="number">0x40404040</span></span><br><span class="line">    tmp = <span class="string">b&#x27;&#x27;</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(enctxt)):</span><br><span class="line">        tmp += struct.pack(<span class="string">&#x27;&lt;L&#x27;</span>, enctxt[i])</span><br><span class="line">    <span class="built_in">print</span>(tmp)</span><br><span class="line"><span class="comment"># b&#x27;flag&#123;u_ar3_re@11y_g00d_@t_011vm_de0bf_and_anti_debugger&#125;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>附一下断点地址</p>
+<p><img src="https://raw.githubusercontent.com/WoaW04/Picture/main/202410262310594.png"></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="http://example.com">WoaW04</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="http://example.com/2024/10/26/2024%E5%BC%BA%E7%BD%91%E6%8B%9F%E6%80%81easyre/">http://example.com/2024/10/26/2024%E5%BC%BA%E7%BD%91%E6%8B%9F%E6%80%81easyre/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://example.com" target="_blank">The Blog of WoaW04</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/RE/">RE</a><a class="post-meta__tags" href="/tags/2024%E5%BC%BA%E7%BD%91%E6%8B%9F%E6%80%81/">2024强网拟态</a></div><div class="post_share"><div class="social-share" data-image="https://raw.githubusercontent.com/WoaW04/Picture/main/202410261308001.png" data-sites="wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2024/10/25/2024%E5%BC%BA%E7%BD%91%E6%8B%9F%E6%80%81A-game/" title="2024强网拟态A_game"><img class="cover" src="https://raw.githubusercontent.com/WoaW04/Picture/main/202410251026625.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">2024强网拟态A_game</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image04CTF.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">WoaW04</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">57</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">22</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/WoaW04"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#0x00-%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">0x00 前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x01-%E8%A7%A3"><span class="toc-number">2.</span> <span class="toc-text">0x01 解</span></a></li></ol></div></div></div></div></main><footer id="footer" style="background: #FFFFFF00"><div id="footer-wrap"><div class="copyright">&copy;2022 - 2024 By WoaW04</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div></div></body></html>
