@@ -1,0 +1,277 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>2024鹏城杯tigtea | The Blog of WoaW04</title><meta name="author" content="WoaW04"><meta name="copyright" content="WoaW04"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="0x00 前言学学Trace，应对一下控制流混淆 0x01 解解压出来一个txt，查看010发现是ELF 改下后缀，直接拖IDA，发现函数很少，应该是有壳 查壳发现是UPX，没有改过，可以直接upx -d 这边不演示了，直接进到脱壳后 进到main函数发现完全看不懂，发现有很多混淆  从输入入手，要求输入时进行暂停，随便输点，回到用户代码，发现在这里接收输入  一执行就会清空前面的寄存器，但根据l">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2024鹏城杯tigtea">
+<meta property="og:url" content="https://woaw04.github.io/2024/12/21/2024%E9%B9%8F%E5%9F%8E%E6%9D%AFtigtea/index.html">
+<meta property="og:site_name" content="The Blog of WoaW04">
+<meta property="og:description" content="0x00 前言学学Trace，应对一下控制流混淆 0x01 解解压出来一个txt，查看010发现是ELF 改下后缀，直接拖IDA，发现函数很少，应该是有壳 查壳发现是UPX，没有改过，可以直接upx -d 这边不演示了，直接进到脱壳后 进到main函数发现完全看不懂，发现有很多混淆  从输入入手，要求输入时进行暂停，随便输点，回到用户代码，发现在这里接收输入  一执行就会清空前面的寄存器，但根据l">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/WoaW04/Picture/main/202412212047119.png">
+<meta property="article:published_time" content="2024-12-21T12:47:23.000Z">
+<meta property="article:modified_time" content="2024-12-23T11:39:54.352Z">
+<meta property="article:author" content="WoaW04">
+<meta property="article:tag" content="RE">
+<meta property="article:tag" content="2024鹏城杯">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/WoaW04/Picture/main/202412212047119.png"><link rel="shortcut icon" href="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image04CTF.png"><link rel="canonical" href="https://woaw04.github.io/2024/12/21/2024%E9%B9%8F%E5%9F%8E%E6%9D%AFtigtea/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="stylesheet" href="/css/index.css?v=4.13.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.11.1/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: false,
+    rightside: false,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '2024鹏城杯tigtea',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-12-23 19:39:54'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+          const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+          const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+          const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+          if (t === undefined) {
+            if (isLightMode) activateLightMode()
+            else if (isDarkMode) activateDarkMode()
+            else if (isNotSpecified || hasNoSupport) {
+              const now = new Date()
+              const hour = now.getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            window.matchMedia('(prefers-color-scheme: dark)').addListener(e => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else if (t === 'light') activateLightMode()
+          else activateDarkMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 7.1.1"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image04CTF.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">60</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">24</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://raw.githubusercontent.com/WoaW04/Picture/main/202412212047119.png')"><nav id="nav"><span id="blog-info"><a href="/" title="The Blog of WoaW04"><img class="site-icon" src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image04CTF.png"/><span class="site-name">The Blog of WoaW04</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">2024鹏城杯tigtea</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-12-21T12:47:23.000Z" title="发表于 2024-12-21 20:47:23">2024-12-21</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-12-23T11:39:54.352Z" title="更新于 2024-12-23 19:39:54">2024-12-23</time></span></div><div class="meta-secondline"></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>学学Trace，应对一下控制流混淆</p>
+<h2 id="0x01-解"><a href="#0x01-解" class="headerlink" title="0x01 解"></a>0x01 解</h2><p>解压出来一个txt，查看010发现是ELF</p>
+<p>改下后缀，直接拖IDA，发现函数很少，应该是有壳</p>
+<p>查壳发现是UPX，没有改过，可以直接<code>upx -d</code></p>
+<p>这边不演示了，直接进到脱壳后</p>
+<p>进到main函数发现完全看不懂，发现有很多混淆</p>
+<p><img src="https://raw.githubusercontent.com/WoaW04/Picture/main/202412212346634.png"></p>
+<p>从输入入手，要求输入时进行暂停，随便输点，回到用户代码，发现在这里接收输入</p>
+<p><img src="https://raw.githubusercontent.com/WoaW04/Picture/main/202412212347698.png"></p>
+<p>一执行就会清空前面的寄存器，但根据linux调用规则，存放输入的应该是<code>rsi</code>寄存器，提前记录寄存器指向的地址，输入后转到这个地址下硬断</p>
+<p><img src="https://raw.githubusercontent.com/WoaW04/Picture/main/202412212354308.png"></p>
+<p>断下来在libc里面，出来是strlen</p>
+<p><img src="https://raw.githubusercontent.com/WoaW04/Picture/main/202412212355516.png"></p>
+<p>使用IDA的跟踪功能，选择指令跟踪，然后打开跟踪窗口</p>
+<p><img src="https://raw.githubusercontent.com/WoaW04/Picture/main/202412212356034.png"></p>
+<p>直接开始执行（注意要关闭断点），跟长点，后面要手动分析，跟短了可能都没进加密（这里不好说跟多少，凭感觉吧）</p>
+<p>由于混淆太恶心，无法下手，只能根据题目给的tea猜测是TEA算法，而这就要考虑使用的是哪一种TEA了</p>
+<p>TEA及其衍生算法是有规律可循的，不同变种有不同的特征</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># TEA</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">TEA_encrypt</span>(<span class="params">v,k</span>):</span><br><span class="line">    v0=c_uint32(v[<span class="number">0</span>])</span><br><span class="line">    v1=c_uint32(v[<span class="number">1</span>])</span><br><span class="line">    sum1=c_uint32(<span class="number">0</span>)</span><br><span class="line">    delta=<span class="number">0x9E3449B8</span></span><br><span class="line">    <span class="keyword">while</span>(sum1.value != <span class="number">0x987E55D0</span>):</span><br><span class="line">        sum1.value+=delta &amp; <span class="number">0xFFFFFFFF</span></span><br><span class="line">        v0.value+=((v1.value+sum1.value)^((v1.value&gt;&gt;<span class="number">4</span>)+k[<span class="number">0</span>])^((v1.value&lt;&lt;<span class="number">5</span>)+k[<span class="number">1</span>]))</span><br><span class="line">        v1.value+=((v0.value+sum1.value)^((v0.value&gt;&gt;<span class="number">4</span>)+k[<span class="number">2</span>])^((v0.value&lt;&lt;<span class="number">5</span>)+k[<span class="number">3</span>]))</span><br><span class="line">    <span class="keyword">return</span> v0.value,v1.value</span><br><span class="line"></span><br><span class="line"><span class="comment"># XTEA</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">XTEA_encrypt</span>(<span class="params">rounds, v, k</span>):</span><br><span class="line">    v0 = v[<span class="number">0</span>]</span><br><span class="line">    v1 = v[<span class="number">1</span>]</span><br><span class="line">    x = <span class="number">0</span></span><br><span class="line">    delta = <span class="number">0x9E3779B9</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(rounds):</span><br><span class="line">        v0 += (((v1 &lt;&lt; <span class="number">4</span>) ^ (v1 &gt;&gt; <span class="number">5</span>)) + v1) ^ (x + k[x &amp; <span class="number">3</span>])</span><br><span class="line">        v0 = v0 &amp; <span class="number">0xFFFFFFFF</span></span><br><span class="line">        x += delta</span><br><span class="line">        x = x &amp; <span class="number">0xFFFFFFFF</span></span><br><span class="line">        v1 += (((v0 &lt;&lt; <span class="number">4</span>) ^ (v0 &gt;&gt; <span class="number">5</span>)) + v0) ^ (x + k[(x &gt;&gt; <span class="number">11</span>) &amp; <span class="number">3</span>])</span><br><span class="line">        v1 = v1 &amp; <span class="number">0xFFFFFFFF</span></span><br><span class="line">    v[<span class="number">0</span>] = v0</span><br><span class="line">    v[<span class="number">1</span>] = v1</span><br><span class="line">    <span class="keyword">return</span> v</span><br><span class="line"></span><br><span class="line"><span class="comment"># XXTEA</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">shift</span>(<span class="params">z, y, x, k, p, e</span>):</span><br><span class="line">    <span class="keyword">return</span> ((((z &gt;&gt; <span class="number">5</span>) ^ (y &lt;&lt; <span class="number">2</span>)) + ((y &gt;&gt; <span class="number">3</span>) ^ (z &lt;&lt; <span class="number">4</span>))) ^ ((x ^ y) + (k[(p &amp; <span class="number">3</span>) ^ e] ^ z)))</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">XXTEA_encrypt</span>(<span class="params">v, k</span>):</span><br><span class="line">    delta = <span class="number">0x9E3779B9</span></span><br><span class="line">    n = <span class="built_in">len</span>(v)</span><br><span class="line">    rounds = <span class="built_in">int</span>(<span class="number">6</span> + <span class="number">52</span> / n)</span><br><span class="line">    x = <span class="number">0</span></span><br><span class="line">    z = v[n - <span class="number">1</span>]</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(rounds):</span><br><span class="line">        x = (x + delta) &amp; <span class="number">0xFFFFFFFF</span></span><br><span class="line">        e = (x &gt;&gt; <span class="number">2</span>) &amp; <span class="number">3</span></span><br><span class="line">        <span class="keyword">for</span> p <span class="keyword">in</span> <span class="built_in">range</span>(n - <span class="number">1</span>):</span><br><span class="line">            y = v[p + <span class="number">1</span>]</span><br><span class="line">            v[p] = (v[p] + shift(z, y, x, k, p, e)) &amp; <span class="number">0xFFFFFFFF</span></span><br><span class="line">            z = v[p]</span><br><span class="line">        p += <span class="number">1</span></span><br><span class="line">        y = v[<span class="number">0</span>]</span><br><span class="line">        v[n - <span class="number">1</span>] = (v[n - <span class="number">1</span>] + shift(z, y, x, k, p, e)) &amp; <span class="number">0xFFFFFFFF</span></span><br><span class="line">        z = v[n - <span class="number">1</span>]</span><br><span class="line">    <span class="keyword">return</span> v</span><br></pre></td></tr></table></figure>
+
+<p>判断方法很多，找找不同算法的不同点下手就行</p>
+<p>将跟踪结果按照指令倒序进行排列，先从<code>xor</code>指令入手，不行就查<code>add</code>、<code>shl</code>或<code>shr</code>，总能找到有用的</p>
+<p>略过与常数进行操作的指令，直接看寄存器之间相互异或的</p>
+<p>排查一些重复的，无意义的内容<del>（好恶心的混淆）</del>，发现在这里对输入的内容进行了异或</p>
+<p><img src="https://raw.githubusercontent.com/WoaW04/Picture/main/202412212121932.png"></p>
+<p>需要注意的是这里寄存<code>RDX</code>存的是输入的内容，这点通过查看下面其他的<code>xor edx, ecx</code>指令或者更换输入来判断</p>
+<p>输入flag的组成为：<code>flag&#123;1234567890...&#125;</code>，由此可以判断这里取的是flag的第二个四字节</p>
+<p>结合原始数据出现在<code>xor</code>指令中，可以判断是XXTEA算法（独有的将输入内容丢进去异或<code>((x ^ y) + (k[(p &amp; 3) ^ e] ^ z))</code>）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># XXTEA</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">shift</span>(<span class="params">z, y, x, k, p, e</span>):</span><br><span class="line">    <span class="keyword">return</span> ((((z &gt;&gt; <span class="number">5</span>) ^ (y &lt;&lt; <span class="number">2</span>)) + ((y &gt;&gt; <span class="number">3</span>) ^ (z &lt;&lt; <span class="number">4</span>))) ^ ((x ^ y) + (k[(p &amp; <span class="number">3</span>) ^ e] ^ z)))</span><br></pre></td></tr></table></figure>
+
+<p>可见这条指令很有用，先下个断点</p>
+<p>确定是XXTEA后，要找的就是<code>key</code>、<code>delta</code>、密文还有轮数了</p>
+<p>由于输入太长，无法确定这个<code>xor</code>中的明文属于<code>z</code>还是<code>y</code>，所以需要进一步进行判断</p>
+<p>根据XXTEA的性质，当输入的长度为12（Bytes）时，在第一轮加密中有<code>z==v[2]</code>和<code>y==v[1]</code>，将输入内容设为<code>111122223333</code>，重新追踪，通过观察发现，在上面相同的位置上，<code>RDX</code>寄存器的内容是<code>v[1]</code>即<code>2222</code>，所以可以确定<code>RCX</code>存的是<code>delta</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">delta = <span class="number">0x7f8a6b4c</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://raw.githubusercontent.com/WoaW04/Picture/main/202412212228877.png"></p>
+<p>查看下一条<code>xor</code>指令，发现是一个非常小的数字，而后面也有这种小数字，因此可以确定这条指令是<code>(p &amp; 3) ^ e</code>，用来得到<code>key</code>的索引</p>
+<p><img src="https://raw.githubusercontent.com/WoaW04/Picture/main/202412212221516.png"></p>
+<p>而索引后面的就是<code>key</code>了，这个根据<code>RDX==v[2]</code>也可以得出来</p>
+<p><img src="C:\Users\WoaW04\AppData\Roaming\Typora\typora-user-images\image-20241221222849410.png" alt="image-20241221222849410"></p>
+<p>根据索引一个个按顺序提取一下可得（注意要追长一点，太短了拿不到全部的<code>key</code>，上面这图就是反面例子，60000多条是不够的）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">key = [<span class="number">0x7f8a6b4c</span>,<span class="number">0x9E3779B9</span>,<span class="number">0xDEAFBEEF</span>,<span class="number">0xCAFEC3C3</span>]</span><br></pre></td></tr></table></figure>
+
+<p>而根据XXTEA的性质，当输入的长度为8（Bytes）时，在第一轮的加密中有<code>z==y==v[1]</code>，因此将输入变为一个比较简单的数字（这边用<code>11112222</code>），然后重新进行跟踪</p>
+<p>由于已知加密的<code>z==y==0x32323232</code>，所以<code>(((z &gt;&gt; 5) ^ (y &lt;&lt; 2)) + ((y &gt;&gt; 3) ^ (z &lt;&lt; 4)))</code>中的每一个操作结果都可以被计算出来</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Ly = y.value &lt;&lt; 2 = 0xc8c8c8c8</span><br><span class="line">Ry = y.value &gt;&gt; 3 = 0x6464646</span><br><span class="line">Lz = z.value &lt;&lt; 4 = 0x323232320</span><br><span class="line">Rz = z.value &gt;&gt; 5 = 0x1919191</span><br><span class="line">Rz ^ Ly = 0xc9595959</span><br><span class="line">Ry ^ Lz = 0x325656566</span><br><span class="line">(Rz ^ Ly) + (Ry ^ Lz) = 0x3EEBEBEBF = 0xEEBEBEBF（取低8位）</span><br></pre></td></tr></table></figure>
+
+<p>由此可以判断题目是否对这些操作进行了更改</p>
+<p>所幸没有，但直接上自己的XXTEA发现不对，没办法，去看看原始值进行了什么操作</p>
+<p>在<code>xor</code>的位置下断点，断下来之后查找字节序列，在内存中找到输入的内容然后下断点（可能会搜到很多个，可以都下然后查看断哪个）</p>
+<p><img src="https://raw.githubusercontent.com/WoaW04/Picture/main/202412221136503.png"></p>
+<p>后面可以发现断在这了</p>
+<p><img src="https://raw.githubusercontent.com/WoaW04/Picture/main/202412221141333.png"></p>
+<p>这个地方对应的就是</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">v[p] = (v[p] + shift(z, y, x, k, p, e)) &amp; <span class="number">0xFFFFFFFF</span></span><br></pre></td></tr></table></figure>
+
+<p>和</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">v[n - <span class="number">1</span>] = (v[n - <span class="number">1</span>] + shift(z, y, x, k, p, e)) &amp; <span class="number">0xFFFFFFFF</span></span><br></pre></td></tr></table></figure>
+
+<p>这个可以通过输出自己的XXTEA中间步骤来证明</p>
+<p>两边同时运行，发现自己的XXTEA的结果出现</p>
+<p><img src="https://raw.githubusercontent.com/WoaW04/Picture/main/202412221150790.png"></p>
+<p><img src="https://raw.githubusercontent.com/WoaW04/Picture/main/202412221151493.png"></p>
+<p>但是程序还能继续运行</p>
+<p>这说明轮数变了</p>
+<p>根据轮数的构成</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">n = <span class="built_in">len</span>(v)</span><br><span class="line">rounds = <span class="built_in">int</span>(<span class="number">6</span> + <span class="number">52</span> / n)</span><br></pre></td></tr></table></figure>
+
+<p>用IDA脚本获取轮数</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> ida_dbg</span><br><span class="line"><span class="keyword">import</span> ida_nalt</span><br><span class="line"><span class="keyword">import</span> ida_ida</span><br><span class="line"><span class="comment"># global items</span></span><br><span class="line">base = <span class="number">0</span></span><br><span class="line">count = <span class="number">0</span></span><br><span class="line">f =<span class="number">0</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MyDbgHook</span>(ida_dbg.DBG_Hooks):</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        ida_dbg.DBG_Hooks.__init__(self) <span class="comment"># important</span></span><br><span class="line">        self.steps = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">log</span>(<span class="params">self, msg</span>):</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;&gt;&gt;&gt; %s&quot;</span> % msg)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">dbg_bpt</span>(<span class="params">self, tid, ea</span>):</span><br><span class="line">        self.log(<span class="string">&quot;Break point at 0x%x pid=%d&quot;</span> % (ea, tid))</span><br><span class="line">        <span class="keyword">global</span> count</span><br><span class="line">        count +=<span class="number">1</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">dbg_process_exit</span>(<span class="params">self, pid, tid, ea, code</span>):</span><br><span class="line">        self.log(<span class="string">&quot;Process exited pid=%d tid=%d ea=0x%x code=%d&quot;</span> % (pid, tid, ea, code))</span><br><span class="line">        <span class="keyword">global</span> count</span><br><span class="line">        <span class="keyword">global</span> f</span><br><span class="line">        f = <span class="number">1</span></span><br><span class="line">        <span class="built_in">print</span>(count) <span class="comment"># 获取的是shift的次数，根据XXTEA的shift次数来进行求解</span></span><br><span class="line">        </span><br><span class="line"></span><br><span class="line"><span class="comment"># Install the debug hook</span></span><br><span class="line">debughook = MyDbgHook()</span><br><span class="line">debughook.hook()</span><br><span class="line">ep = ida_ida.inf_get_start_ip()</span><br><span class="line"><span class="keyword">if</span> ida_dbg.request_run_to(ep): <span class="comment"># Request stop at entry point</span></span><br><span class="line">    ida_dbg.run_requests()     <span class="comment"># Launch process</span></span><br><span class="line">    base = ida_nalt.get_imagebase() <span class="comment"># get base</span></span><br><span class="line">    <span class="keyword">while</span> <span class="number">1</span>:</span><br><span class="line">        ida_dbg.run_to(base+<span class="number">0x9CBF</span>) <span class="comment"># loop the xor</span></span><br><span class="line">        ida_dbg.wait_for_next_event(ida_dbg.WFNE_SUSP, -<span class="number">1</span>)</span><br><span class="line">        <span class="keyword">if</span> f == <span class="number">1</span>:</span><br><span class="line">            ida_dbg.request_exit_process()</span><br><span class="line">            <span class="keyword">break</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://raw.githubusercontent.com/WoaW04/Picture/main/202412221952467.png"></p>
+<p>XXTEA中<code>shift</code>的次数与<code>rounds</code>和<code>n</code>有关，可以得到如下式子</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">rounds * (n-<span class="number">1</span>) + rounds = shift次数</span><br><span class="line"><span class="comment"># 设常量为x，分子为y，则有</span></span><br><span class="line"><span class="built_in">int</span>(x+y/<span class="built_in">len</span>(v)) * (<span class="built_in">len</span>(v)-<span class="number">1</span>) + <span class="built_in">int</span>(x+y/<span class="built_in">len</span>(v)) = shift次数</span><br><span class="line"><span class="built_in">int</span>(x+y/<span class="built_in">len</span>(v)) * (<span class="built_in">len</span>(v)-<span class="number">1</span>) + <span class="built_in">int</span>(x+y/<span class="built_in">len</span>(v)) = xor次数/<span class="number">6</span></span><br></pre></td></tr></table></figure>
+
+<p>随便取几个不同长度的输入丢进去，得到不同的shift次数，注意要考虑取整的问题，建议多取几组输入长度丢进去</p>
+<p>最后可以解得</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">x = <span class="number">32</span></span><br><span class="line">y = <span class="number">52</span></span><br></pre></td></tr></table></figure>
+
+<p>至于密文，由于上文已经知道了赋值的地方，但不知道密文长度，也不知道有没有长度检测，保险起见，开头使用flag头以便能顺利通过，长度先猜测是跟scanf中寄存器<code>rdi</code>存的<code>%42s</code>有关，将其填满，也就是<code>flag&#123;(36字节长内容)&#125;</code>，改一下上面的脚本，让其在最后一轮停下（2375）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Install the debug hook</span></span><br><span class="line">debughook = MyDbgHook()</span><br><span class="line">debughook.hook()</span><br><span class="line">ep = ida_ida.inf_get_start_ip()</span><br><span class="line"><span class="keyword">if</span> ida_dbg.request_run_to(ep): <span class="comment"># Request stop at entry point</span></span><br><span class="line">    ida_dbg.run_requests()     <span class="comment"># Launch process</span></span><br><span class="line">    base = ida_nalt.get_imagebase() <span class="comment"># get base</span></span><br><span class="line">    <span class="keyword">while</span> <span class="number">1</span>:</span><br><span class="line">        ida_dbg.run_to(base+<span class="number">0x9CBF</span>) <span class="comment"># loop the xor</span></span><br><span class="line">        ida_dbg.wait_for_next_event(ida_dbg.WFNE_SUSP, -<span class="number">1</span>)</span><br><span class="line">        <span class="keyword">if</span> count == <span class="number">2375</span>:</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        <span class="keyword">if</span> f == <span class="number">1</span>:</span><br><span class="line">            ida_dbg.request_exit_process()</span><br><span class="line">            <span class="keyword">break</span></span><br></pre></td></tr></table></figure>
+
+<p>之后到赋值的地方，搜索内存，将所有搜索出来的加密结果下硬件断点</p>
+<p>跑起来，会发现断在将加密结果赋值给了一个地址的地方，走一步，然后给这个接收加密结果的地址下硬断</p>
+<p><img src="https://raw.githubusercontent.com/WoaW04/Picture/main/202412231921293.png"></p>
+<p>之后又会断下来</p>
+<p><img src="https://raw.githubusercontent.com/WoaW04/Picture/main/202412231917282.png"></p>
+<p>一步步走，发现下面的<code>cmp</code>就是将加密结果拿去做了对比</p>
+<p>通过分析可以知道，<code>cmp</code>之后会执行<code>setnz</code>指令，即根据<code>ZF</code>寄存器来取反进行赋值</p>
+<p>由于对比不会通过，所以<code>ZF</code>寄存器的结果一定为<code>0</code>，取反之后就是<code>1</code>，所以为了让其能继续执行，需要设置其为<code>1</code>才能让其正常运行</p>
+<p>给断点写点脚本</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># cmp</span></span><br><span class="line"><span class="keyword">import</span> idc</span><br><span class="line">eax = idc.get_reg_value(<span class="string">&#x27;EAX&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(eax,end=<span class="string">&#x27;,&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://raw.githubusercontent.com/WoaW04/Picture/main/202412231933003.png"></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># setnz</span></span><br><span class="line"><span class="keyword">import</span> idc</span><br><span class="line">idc.set_reg_value(<span class="number">1</span>,<span class="string">&#x27;ZF&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://raw.githubusercontent.com/WoaW04/Picture/main/202412231937775.png"></p>
+<p>得到密文之后就可以解密了</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> struct</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">shift</span>(<span class="params">z, y, x, k, p, e</span>):</span><br><span class="line">    <span class="keyword">return</span> ((((z &gt;&gt; <span class="number">5</span>) ^ (y &lt;&lt; <span class="number">2</span>)) + ((y &gt;&gt; <span class="number">3</span>) ^ (z &lt;&lt; <span class="number">4</span>))) ^ ((x ^ y) + (k[(p &amp; <span class="number">3</span>) ^ e] ^ z)))</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">decrypt</span>(<span class="params">v, k</span>):</span><br><span class="line">    delta = <span class="number">0x7f8a6b4c</span></span><br><span class="line">    n = <span class="built_in">len</span>(v)</span><br><span class="line">    rounds = <span class="built_in">int</span>(<span class="number">32</span> + <span class="number">52</span> / n)</span><br><span class="line">    x = (rounds * delta) &amp; <span class="number">0xFFFFFFFF</span></span><br><span class="line">    y = v[<span class="number">0</span>]</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(rounds):</span><br><span class="line">        e = (x &gt;&gt; <span class="number">2</span>) &amp; <span class="number">3</span></span><br><span class="line">        <span class="keyword">for</span> p <span class="keyword">in</span> <span class="built_in">range</span>(n - <span class="number">1</span>, <span class="number">0</span>, -<span class="number">1</span>):</span><br><span class="line">            z = v[p - <span class="number">1</span>]</span><br><span class="line">            v[p] = (v[p] - shift(z, y, x, k, p, e)) &amp; <span class="number">0xFFFFFFFF</span></span><br><span class="line">            y = v[p]</span><br><span class="line">        p -= <span class="number">1</span></span><br><span class="line">        z = v[n - <span class="number">1</span>]</span><br><span class="line">        v[<span class="number">0</span>] = (v[<span class="number">0</span>] - shift(z, y, x, k, p, e)) &amp; <span class="number">0xFFFFFFFF</span></span><br><span class="line">        y = v[<span class="number">0</span>]</span><br><span class="line">        x = (x - delta) &amp; <span class="number">0xFFFFFFFF</span></span><br><span class="line">    <span class="keyword">return</span> v</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    k = [<span class="number">0x7f8a6b4c</span>,<span class="number">0x9E3779B9</span>,<span class="number">0xDEAFBEEF</span>,<span class="number">0xCAFEC3C3</span>]</span><br><span class="line">    enctxt = [<span class="number">1214171175</span>,<span class="number">3066933611</span>,<span class="number">4062421290</span>,<span class="number">3922368852</span>,<span class="number">2540993788</span>,<span class="number">1332676358</span>,<span class="number">22469667</span>,<span class="number">3633624522</span>,<span class="number">2241914041</span>,<span class="number">3542748258</span>,<span class="number">1546291565</span>]</span><br><span class="line">    decrypted = decrypt(enctxt, k)</span><br><span class="line">    tmp = <span class="string">b&#x27;&#x27;</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(decrypted)):</span><br><span class="line">        tmp += struct.pack(<span class="string">&#x27;&lt;L&#x27;</span>, decrypted[i])</span><br><span class="line">    <span class="built_in">print</span>(tmp)</span><br><span class="line"><span class="comment"># b&#x27;flag&#123;9aad3962-8ad5-48d0-83dc-1e60a81439a1&#125;\x00\x00&#x27;</span></span><br></pre></td></tr></table></figure>
+
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://woaw04.github.io">WoaW04</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://woaw04.github.io/2024/12/21/2024%E9%B9%8F%E5%9F%8E%E6%9D%AFtigtea/">https://woaw04.github.io/2024/12/21/2024%E9%B9%8F%E5%9F%8E%E6%9D%AFtigtea/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://woaw04.github.io" target="_blank">The Blog of WoaW04</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/RE/">RE</a><a class="post-meta__tags" href="/tags/2024%E9%B9%8F%E5%9F%8E%E6%9D%AF/">2024鹏城杯</a></div><div class="post_share"><div class="social-share" data-image="https://raw.githubusercontent.com/WoaW04/Picture/main/202412212047119.png" data-sites="wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2024/12/08/2024%E9%B9%8F%E5%9F%8E%E6%9D%AFminire/" title="2024鹏城杯minire"><img class="cover" src="https://raw.githubusercontent.com/WoaW04/Picture/main/202412212048647.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">2024鹏城杯minire</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://cdn.jsdelivr.net/gh/WoaW04/Picture/image04CTF.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">WoaW04</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">60</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">24</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/WoaW04"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#0x00-%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">0x00 前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x01-%E8%A7%A3"><span class="toc-number">2.</span> <span class="toc-text">0x01 解</span></a></li></ol></div></div></div></div></main><footer id="footer" style="background: #FFFFFF00"><div id="footer-wrap"><div class="copyright">&copy;2022 - 2024 By WoaW04</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div></div></body></html>
